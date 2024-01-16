@@ -17,9 +17,16 @@ namespace Blopnote
             this.TextBoxWithText = TextBoxWithText;
         }
 
+        public void PlaceToCorrectPosition(int topSpace)
+        {
+            // Here -1 due to strange display of textbox borders even with the property ClientSize being used
+            TextBoxWithText.Location = new Point(-1, topSpace);
+        }
+
         public void AdjustTextFieldSizeTo(Size size)
         {
-            TextBoxWithText.Size = size;
+            // Here +2 due to strange display of textbox borders even with the property ClientSize being used
+            TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
         }
     }
 }
