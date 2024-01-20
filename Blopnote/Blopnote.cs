@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    public partial class Blopnote : Form
+    public partial class Blopnote : Form // argh
     {
         private Title title { get; set; }
         private TextField textField { set; get; }
