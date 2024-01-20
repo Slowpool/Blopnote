@@ -27,6 +27,13 @@ namespace Blopnote
         {
             // Here +2 due to strange display of textbox borders even with the property ClientSize being used
             TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
+            TextBoxWithText.AutoCompleteMode = AutoCompleteMode.Suggest;
+            TextBoxWithText.AutoCompleteSource = AutoCompleteSource.CustomSource;
+        }
+
+        public string GetText()
+        {
+            return TextBoxWithText.Text;
         }
     }
 }

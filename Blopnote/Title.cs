@@ -11,6 +11,12 @@ namespace Blopnote
     {
         private Form form;
 
+        public Title(Form form)
+        {
+            this.form = form;
+            FileState = FileStates.JustCreated;
+        }
+
         private string TitleString
         {
             get => form.Text;
@@ -19,11 +25,13 @@ namespace Blopnote
 
         private string FileName { get; set; }
 
+        private FileStates fileState;
         public FileStates FileState
         {
             set
             {
-                switch (value)
+                fileState = value;
+                switch (fileState)
                 {
                     case FileStates.JustCreated:
                         SetNewName("Unnamed");
@@ -36,6 +44,7 @@ namespace Blopnote
                         break;
                 }
             }
+            get => fileState;
         }
 
         public void SetNewName(string fileName)

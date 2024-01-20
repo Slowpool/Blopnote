@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blopnote.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,13 +13,19 @@ namespace Blopnote
 {
     public partial class Blopnote : Form // argh
     {
-        private Title title { get; set; }
-        private TextField textField { set; get; }
+        private readonly TextField textField;
+        private readonly FileProcessor fileProcessor;
+        private readonly Title title;
 
         public Blopnote()
         {
             InitializeComponent();
+            this.Icon = Resources.icon;
+
+            title = new Title(this);
             textField = new TextField(TextBoxWithText);
+            fileProcessor = new FileProcessor(textField, title);
+
             AdjustTextField();
         }
 
@@ -46,19 +53,30 @@ namespace Blopnote
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // somewhere at the end
-            //FileSaved = true;
+            fileProcessor.SaveFile();
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // somewhere at the end
-            //FileSaved = true;
+            fileProcessor.SaveFileAs();
         }
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-            
+            title.FileState = FileStates.Unsaved;
+        }
+
+        private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            #warning stub
+            string filePath = "here must be file path";
+            var userAnswer = MessageBox.Show
+            (
+                caption: "Are you sure?",
+                text: "Do you want to save file as " + filePath,
+                buttons: MessageBoxButtons.YesNoCancel,
+                icon: MessageBoxIcon.Warning
+            );
         }
     }
 }
