@@ -17,6 +17,30 @@ namespace Blopnote
             set => form.Text = value;
         }
 
-        private FileState
+        private string FileName { get; set; }
+
+        public FileStates FileState
+        {
+            set
+            {
+                switch (value)
+                {
+                    case FileStates.JustCreated:
+                        SetNewName("Unnamed");
+                        break;
+                    case FileStates.Saved:
+                        TitleString = TitleString.Substring(1);
+                        break;
+                    case FileStates.Unsaved:
+                        TitleString = '*' + TitleString;
+                        break;
+                }
+            }
+        }
+
+        public void SetNewName(string fileName)
+        {
+            TitleString = fileName + " - Blopnot";
+        }
     }
 }

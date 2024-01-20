@@ -1,7 +1,8 @@
 ﻿namespace Blopnote
 {
-    public enum FileState
+    public enum FileStates
     {
+        JustCreated,
         Saved,
         Unsaved,
     }

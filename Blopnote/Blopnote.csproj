@@ -52,7 +52,7 @@
     <Compile Include="Blopnote.Designer.cs">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileState.cs" />
+    <Compile Include="FileStates.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextField.cs" />

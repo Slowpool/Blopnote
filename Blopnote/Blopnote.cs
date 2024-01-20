@@ -15,11 +15,15 @@ namespace Blopnote
         private Title title { get; set; }
         private TextField textField { set; get; }
 
-        private bool FileSaved { get; set; }
         public Blopnote()
         {
             InitializeComponent();
             textField = new TextField(TextBoxWithText);
+            AdjustTextField();
+        }
+
+        private void AdjustTextField()
+        {
             textField.PlaceToCorrectPosition(menuStrip1.Bottom);
             textField.AdjustTextFieldSizeTo(ClientSize);
         }
@@ -42,12 +46,19 @@ namespace Blopnote
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            // somewhere at the end
+            //FileSaved = true;
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // somewhere at the end
+            //FileSaved = true;
+        }
 
+        private void TextBoxWithText_TextChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }
