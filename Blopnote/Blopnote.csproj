@@ -54,11 +54,9 @@
     </Compile>
     <Compile Include="Condition.cs" />
     <Compile Include="FileProcessor.cs" />
-    <Compile Include="FileStates.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextField.cs" />
-    <Compile Include="Title.cs" />
     <EmbeddedResource Include="Blopnote.resx">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </EmbeddedResource>

@@ -15,7 +15,6 @@ namespace Blopnote
     {
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
-        private readonly Title title;
         private readonly Condition condition;
 
         public Blopnote()
@@ -24,10 +23,9 @@ namespace Blopnote
             this.Icon = Resources.icon;
 
 
-            title = new Title(this);
             textField = new TextField(TextBoxWithText);
-            condition = new Condition(title);
-            fileProcessor = new FileProcessor(textField, title, condition);
+            condition = new Condition();
+            fileProcessor = new FileProcessor(textField, condition);
 
             AdjustTextField();
         }
@@ -66,44 +64,12 @@ namespace Blopnote
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-            if (condition.IsUnsaved())
-            {
-                return;
-            }
-            else
-            {
-                condition.FileState = FileStates.Unsaved;
-            }
+            
         }
 
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
-            #warning stub
-            string filePath = "here must be file path";
 
-            var userAnswer = MessageBox.Show
-            (
-                caption: "Are you sure?",
-                text: "Do you want to save file as " + filePath,
-                buttons: MessageBoxButtons.YesNoCancel,
-                icon: MessageBoxIcon.Warning
-            );
-
-            switch (userAnswer)
-            {
-                case DialogResult.Yes:
-                    SuggestSaveFileToUser();
-                    if (condition.IsUnsaved())
-                    {
-                        e.Cancel = true;
-                    }
-                    break;
-                case DialogResult.No:
-                    break;
-                case DialogResult.Cancel:
-                    e.Cancel = true;
-                    return;
-            }
         }
 
         private void SuggestSaveFileToUser()

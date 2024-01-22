@@ -13,17 +13,13 @@ namespace Blopnote
     {
         private readonly SaveFileDialog SaveFileDialog1;
         private readonly TextField textField;
-        private readonly Title title;
         private readonly Condition condition;
 
         private bool FileExists => SaveFileDialog1.CheckFileExists;
 
-        private bool FileJustCreated => condition.FileState == FileStates.JustCreated;
-
-        public FileProcessor(TextField textField, Title title, Condition condition)
+        public FileProcessor(TextField textField, Condition condition)
         {
             this.textField = textField;
-            this.title = title;
             this.condition = condition;
             this.SaveFileDialog1 = new SaveFileDialog();
             this.SaveFileDialog1.Filter = "txt files (*.txt)|*.txt|all files (*.*)|*.*";
@@ -35,22 +31,12 @@ namespace Blopnote
             if (userAnswer == DialogResult.OK)
             {
                 WriteFile();
-                if (condition.IsSaved())
-                {
-                    return;
-                }
-                else
-                {
-                    condition.FileState = FileStates.Saved;
-                }
             }
         }
 
         public void SaveFile()
         {
             WriteFile();
-            condition.FileState = FileStates.Saved;
-            title.SetNewName(SaveFileDialog1.FileName);
         }
 
         public void WriteFile()
@@ -58,18 +44,6 @@ namespace Blopnote
             using (var writer = new StreamWriter(SaveFileDialog1.FileName, append: false, encoding: Encoding.UTF8))
             {
                 writer.Write(textField.GetText());
-            }
-        }
-
-        public void SaveIfNeed()
-        {
-            if (condition.FileHasName)
-            {
-                SaveFile();
-            }
-            else
-            {
-                SaveFileAs();
             }
         }
     }
