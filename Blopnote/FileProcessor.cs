@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,15 +14,17 @@ namespace Blopnote
         private readonly SaveFileDialog SaveFileDialog1;
         private readonly TextField textField;
         private readonly Title title;
+        private readonly Condition condition;
 
         private bool FileExists => SaveFileDialog1.CheckFileExists;
 
-        private bool FileJustCreated => title.FileState == FileStates.JustCreated;
+        private bool FileJustCreated => condition.FileState == FileStates.JustCreated;
 
-        public FileProcessor(TextField textField, Title title)
+        public FileProcessor(TextField textField, Title title, Condition condition)
         {
             this.textField = textField;
             this.title = title;
+            this.condition = condition;
             this.SaveFileDialog1 = new SaveFileDialog();
             this.SaveFileDialog1.Filter = "txt files (*.txt)|*.txt|all files (*.*)|*.*";
         }
@@ -32,24 +35,37 @@ namespace Blopnote
             if (userAnswer == DialogResult.OK)
             {
                 WriteFile();
-                title.FileState = FileStates.Saved;
+                if (condition.IsSaved())
+                {
+                    return;
+                }
+                else
+                {
+                    condition.FileState = FileStates.Saved;
+                }
             }
+        }
+
+        public void SaveFile()
+        {
+            WriteFile();
+            condition.FileState = FileStates.Saved;
+            title.SetNewName(SaveFileDialog1.FileName);
         }
 
         public void WriteFile()
         {
             using (var writer = new StreamWriter(SaveFileDialog1.FileName, append: false, encoding: Encoding.UTF8))
             {
-                writer.Write(textField.GetText()); 
+                writer.Write(textField.GetText());
             }
         }
 
-        public void SaveFile()
+        public void SaveIfNeed()
         {
-            if (FileExists)
+            if (condition.FileHasName)
             {
-                WriteFile();
-                title.FileState = FileStates.Saved;
+                SaveFile();
             }
             else
             {

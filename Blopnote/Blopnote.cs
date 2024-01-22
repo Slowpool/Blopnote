@@ -11,20 +11,23 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    public partial class Blopnote : Form // argh
+    public partial class Blopnote : Form
     {
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
         private readonly Title title;
+        private readonly Condition condition;
 
         public Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
 
+
             title = new Title(this);
             textField = new TextField(TextBoxWithText);
-            fileProcessor = new FileProcessor(textField, title);
+            condition = new Condition(title);
+            fileProcessor = new FileProcessor(textField, title, condition);
 
             AdjustTextField();
         }
@@ -53,7 +56,7 @@ namespace Blopnote
 
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fileProcessor.SaveFile();
+            //fileProcessor.Save();
         }
 
         private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -63,13 +66,21 @@ namespace Blopnote
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-            title.FileState = FileStates.Unsaved;
+            if (condition.IsUnsaved())
+            {
+                return;
+            }
+            else
+            {
+                condition.FileState = FileStates.Unsaved;
+            }
         }
 
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             #warning stub
             string filePath = "here must be file path";
+
             var userAnswer = MessageBox.Show
             (
                 caption: "Are you sure?",
@@ -77,6 +88,28 @@ namespace Blopnote
                 buttons: MessageBoxButtons.YesNoCancel,
                 icon: MessageBoxIcon.Warning
             );
+
+            switch (userAnswer)
+            {
+                case DialogResult.Yes:
+                    SuggestSaveFileToUser();
+                    if (condition.IsUnsaved())
+                    {
+                        e.Cancel = true;
+                    }
+                    break;
+                case DialogResult.No:
+                    break;
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    return;
+            }
+        }
+
+        private void SuggestSaveFileToUser()
+        {
+            // TODO fix it what if i exit from below method by closing dialog window
+            fileProcessor.SaveFile();
         }
     }
 }

@@ -52,6 +52,7 @@
     <Compile Include="Blopnote.Designer.cs">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </Compile>
+    <Compile Include="Condition.cs" />
     <Compile Include="FileProcessor.cs" />
     <Compile Include="FileStates.cs" />
     <Compile Include="Program.cs" />

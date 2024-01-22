@@ -39,6 +39,7 @@
             this.autosaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.somethingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -46,7 +47,7 @@
             // 
             this.TextBoxWithText.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxWithText.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.TextBoxWithText.Location = new System.Drawing.Point(96, 75);
+            this.TextBoxWithText.Location = new System.Drawing.Point(0, 27);
             this.TextBoxWithText.MaxLength = 1500000;
             this.TextBoxWithText.Multiline = true;
             this.TextBoxWithText.Name = "TextBoxWithText";
@@ -80,28 +81,28 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem1
             // 
             this.saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(121, 22);
             this.saveToolStripMenuItem1.Text = "Save";
             this.saveToolStripMenuItem1.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItem_Click);
             // 
@@ -121,6 +122,8 @@
             // 
             // lyricsToolStripMenuItem
             // 
+            this.lyricsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.somethingToolStripMenuItem});
             this.lyricsToolStripMenuItem.Name = "lyricsToolStripMenuItem";
             this.lyricsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.lyricsToolStripMenuItem.Text = "Lyrics";
@@ -132,6 +135,13 @@
             this.statusStrip1.Size = new System.Drawing.Size(800, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // somethingToolStripMenuItem
+            // 
+            this.somethingToolStripMenuItem.CheckOnClick = true;
+            this.somethingToolStripMenuItem.Name = "somethingToolStripMenuItem";
+            this.somethingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.somethingToolStripMenuItem.Text = "Something";
             // 
             // Blopnote
             // 
@@ -166,6 +176,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem lyricsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autosaveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem somethingToolStripMenuItem;
     }
 }
 
