@@ -8,22 +8,22 @@ using System.Drawing;
 
 namespace Blopnote
 {
-    public class TextField
+    internal class TextField
     {
         private readonly TextBox TextBoxWithText;
 
-        public TextField(TextBox TextBoxWithText)
+        internal TextField(TextBox TextBoxWithText)
         {
             this.TextBoxWithText = TextBoxWithText;
         }
 
-        public void PlaceToCorrectPosition(int topSpace)
+        internal void PlaceToCorrectPosition(int topSpace)
         {
             // Here -1 due to strange display of textbox borders even with the property ClientSize being used
             TextBoxWithText.Location = new Point(-1, topSpace);
         }
 
-        public void AdjustTextFieldSizeTo(Size size)
+        internal void AdjustTextFieldSizeTo(Size size)
         {
             // Here +2 due to strange display of textbox borders even with the property ClientSize being used
             TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
@@ -31,9 +31,19 @@ namespace Blopnote
             TextBoxWithText.AutoCompleteSource = AutoCompleteSource.CustomSource;
         }
 
-        public string GetText()
+        internal string GetText()
         {
             return TextBoxWithText.Text;
+        }
+
+        internal void Disable()
+        {
+            TextBoxWithText.Enabled = false;
+        }
+
+        internal void Enable()
+        {
+            TextBoxWithText.Enabled = true;
         }
     }
 }

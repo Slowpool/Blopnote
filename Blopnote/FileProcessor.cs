@@ -9,39 +9,32 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    public class FileProcessor
+    internal class FileProcessor
     {
-        private readonly SaveFileDialog SaveFileDialog1;
         private readonly TextField textField;
-        private readonly Condition condition;
+        private readonly FileCondition condition;
 
-        private bool FileExists => SaveFileDialog1.CheckFileExists;
+        private string directoryPath { get; set; }
 
-        public FileProcessor(TextField textField, Condition condition)
+        internal FileProcessor(TextField textField, FileCondition condition)
         {
             this.textField = textField;
             this.condition = condition;
-            this.SaveFileDialog1 = new SaveFileDialog();
-            this.SaveFileDialog1.Filter = "txt files (*.txt)|*.txt|all files (*.*)|*.*";
         }
 
-        public void SaveFileAs()
+        internal void ChangeDirectory(string directoryName)
         {
-            DialogResult userAnswer = SaveFileDialog1.ShowDialog();
-            if (userAnswer == DialogResult.OK)
-            {
-                WriteFile();
-            }
+            directoryPath = directoryName;
         }
 
-        public void SaveFile()
+        internal void CreateNewFile(string fileName)
         {
-            WriteFile();
+            #warning
         }
 
-        public void WriteFile()
+        internal void WriteFile()
         {
-            using (var writer = new StreamWriter(SaveFileDialog1.FileName, append: false, encoding: Encoding.UTF8))
+            using (var writer = new StreamWriter(condition.FileName, append: false, encoding: Encoding.UTF8))
             {
                 writer.Write(textField.GetText());
             }

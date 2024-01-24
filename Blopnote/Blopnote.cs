@@ -1,4 +1,5 @@
 ﻿using Blopnote.Properties;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,25 +12,30 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    public partial class Blopnote : Form
+    internal partial class Blopnote : Form
     {
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
-        private readonly Condition condition;
+        private readonly FileCondition fileCondition;
+        private readonly FileNameAndLyricsInputWindow fileNameAndLyricsInputWindow;
 
-        public Blopnote()
+        private const string DEFAULT_PATH_FOR_FILES = @"C:/Users/azgel/Desktop/translations";
+
+        internal Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
-
+            folderBrowserDialog1.Description = "The default path is " + DEFAULT_PATH_FOR_FILES;
 
             textField = new TextField(TextBoxWithText);
-            condition = new Condition();
-            fileProcessor = new FileProcessor(textField, condition);
+            fileCondition = new FileCondition(status, textField);
+            fileProcessor = new FileProcessor(textField, fileCondition);
+            fileNameAndLyricsInputWindow = new FileNameAndLyricsInputWindow();
 
             AdjustTextField();
         }
-
+        
+        #warning should redo
         private void AdjustTextField()
         {
             textField.PlaceToCorrectPosition(menuStrip1.Bottom);
@@ -44,7 +50,26 @@ namespace Blopnote
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            fileNameAndLyricsInputWindow.ShowForDataInput();
+            if (fileNameAndLyricsInputWindow.IsDataInserted)
+            {
+                string fileName = fileNameAndLyricsInputWindow.FileName;
+                string lyrics = fileNameAndLyricsInputWindow.Lyrics;
 
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    return;
+                }
+                fileName += ".txt";
+                fileProcessor.CreateNewFile(fileName);
+
+                if (string.IsNullOrEmpty(lyrics))
+                {
+                    return;
+                }
+
+                
+            }
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -52,30 +77,33 @@ namespace Blopnote
 
         }
 
-        private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //fileProcessor.Save();
-        }
-
-        private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            fileProcessor.SaveFileAs();
-        }
-
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
             
         }
 
-        private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
+        private void Blopnote_Load(object sender, EventArgs e)
         {
-
+            fileCondition.DoesNotExist();
+            fileProcessor.ChangeDirectory(DEFAULT_PATH_FOR_FILES);
         }
 
-        private void SuggestSaveFileToUser()
+        private void changeFilePathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // TODO fix it what if i exit from below method by closing dialog window
-            fileProcessor.SaveFile();
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                fileProcessor.ChangeDirectory(folderBrowserDialog1.SelectedPath);
+            }
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fileCondition.DoesNotExist();
+        }
+
+        private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
