@@ -29,7 +29,7 @@ namespace Blopnote
 
         internal void CreateNewFile(string fileName)
         {
-            #warning
+
         }
 
         internal void WriteFile()

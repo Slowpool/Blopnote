@@ -17,7 +17,8 @@ namespace Blopnote
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
         private readonly FileCondition fileCondition;
-        private readonly FileNameAndLyricsInputWindow fileNameAndLyricsInputWindow;
+        private readonly FileNameAndLyricsInputWindow dataInputWindow;
+        private readonly LyricsBox lyricsBox;
 
         private const string DEFAULT_PATH_FOR_FILES = @"C:/Users/azgel/Desktop/translations";
 
@@ -30,7 +31,7 @@ namespace Blopnote
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             fileProcessor = new FileProcessor(textField, fileCondition);
-            fileNameAndLyricsInputWindow = new FileNameAndLyricsInputWindow();
+            dataInputWindow = new FileNameAndLyricsInputWindow();
 
             AdjustTextField();
         }
@@ -50,25 +51,13 @@ namespace Blopnote
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fileNameAndLyricsInputWindow.ShowForDataInput();
-            if (fileNameAndLyricsInputWindow.IsDataInserted)
+            dataInputWindow.ShowForDataInput();
+            if (dataInputWindow.IsDataInserted)
             {
-                string fileName = fileNameAndLyricsInputWindow.FileName;
-                string lyrics = fileNameAndLyricsInputWindow.Lyrics;
+                string fileName = dataInputWindow.FileName;
+                string lyrics = dataInputWindow.Lyrics;
 
-                if (string.IsNullOrEmpty(fileName))
-                {
-                    return;
-                }
-                fileName += ".txt";
                 fileProcessor.CreateNewFile(fileName);
-
-                if (string.IsNullOrEmpty(lyrics))
-                {
-                    return;
-                }
-
-                
             }
         }
 

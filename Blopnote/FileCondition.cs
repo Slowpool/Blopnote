@@ -10,15 +10,14 @@ namespace Blopnote
 {
     internal class FileCondition
     {
-        private readonly ToolStripStatusLabel status;
+        private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
 
         internal string FileName { get; set; }
-        internal bool FileHasName => FileName != null;
 
-        internal FileCondition(ToolStripStatusLabel status, TextField textField)
+        internal FileCondition(ToolStripStatusLabel programStatus, TextField textField)
         {
-            this.status = status;
+            this.programStatus = programStatus;
             this.textField = textField;
         }
 
@@ -26,9 +25,7 @@ namespace Blopnote
         {
             FileName = null;
             textField.Disable();
-            status.Text = "Create or open any file";
+            programStatus.Text = "Create or open any file";
         }
-
-        
     }
 }

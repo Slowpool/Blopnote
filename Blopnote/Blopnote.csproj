@@ -58,15 +58,19 @@
     <Compile Include="FileNameAndLyricsInputWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FileNameAndLyricsInputWindowDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FileProcessor.cs" />
+    <Compile Include="LyricsBox.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextField.cs" />
     <EmbeddedResource Include="Blopnote.resx">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FileNameAndLyricsInputWindow.resx">
-      <DependentUpon>FileNameAndLyricsInputWindow.cs</DependentUpon>
+    <EmbeddedResource Include="FileNameAndLyricsInputWindowDesigner.resx">
+      <DependentUpon>FileNameAndLyricsInputWindowDesigner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
