@@ -67,8 +67,9 @@ namespace Blopnote
             string fileName = dataInputWindow.FileName;
             string lyrics = dataInputWindow.Lyrics;
 
-
             fileProcessor.CreateNewTranslation(fileName, lyrics);
+
+
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -102,7 +103,7 @@ namespace Blopnote
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LyricsUsed = !LyricsUsed;
+            fileCondition.SwitchLyricsUsed();
         }
     }
 }

@@ -12,15 +12,26 @@ namespace Blopnote
     internal class FileProcessor
     {
         private readonly TextField textField;
-        private readonly FileCondition condition;
+        private readonly FileCondition fileCondition;
         private readonly LyricsBox lyricsBox;
 
         private DirectoryInfo directory;
 
+        private string FilePath => directory.FullName + "\\" + fileCondition.FileName;
+        private string LyricsPath => EditFilePathToLyricsPath();
+
+        private string EditFilePathToLyricsPath()
+        {
+            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " lyrics");
+            int indexOfLastSlash = FilePath.LastIndexOf('\\');
+            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\lyrics");
+            return lyricsPath;
+        }
+
         internal FileProcessor(TextField textField, FileCondition condition)
         {
             this.textField = textField;
-            this.condition = condition;
+            this.fileCondition = condition;
         }
 
         // Q it doesn't matter for me now
@@ -48,18 +59,34 @@ namespace Blopnote
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
-            directory = new DirectoryInfo(fileName);
-            WriteText();
+            fileCondition.FileName = fileName;
+            File.Create(FilePath);
 
-            // TODO
-
+            fileCondition.CheckLyrics(lyrics);
+            if (fileCondition.LyricsExists)
+            {
+                File.Create(LyricsPath);
+                WriteLyrics(lyrics);
+            }
         }
 
-        internal void WriteText()
+        private void WriteText()
         {
-            using (var writer = new StreamWriter(condition.FileName, append: false, encoding: Encoding.UTF8))
+            WriteInFile(FilePath, textField.GetText());
+        }
+
+        private void WriteLyrics(string lyrics)
+        {
+            WriteInFile(LyricsPath, lyrics);
+        }
+
+        private void WriteInFile(string filePath, string text)
+        {
+            using (var writer = new StreamWriter(path: filePath,
+                                                 append: false,
+                                                 encoding: Encoding.UTF8))
             {
-                writer.Write(textField.GetText());
+                writer.Write(text);
             }
         }
     }
