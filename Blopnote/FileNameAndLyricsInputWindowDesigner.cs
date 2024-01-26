@@ -10,7 +10,7 @@ namespace Blopnote
         private TextBox TextBoxForAuthor;
         private TextBox TextBoxForLyrics;
         private CheckBox CheckBoxUseLyrics;
-        private Button button1;
+        private Button ButtonOK;
         private TextBox TextBoxForSong;
         private Label label3;
         private Label label2;
@@ -22,7 +22,7 @@ namespace Blopnote
             this.TextBoxForAuthor = new System.Windows.Forms.TextBox();
             this.TextBoxForLyrics = new System.Windows.Forms.TextBox();
             this.CheckBoxUseLyrics = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ButtonOK = new System.Windows.Forms.Button();
             this.TextBoxForSong = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -30,20 +30,20 @@ namespace Blopnote
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 37);
+            this.label1.Location = new System.Drawing.Point(72, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(240, 22);
+            this.label1.Size = new System.Drawing.Size(180, 22);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Enter author pseudonym:";
+            this.label1.Text = "Author pseudonym:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(83, 190);
+            this.label2.Location = new System.Drawing.Point(172, 190);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(140, 22);
+            this.label2.Size = new System.Drawing.Size(80, 22);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Enter lyrics:";
+            this.label2.Text = "Lyrics:";
             // 
             // TextBoxForAuthor
             // 
@@ -72,17 +72,17 @@ namespace Blopnote
             this.CheckBoxUseLyrics.UseVisualStyleBackColor = true;
             this.CheckBoxUseLyrics.CheckedChanged += new System.EventHandler(this.CheckBoxUseLyrics_CheckedChanged);
             // 
-            // button1
+            // ButtonOK
             // 
-            this.button1.AutoSize = true;
-            this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(310, 515);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(160, 32);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "OK";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.OK_Click);
+            this.ButtonOK.AutoSize = true;
+            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ButtonOK.Location = new System.Drawing.Point(310, 515);
+            this.ButtonOK.Name = "ButtonOK";
+            this.ButtonOK.Size = new System.Drawing.Size(160, 32);
+            this.ButtonOK.TabIndex = 5;
+            this.ButtonOK.Text = "OK";
+            this.ButtonOK.UseVisualStyleBackColor = true;
+            this.ButtonOK.Click += new System.EventHandler(this.OK_Click);
             // 
             // TextBoxForSong
             // 
@@ -95,18 +95,18 @@ namespace Blopnote
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(132, 85);
+            this.label3.Location = new System.Drawing.Point(192, 85);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(120, 22);
+            this.label3.Size = new System.Drawing.Size(60, 22);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Enter song:";
+            this.label3.Text = "Song:";
             // 
             // FileNameAndLyricsInputWindow
             // 
             this.ClientSize = new System.Drawing.Size(780, 559);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.TextBoxForSong);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.ButtonOK);
             this.Controls.Add(this.CheckBoxUseLyrics);
             this.Controls.Add(this.TextBoxForLyrics);
             this.Controls.Add(this.TextBoxForAuthor);

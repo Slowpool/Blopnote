@@ -20,6 +20,9 @@ namespace Blopnote
         private readonly FileNameAndLyricsInputWindow dataInputWindow;
         private readonly LyricsBox lyricsBox;
 
+        // TODO I should disable toolstripmenuitem Show' in case when lyrics doesn't exist. When it exist, user can enable or disable 'Show' item.
+
+
         private const string DEFAULT_PATH_FOR_FILES = @"C:/Users/azgel/Desktop/translations";
 
         internal Blopnote()
@@ -33,11 +36,12 @@ namespace Blopnote
             fileProcessor = new FileProcessor(textField, fileCondition);
             dataInputWindow = new FileNameAndLyricsInputWindow();
 
-            AdjustTextField();
+            AdjustFields();
         }
         
         #warning should redo
-        private void AdjustTextField()
+
+        private void AdjustFields()
         {
             textField.PlaceToCorrectPosition(menuStrip1.Bottom);
             textField.AdjustTextFieldSizeTo(ClientSize);
@@ -54,11 +58,17 @@ namespace Blopnote
             dataInputWindow.ShowForDataInput();
             if (dataInputWindow.IsDataInserted)
             {
-                string fileName = dataInputWindow.FileName;
-                string lyrics = dataInputWindow.Lyrics;
-
-                fileProcessor.CreateNewFile(fileName);
+                HandleInsertedData();
             }
+        }
+
+        private void HandleInsertedData()
+        {
+            string fileName = dataInputWindow.FileName;
+            string lyrics = dataInputWindow.Lyrics;
+
+
+            fileProcessor.CreateNewTranslation(fileName, lyrics);
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -92,7 +102,7 @@ namespace Blopnote
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            LyricsUsed = !LyricsUsed;
         }
     }
 }

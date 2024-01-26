@@ -13,8 +13,9 @@ namespace Blopnote
     {
         private readonly TextField textField;
         private readonly FileCondition condition;
+        private readonly LyricsBox lyricsBox;
 
-        private string directoryPath { get; set; }
+        private DirectoryInfo directory;
 
         internal FileProcessor(TextField textField, FileCondition condition)
         {
@@ -22,17 +23,39 @@ namespace Blopnote
             this.condition = condition;
         }
 
+        // Q it doesn't matter for me now
         internal void ChangeDirectory(string directoryName)
         {
-            directoryPath = directoryName;
+            directory = new DirectoryInfo(directoryName);
         }
 
-        internal void CreateNewFile(string fileName)
+        // Q it doesn't matter for me now
+        //internal void CreateLyricsInCurrentDirectoryIfNeed()
+        //{
+        //    bool lyricsExists = (from dir in directory.GetDirectories()
+        //                        where dir.Name == "lyrics"
+        //                        select dir)
+        //                        .Count() == 1;
+        //    if (lyricsExists)
+        //    {
+        //        return;
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //}
+
+        internal void CreateNewTranslation(string fileName, string lyrics)
         {
+            directory = new DirectoryInfo(fileName);
+            WriteText();
+
+            // TODO
 
         }
 
-        internal void WriteFile()
+        internal void WriteText()
         {
             using (var writer = new StreamWriter(condition.FileName, append: false, encoding: Encoding.UTF8))
             {

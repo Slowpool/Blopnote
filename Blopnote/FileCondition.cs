@@ -13,6 +13,7 @@ namespace Blopnote
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
 
+        internal bool LyricsUsed { get; set; } = false;
         internal string FileName { get; set; }
 
         internal FileCondition(ToolStripStatusLabel programStatus, TextField textField)

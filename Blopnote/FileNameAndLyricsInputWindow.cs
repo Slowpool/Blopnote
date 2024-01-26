@@ -10,7 +10,7 @@ namespace Blopnote
 {
     internal partial class FileNameAndLyricsInputWindow : Form
     {
-        internal string FileName => Author + " - " + Song;
+        internal string FileName => Author + " - " + Song + ".txt";
 
         private string Author { get; set; }
         private string Song { get; set; }
@@ -37,7 +37,7 @@ namespace Blopnote
             {
                 Author = TextBoxForAuthor.Text;
                 Song = TextBoxForSong.Text;
-                Lyrics = TextBoxForLyrics.Text;
+                ReadLyricsIfItUsed();
             }
         }
 
@@ -65,6 +65,14 @@ namespace Blopnote
             }
         }
 
+        private void ReadLyricsIfItUsed()
+        {
+            if (CheckBoxUseLyrics.Checked)
+            {
+                Lyrics = TextBoxForLyrics.Text;
+            }
+        }
+
         private void FileNameAndLyricsInputWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
 
@@ -72,7 +80,7 @@ namespace Blopnote
 
         private void OK_Click(object sender, EventArgs e)
         {
-
+            
         }
     }
 }
