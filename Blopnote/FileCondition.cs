@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Blopnote
 {
@@ -13,7 +14,15 @@ namespace Blopnote
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
 
-        internal string FileName { get; set; }
+        private string fileName;
+        internal string FileName
+        {
+            get => fileName;
+            set
+            {
+                fileName = value;
+            }
+        }
 
         internal bool LyricsExists { get; set; }
         internal bool LyricsDisplayed { get; set; }
@@ -27,6 +36,7 @@ namespace Blopnote
         internal void DoesNotExist()
         {
             FileName = null;
+            textField.Clear();
             textField.Disable();
             programStatus.Text = "Create or open any file";
         }
@@ -46,6 +56,14 @@ namespace Blopnote
             {
                 LyricsExists = true;
             }
+        }
+
+        internal void RefreshStatus()
+        {
+            int lastIndexOfLastSlash = FileName.LastIndexOf('\\');
+            int IndexOfLastPoint = FileName.LastIndexOf('.');
+            string song = FileName.Substring(lastIndexOfLastSlash + 1, IndexOfLastPoint);
+            programStatus.Text = "Song: " + song;
         }
     }
 }

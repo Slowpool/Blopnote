@@ -60,14 +60,15 @@ namespace Blopnote
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
             fileCondition.FileName = fileName;
-            File.Create(FilePath);
+            File.Create(FilePath).Dispose();
 
             fileCondition.CheckLyrics(lyrics);
             if (fileCondition.LyricsExists)
             {
-                File.Create(LyricsPath);
                 WriteLyrics(lyrics);
             }
+
+            fileCondition.RefreshStatus();
         }
 
         private void WriteText()

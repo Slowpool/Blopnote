@@ -59,6 +59,8 @@ namespace Blopnote
             if (dataInputWindow.IsDataInserted)
             {
                 HandleInsertedData();
+                textField.Enable();
+                textField.Clear();
             }
         }
 
@@ -67,8 +69,15 @@ namespace Blopnote
             string fileName = dataInputWindow.FileName;
             string lyrics = dataInputWindow.Lyrics;
 
-            fileProcessor.CreateNewTranslation(fileName, lyrics);
-
+            try
+            {
+                fileProcessor.CreateNewTranslation(fileName, lyrics);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(caption: "File error",
+                    text: "File wasn't created.\nCause: " + e.Message);
+            }
 
         }
 

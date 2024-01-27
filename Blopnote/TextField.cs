@@ -45,5 +45,10 @@ namespace Blopnote
         {
             TextBoxWithText.Enabled = true;
         }
+
+        internal void Clear()
+        {
+            TextBoxWithText.Clear();
+        }
     }
 }
