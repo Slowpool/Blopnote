@@ -25,7 +25,6 @@ namespace Blopnote
         }
 
         internal bool LyricsExists { get; set; }
-        internal bool LyricsDisplayed { get; set; }
 
         internal FileCondition(ToolStripStatusLabel programStatus, TextField textField)
         {
@@ -39,11 +38,6 @@ namespace Blopnote
             textField.Clear();
             textField.Disable();
             programStatus.Text = "Create or open any file";
-        }
-
-        internal void SwitchLyricsUsed()
-        {
-            LyricsDisplayed = !LyricsDisplayed;
         }
 
         internal void CheckLyrics(string lyrics)

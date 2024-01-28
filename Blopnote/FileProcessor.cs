@@ -28,10 +28,11 @@ namespace Blopnote
             return lyricsPath;
         }
 
-        internal FileProcessor(TextField textField, FileCondition condition)
+        internal FileProcessor(TextField textField, FileCondition fileCondition, LyricsBox lyricsBox)
         {
             this.textField = textField;
-            this.fileCondition = condition;
+            this.fileCondition = fileCondition;
+            this.lyricsBox = lyricsBox;
         }
 
         // Q it doesn't matter for me now

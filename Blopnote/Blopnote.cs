@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    internal partial class Blopnote : Form
+    public partial class Blopnote : Form
     {
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
@@ -25,32 +25,27 @@ namespace Blopnote
 
         private const string DEFAULT_PATH_FOR_FILES = @"C:/Users/azgel/Desktop/translations";
 
-        internal Blopnote()
+        public Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
             folderBrowserDialog1.Description = "The default path is " + DEFAULT_PATH_FOR_FILES;
 
-            textField = new TextField(TextBoxWithText);
+            textField = new TextField(TextBoxWithText,
+                                      bottomMargin: statusStrip1.Height,
+                                      topMargin: menuStrip1.Height);
             fileCondition = new FileCondition(status, textField);
-            fileProcessor = new FileProcessor(textField, fileCondition);
+            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font);
+            fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox);
             dataInputWindow = new FileNameAndLyricsInputWindow();
 
-            AdjustFields();
+            textField.Place();
         }
         
-        #warning should redo
-
-        private void AdjustFields()
-        {
-            textField.PlaceToCorrectPosition(menuStrip1.Bottom);
-            textField.AdjustTextFieldSizeTo(ClientSize);
-        }
-
         private void Blopnote_SizeChanged(object sender, EventArgs e)
         {
             Size currentSizeOfWindow = ClientSize;
-            textField.AdjustTextFieldSizeTo(currentSizeOfWindow);
+            textField.AdjustSizeTo(currentSizeOfWindow);
         }
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -61,24 +56,6 @@ namespace Blopnote
                 HandleInsertedData();
                 RefreshComponentsForNewFile();
                 DisplayLyricsIfNeed();
-            }
-        }
-
-        private void DisplayLyricsIfNeed()
-        {
-            #warning raw version
-            lyricsBox.Display();
-        }
-
-        private void RefreshComponentsForNewFile()
-        {
-            textField.Enable();
-            textField.Clear();
-            ShowLyrics.Enabled = fileCondition.LyricsExists;
-            if (fileCondition.LyricsExists && ShowLyrics.Checked == false)
-            {
-                // Auto enabling of lyrics when user entered it
-                ShowLyrics.PerformClick();
             }
         }
 
@@ -96,7 +73,28 @@ namespace Blopnote
                 MessageBox.Show(caption: "File error",
                     text: "File wasn't created.\nCause: " + e.Message);
             }
+        }
 
+        private void RefreshComponentsForNewFile()
+        {
+            textField.Enable();
+            textField.Clear();
+            ShowLyrics.Enabled = fileCondition.LyricsExists;
+            if (fileCondition.LyricsExists && ShowLyrics.Checked == false)
+            {
+                // Auto enabling of lyrics when user entered it
+                ShowLyrics.PerformClick();
+            }
+        }
+
+
+        private void DisplayLyricsIfNeed()
+        {
+#warning raw version
+            if(fileCondition.LyricsExists && ShowLyrics.Checked)
+            {
+                lyricsBox.Display();
+            }
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -113,7 +111,12 @@ namespace Blopnote
         {
             fileCondition.DoesNotExist();
             fileProcessor.ChangeDirectory(DEFAULT_PATH_FOR_FILES);
-            ShowLyrics.Enabled = false;
+
+            //ShowLyrics.Enabled = false;
+
+            textField.AdjustSizeTo(ClientSize);
+
+
         }
 
         private void changeFilePathToolStripMenuItem_Click(object sender, EventArgs e)
@@ -133,6 +136,7 @@ namespace Blopnote
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            
             fileCondition.SwitchLyricsUsed();
         }
     }

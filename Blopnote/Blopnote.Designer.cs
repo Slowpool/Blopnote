@@ -41,13 +41,14 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+            this.PanelForLyricsBox = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBoxWithText
             // 
+            this.TextBoxWithText.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.TextBoxWithText.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxWithText.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TextBoxWithText.Location = new System.Drawing.Point(0, 27);
@@ -55,7 +56,7 @@
             this.TextBoxWithText.Multiline = true;
             this.TextBoxWithText.Name = "TextBoxWithText";
             this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBoxWithText.Size = new System.Drawing.Size(567, 454);
+            this.TextBoxWithText.Size = new System.Drawing.Size(488, 303);
             this.TextBoxWithText.TabIndex = 0;
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             // 
@@ -84,21 +85,21 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -114,7 +115,7 @@
             // 
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
             // 
@@ -129,7 +130,7 @@
             // changeFilePathToolStripMenuItem
             // 
             this.changeFilePathToolStripMenuItem.Name = "changeFilePathToolStripMenuItem";
-            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.changeFilePathToolStripMenuItem.Text = "Change file path";
             this.changeFilePathToolStripMenuItem.Click += new System.EventHandler(this.changeFilePathToolStripMenuItem_Click);
             // 
@@ -150,20 +151,19 @@
             this.status.Size = new System.Drawing.Size(180, 22);
             this.status.Text = "initialize status";
             // 
-            // vScrollBar1
+            // PanelForLyricsBox
             // 
-            this.vScrollBar1.Location = new System.Drawing.Point(927, 27);
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(19, 457);
-            this.vScrollBar1.TabIndex = 3;
+            this.PanelForLyricsBox.Location = new System.Drawing.Point(617, 147);
+            this.PanelForLyricsBox.Name = "PanelForLyricsBox";
+            this.PanelForLyricsBox.Size = new System.Drawing.Size(189, 151);
+            this.PanelForLyricsBox.TabIndex = 4;
             // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(946, 511);
-            this.Controls.Add(this.vScrollBar1);
+            this.Controls.Add(this.PanelForLyricsBox);
             this.Controls.Add(this.TextBoxWithText);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -196,7 +196,7 @@
         private System.Windows.Forms.ToolStripMenuItem changeFilePathToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.VScrollBar vScrollBar1;
+        private System.Windows.Forms.Panel PanelForLyricsBox;
     }
 }
 

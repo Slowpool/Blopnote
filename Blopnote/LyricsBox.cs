@@ -4,18 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Blopnote
 {
     internal class LyricsBox
     {
-        internal Panel panel;
+        internal readonly Panel panel;
+        private readonly Font font;
 
-        private string lyrics { get; set; }
+        private string[] Lines { get; set; }
 
-        internal LyricsBox()
+        private Label[] labelsWithLyrics { get; set; }
+
+        internal LyricsBox(Panel panel, Font font)
         {
-            panel = new Panel();
+            this.panel = panel;
+            this.font = font;
         }
 
         /// <summary>
@@ -26,14 +31,22 @@ namespace Blopnote
         /// <param name="lyrics"></param>
         public void BuildNewLyrics(string lyrics)
         {
-            this.lyrics = lyrics;
-
+            // Q Remove empty lines or not?
+            Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None);
+            labelsWithLyrics = new Label[Lines.Length];
+            for(int i = 0; i < labelsWithLyrics.Length; i++)
+            {
+                labelsWithLyrics[i] = new Label();
+                labelsWithLyrics[i].Font = font;
+                labelsWithLyrics[i].Text = Lines[i];
+            }
+#warning unfinished
         }
 
         internal void NoLyrics()
         {
             panel.Visible = false;
-            lyrics = null;
+            Lines = null;
         }
 
         internal void Display()

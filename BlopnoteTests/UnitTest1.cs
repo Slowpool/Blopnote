@@ -1,3 +1,7 @@
+using Blopnote;
+using System.Drawing;
+using blopnote = Blopnote.Blopnote;
+
 namespace BlopnoteTests
 {
     public class Tests
@@ -5,6 +9,8 @@ namespace BlopnoteTests
         [SetUp]
         public void Setup()
         {
+            blopnote blop = new blopnote();
+
         }
 
         [Test]

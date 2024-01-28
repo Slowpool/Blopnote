@@ -12,23 +12,39 @@ namespace Blopnote
     {
         private readonly TextBox TextBoxWithText;
 
-        internal TextField(TextBox TextBoxWithText)
+        private readonly int bottomMargin;
+        private readonly int topMargin;
+
+        private int rightMargin;
+        private int RightMargin
+        {
+            get => rightMargin;
+            set
+            {
+                rightMargin = value;
+
+            }
+        }
+
+        internal TextField(TextBox TextBoxWithText, int bottomMargin, int topMargin)
         {
             this.TextBoxWithText = TextBoxWithText;
+            this.bottomMargin = bottomMargin;
+            this.topMargin = topMargin;
+
+            rightMargin = 0;
         }
 
-        internal void PlaceToCorrectPosition(int topSpace)
+        internal void Place()
         {
-            // Here -1 due to strange display of textbox borders even with the property ClientSize being used
-            TextBoxWithText.Location = new Point(-1, topSpace);
+            // Here -1 due to strange display of textbox borders even with using of property ClientSize
+            TextBoxWithText.Location = new Point(-1, topMargin);
         }
 
-        internal void AdjustTextFieldSizeTo(Size size)
+        internal void AdjustSizeTo(Size size)
         {
             // Here +2 due to strange display of textbox borders even with the property ClientSize being used
-            TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
-            TextBoxWithText.AutoCompleteMode = AutoCompleteMode.Suggest;
-            TextBoxWithText.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            TextBoxWithText.Size = new Size(size.Width + 2 - rightMargin, size.Height - (topMargin + bottomMargin));
         }
 
         internal string GetText()
