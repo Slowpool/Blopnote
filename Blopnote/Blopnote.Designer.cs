@@ -35,12 +35,13 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.somethingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ShowLyrics = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -53,7 +54,8 @@
             this.TextBoxWithText.MaxLength = 1500000;
             this.TextBoxWithText.Multiline = true;
             this.TextBoxWithText.Name = "TextBoxWithText";
-            this.TextBoxWithText.Size = new System.Drawing.Size(490, 398);
+            this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.TextBoxWithText.Size = new System.Drawing.Size(567, 454);
             this.TextBoxWithText.TabIndex = 0;
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             // 
@@ -82,39 +84,39 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // lyricsToolStripMenuItem
             // 
             this.lyricsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.somethingToolStripMenuItem});
+            this.ShowLyrics});
             this.lyricsToolStripMenuItem.Name = "lyricsToolStripMenuItem";
             this.lyricsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.lyricsToolStripMenuItem.Text = "Lyrics";
             // 
-            // somethingToolStripMenuItem
+            // ShowLyrics
             // 
-            this.somethingToolStripMenuItem.CheckOnClick = true;
-            this.somethingToolStripMenuItem.Name = "somethingToolStripMenuItem";
-            this.somethingToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.somethingToolStripMenuItem.Text = "Show";
-            this.somethingToolStripMenuItem.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
+            this.ShowLyrics.CheckOnClick = true;
+            this.ShowLyrics.Name = "ShowLyrics";
+            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
+            this.ShowLyrics.Text = "Show";
+            this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -127,7 +129,7 @@
             // changeFilePathToolStripMenuItem
             // 
             this.changeFilePathToolStripMenuItem.Name = "changeFilePathToolStripMenuItem";
-            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.changeFilePathToolStripMenuItem.Text = "Change file path";
             this.changeFilePathToolStripMenuItem.Click += new System.EventHandler(this.changeFilePathToolStripMenuItem_Click);
             // 
@@ -148,13 +150,22 @@
             this.status.Size = new System.Drawing.Size(180, 22);
             this.status.Text = "initialize status";
             // 
+            // vScrollBar1
+            // 
+            this.vScrollBar1.Location = new System.Drawing.Point(927, 27);
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(19, 457);
+            this.vScrollBar1.TabIndex = 3;
+            // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(946, 511);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.vScrollBar1);
             this.Controls.Add(this.TextBoxWithText);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Blopnote";
@@ -179,12 +190,13 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lyricsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem somethingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ShowLyrics;
         private System.Windows.Forms.ToolStripStatusLabel status;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeFilePathToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.VScrollBar vScrollBar1;
     }
 }
 

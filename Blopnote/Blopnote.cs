@@ -59,8 +59,26 @@ namespace Blopnote
             if (dataInputWindow.IsDataInserted)
             {
                 HandleInsertedData();
-                textField.Enable();
-                textField.Clear();
+                RefreshComponentsForNewFile();
+                DisplayLyricsIfNeed();
+            }
+        }
+
+        private void DisplayLyricsIfNeed()
+        {
+            #warning raw version
+            lyricsBox.Display();
+        }
+
+        private void RefreshComponentsForNewFile()
+        {
+            textField.Enable();
+            textField.Clear();
+            ShowLyrics.Enabled = fileCondition.LyricsExists;
+            if (fileCondition.LyricsExists && ShowLyrics.Checked == false)
+            {
+                // Auto enabling of lyrics when user entered it
+                ShowLyrics.PerformClick();
             }
         }
 
@@ -95,6 +113,7 @@ namespace Blopnote
         {
             fileCondition.DoesNotExist();
             fileProcessor.ChangeDirectory(DEFAULT_PATH_FOR_FILES);
+            ShowLyrics.Enabled = false;
         }
 
         private void changeFilePathToolStripMenuItem_Click(object sender, EventArgs e)
@@ -108,6 +127,8 @@ namespace Blopnote
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             fileCondition.DoesNotExist();
+            ShowLyrics.Enabled = false;
+            ShowLyrics.Checked = false;
         }
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)

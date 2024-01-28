@@ -65,7 +65,13 @@ namespace Blopnote
             fileCondition.CheckLyrics(lyrics);
             if (fileCondition.LyricsExists)
             {
+                lyricsBox.BuildNewLyrics(lyrics);
                 WriteLyrics(lyrics);
+            }
+            else
+            {
+                //  Q do I really need this?
+                lyricsBox.NoLyrics();
             }
 
             fileCondition.RefreshStatus();
