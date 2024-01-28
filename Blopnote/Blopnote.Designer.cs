@@ -153,9 +153,9 @@
             // 
             // PanelForLyricsBox
             // 
-            this.PanelForLyricsBox.Location = new System.Drawing.Point(617, 147);
+            this.PanelForLyricsBox.Location = new System.Drawing.Point(536, 27);
             this.PanelForLyricsBox.Name = "PanelForLyricsBox";
-            this.PanelForLyricsBox.Size = new System.Drawing.Size(189, 151);
+            this.PanelForLyricsBox.Size = new System.Drawing.Size(342, 225);
             this.PanelForLyricsBox.TabIndex = 4;
             // 
             // Blopnote

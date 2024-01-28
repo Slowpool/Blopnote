@@ -31,21 +31,29 @@ namespace Blopnote
         /// <param name="lyrics"></param>
         public void BuildNewLyrics(string lyrics)
         {
+#warning unfinished
             // Q Remove empty lines or not?
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None);
             labelsWithLyrics = new Label[Lines.Length];
-            for(int i = 0; i < labelsWithLyrics.Length; i++)
+            int y = 0;
+#warning maybe incorrect
+            int lineHeight = font.Height;
+            for (int i = 0; i < labelsWithLyrics.Length; i++)
             {
                 labelsWithLyrics[i] = new Label();
                 labelsWithLyrics[i].Font = font;
                 labelsWithLyrics[i].Text = Lines[i];
+
+                labelsWithLyrics[i].Top = y;
+                panel.Controls.Add(labelsWithLyrics[i]);
+
+                y += lineHeight;
             }
-#warning unfinished
         }
 
         internal void NoLyrics()
         {
-            panel.Visible = false;
+            Hide();
             Lines = null;
         }
 
@@ -54,6 +62,9 @@ namespace Blopnote
             panel.Visible = true;
         }
 
-
+        internal void Hide()
+        {
+            panel.Visible = false;
+        }
     }
 }

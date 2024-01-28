@@ -136,8 +136,14 @@ namespace Blopnote
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-            fileCondition.SwitchLyricsUsed();
+            if (ShowLyrics.Checked)
+            {
+                lyricsBox.Display();
+            }
+            else
+            {
+                lyricsBox.Hide();
+            }
         }
     }
 }
