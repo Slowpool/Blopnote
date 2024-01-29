@@ -11,31 +11,14 @@ namespace Blopnote
     internal class TextField
     {
         private readonly TextBox TextBoxWithText;
+        internal string Text => TextBoxWithText.Text;
 
-        private readonly int bottomMargin;
-        private readonly int topMargin;
-
-        private int rightMargin;
-        private int RightMargin
-        {
-            get => rightMargin;
-            set
-            {
-                rightMargin = value;
-
-            }
-        }
-
-        internal TextField(TextBox TextBoxWithText, int bottomMargin, int topMargin)
+        internal TextField(TextBox TextBoxWithText)
         {
             this.TextBoxWithText = TextBoxWithText;
-            this.bottomMargin = bottomMargin;
-            this.topMargin = topMargin;
-
-            rightMargin = 0;
         }
 
-        internal void Place()
+        internal void PlaceOnce(int topMargin)
         {
             // Here -1 due to strange display of textbox borders even with using of property ClientSize
             TextBoxWithText.Location = new Point(-1, topMargin);
@@ -44,12 +27,7 @@ namespace Blopnote
         internal void AdjustSizeTo(Size size)
         {
             // Here +2 due to strange display of textbox borders even with the property ClientSize being used
-            TextBoxWithText.Size = new Size(size.Width + 2 - rightMargin, size.Height - (topMargin + bottomMargin));
-        }
-
-        internal string GetText()
-        {
-            return TextBoxWithText.Text;
+            TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
         }
 
         internal void Disable()

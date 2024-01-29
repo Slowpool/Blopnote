@@ -80,7 +80,7 @@ namespace Blopnote
 
         private void WriteText()
         {
-            WriteInFile(FilePath, textField.GetText());
+            WriteInFile(FilePath, textField.Text);
         }
 
         private void WriteLyrics(string lyrics)

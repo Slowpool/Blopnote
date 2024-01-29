@@ -80,6 +80,7 @@
     <Compile Include="LyricsBox.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SizeRegulator.cs" />
     <Compile Include="TextField.cs" />
     <Compile Include="UnitTests.cs" />
     <EmbeddedResource Include="Blopnote.resx">

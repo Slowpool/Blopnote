@@ -114,10 +114,12 @@
             // ShowLyrics
             // 
             this.ShowLyrics.CheckOnClick = true;
+            this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
             this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
+            this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
             // 
             // settingsToolStripMenuItem
             // 
