@@ -85,8 +85,8 @@ namespace Blopnote
         private void ConfigureLabels()
         {
             int y = 0;
-            #warning maybe incorrect
-            int lineHeight = font.Height;
+            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
+            int lineHeight = font.Height - 1;
             for (int i = 0; i < labelsWithLyrics.Length; i++)
             {
                 labelsWithLyrics[i] = new Label();
@@ -96,9 +96,21 @@ namespace Blopnote
                 labelsWithLyrics[i].Top = y;
                 labelsWithLyrics[i].Left = WIDTH_PADDING;
                 labelsWithLyrics[i].AutoSize = true;
+                ChangeBackgroundColorIfControlWord(labelsWithLyrics[i]);
                 panel.Controls.Add(labelsWithLyrics[i]);
 
                 y += lineHeight;
+            }
+        }
+        /// <summary>
+        /// This method analyzes label and looking for keyword like [chorus] and then changes color if label contains keyword.
+        /// </summary>
+        /// <param name="label"></param>
+        private void ChangeBackgroundColorIfControlWord(Label label)
+        {
+            if (label.Text == "[Chorus]")
+            {
+                label.BackColor = Color.Yellow;
             }
         }
 
