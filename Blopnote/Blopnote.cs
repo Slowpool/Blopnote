@@ -33,7 +33,7 @@ namespace Blopnote
 
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
-            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font);
+            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox);
             dataInputWindow = new FileNameAndLyricsInputWindow();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);

@@ -42,8 +42,10 @@
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.PanelForLyricsBox = new System.Windows.Forms.Panel();
+            this.VScrollBarForLyrics = new System.Windows.Forms.VScrollBar();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.PanelForLyricsBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBoxWithText
@@ -85,21 +87,21 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -116,7 +118,7 @@
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
             this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
@@ -132,7 +134,7 @@
             // changeFilePathToolStripMenuItem
             // 
             this.changeFilePathToolStripMenuItem.Name = "changeFilePathToolStripMenuItem";
-            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.changeFilePathToolStripMenuItem.Text = "Change file path";
             this.changeFilePathToolStripMenuItem.Click += new System.EventHandler(this.changeFilePathToolStripMenuItem_Click);
             // 
@@ -155,10 +157,19 @@
             // 
             // PanelForLyricsBox
             // 
+            this.PanelForLyricsBox.Controls.Add(this.VScrollBarForLyrics);
             this.PanelForLyricsBox.Location = new System.Drawing.Point(536, 27);
             this.PanelForLyricsBox.Name = "PanelForLyricsBox";
             this.PanelForLyricsBox.Size = new System.Drawing.Size(342, 225);
             this.PanelForLyricsBox.TabIndex = 4;
+            // 
+            // VScrollBarForLyrics
+            // 
+            this.VScrollBarForLyrics.Dock = System.Windows.Forms.DockStyle.Right;
+            this.VScrollBarForLyrics.Location = new System.Drawing.Point(320, 0);
+            this.VScrollBarForLyrics.Name = "VScrollBarForLyrics";
+            this.VScrollBarForLyrics.Size = new System.Drawing.Size(22, 225);
+            this.VScrollBarForLyrics.TabIndex = 5;
             // 
             // Blopnote
             // 
@@ -178,6 +189,7 @@
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.PanelForLyricsBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -199,6 +211,7 @@
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Panel PanelForLyricsBox;
+        private System.Windows.Forms.VScrollBar VScrollBarForLyrics;
     }
 }
 
