@@ -37,6 +37,7 @@ namespace Blopnote
         }
         private int Height
         {
+            get => panel.Height;
             set
             {
                 if (value > 0)
@@ -72,6 +73,7 @@ namespace Blopnote
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
         {
             // Q I should lift up some labels, hide the topmost and show the lowest
+
         }
 
         /// <summary>
@@ -208,6 +210,38 @@ namespace Blopnote
                 {
                     label.Dispose();
                 }
+            }
+        }
+
+        internal void AdjustScrollBar()
+        {
+#error it doesn't work
+            scrollBar.Maximum = GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList());
+        }
+
+        private bool LabelIsNotVisible(Label label)
+        {
+            return label.Top >= Height;
+        }
+
+        private int GetAmountOfNotVisibleLabels(List<Label> labels)
+        {
+            if (labels.Count == 0)
+            {
+                return 0;
+            }
+
+            Label midLabel = labels[labels.Count / 2];
+            if (LabelIsNotVisible(midLabel))
+            {
+                return 1 + labels.Count / 2 + GetAmountOfNotVisibleLabels(labels.TakeWhile(label => label != midLabel).ToList());
+            }
+
+            else
+            {
+                return GetAmountOfNotVisibleLabels(labels.SkipWhile(label => label != midLabel)
+                                                         .Skip(1)
+                                                         .ToList());
             }
         }
     }

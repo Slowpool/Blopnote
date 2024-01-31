@@ -27,6 +27,7 @@ namespace Blopnote
                 Size SizeForTextField = new Size(size.Width - lyricsBox.Width, size.Height);
                 
                 lyricsBox.AdjustHeightTo(size.Height);
+                lyricsBox.AdjustScrollBar();
                 textField.AdjustSizeTo(SizeForTextField);
             }
             else
