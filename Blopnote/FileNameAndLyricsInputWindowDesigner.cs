@@ -47,6 +47,8 @@ namespace Blopnote
             // 
             // TextBoxForAuthor
             // 
+            this.TextBoxForAuthor.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.TextBoxForAuthor.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxForAuthor.Location = new System.Drawing.Point(258, 34);
             this.TextBoxForAuthor.MaxLength = 120;
             this.TextBoxForAuthor.Name = "TextBoxForAuthor";
@@ -86,6 +88,8 @@ namespace Blopnote
             // 
             // TextBoxForSong
             // 
+            this.TextBoxForSong.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.TextBoxForSong.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxForSong.Location = new System.Drawing.Point(258, 82);
             this.TextBoxForSong.MaxLength = 120;
             this.TextBoxForSong.Name = "TextBoxForSong";

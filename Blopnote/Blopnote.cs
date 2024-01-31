@@ -24,12 +24,13 @@ namespace Blopnote
         private Size WorkSpace => new Size(ClientSize.Width, ClientSize.Height - menuStrip1.Height - statusStrip1.Height);
 
         private const string DEFAULT_PATH_FOR_FILES = @"C:/Users/azgel/Desktop/translations";
-
+        private const int FREQUENT_OF_AUTOSAVE_IN_SECONDS = 5;
         public Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
             folderBrowserDialog1.Description = "The default path is " + DEFAULT_PATH_FOR_FILES;
+            timer1.Interval = FREQUENT_OF_AUTOSAVE_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
@@ -69,15 +70,17 @@ namespace Blopnote
             string fileName = dataInputWindow.FileName;
             string lyrics = dataInputWindow.Lyrics;
 
-            try
-            {
-                fileProcessor.CreateNewTranslation(fileName, lyrics);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(caption: "File error",
-                    text: "File wasn't created.\nCause: " + e.Message);
-            }
+            fileProcessor.CreateNewTranslation(fileName, lyrics);
+
+#warning hidden for debug
+            //try
+            //{
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show(caption: "File error",
+            //        text: "File wasn't created.\nCause: " + e.Message);
+            //}
         }
 
         private void PrepareComponentsForDisplayingOfNewTranslation()
@@ -100,7 +103,8 @@ namespace Blopnote
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-            
+            timer1.Stop();
+            timer1.Start();
         }
 
         private void Blopnote_Load(object sender, EventArgs e)
@@ -147,6 +151,20 @@ namespace Blopnote
                 ShowLyrics.Checked = false;
                 lyricsBox.NoLyrics();
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                fileProcessor.WriteText();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(caption: "File writing error",
+                                text: "Error: " + exception.Message);
+            }
+            timer1.Stop();
         }
     }
 }

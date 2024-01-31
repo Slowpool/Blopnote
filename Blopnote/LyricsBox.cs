@@ -15,7 +15,7 @@ namespace Blopnote
         private readonly VScrollBar scrollBar;
         internal bool Enabled => panel.Visible;
         
-        private string[] lines { get; set; }
+        private List<string> lines { get; set; }
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] labelsWithLyrics { get; set; }
 
@@ -25,14 +25,7 @@ namespace Blopnote
             get => panel.Width;
             set
             {
-                if (value > 0)
-                {
-                    panel.Width = value;
-                }
-                else
-                {
-                    throw new Exception("incorrect width");
-                }
+                panel.Width = value;
             }
         }
         private int Height
@@ -40,14 +33,7 @@ namespace Blopnote
             get => panel.Height;
             set
             {
-                if (value > 0)
-                {
-                    panel.Height = value;
-                }
-                else
-                {
-                    throw new Exception("incorrect width");
-                }
+                panel.Height = value;
             }
         }
 
@@ -61,6 +47,9 @@ namespace Blopnote
 
         const int WIDTH_PADDING = 10;
         const int HEIGHT_PADDING = 10;
+
+        const string EXCESS_PHRASE = "You might also like";
+        const int LINES_AMOUNT_AFTER_EXCESS_PHRASE = 7;
 
         internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar)
         {
@@ -86,11 +75,50 @@ namespace Blopnote
         {
 #warning unfinished
             // Q Remove empty lines or not?
-            lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None);
-            labelsWithLyrics = new Label[lines.Length];
+            lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
+            CutExcessPhrase();
+            AddDistanceBeforeKeyWords();
+            labelsWithLyrics = new Label[lines.Count];
             ConfigureLabels();
             CalculateWidth();
             ScaleScrollBar();
+        }
+
+        private void AddDistanceBeforeKeyWords()
+        {
+            int countOfInsertedLines = 0;
+            int actualIndex;
+            int linesAmount = lines.Count;
+            for (int i = 1; i < linesAmount - 2; i++)
+            {
+                actualIndex = i + countOfInsertedLines;
+                #warning a little wrong because here i should check on keyword instead of just square parents
+                if (lines[actualIndex].StartsWith("[") && lines[actualIndex].EndsWith("]"))
+                {
+                    if (lines[actualIndex - 1] != "")
+                    {
+                        lines.Insert(actualIndex, "");
+                        countOfInsertedLines++;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// If lyrics contains accidentaly cut phrase "You might also like..." then this method return the lyrics without that phrase.
+        /// </summary>
+        /// <param name="lyrics"></param>
+        /// <returns></returns>
+        private void CutExcessPhrase()
+        {
+            if (lines.Contains(EXCESS_PHRASE))
+            {
+                int ExcessPhraseIndex = lines.IndexOf(EXCESS_PHRASE);
+                for(int i = 0; i < LINES_AMOUNT_AFTER_EXCESS_PHRASE; i++)
+                {
+                    lines.RemoveAt(ExcessPhraseIndex);
+                }
+            }
         }
 
         private void ConfigureLabels()
@@ -215,7 +243,7 @@ namespace Blopnote
 
         internal void AdjustScrollBar()
         {
-#error it doesn't work
+#warning it doesn't work
             scrollBar.Maximum = GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList());
         }
 
