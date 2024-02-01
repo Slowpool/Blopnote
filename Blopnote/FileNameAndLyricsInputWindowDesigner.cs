@@ -54,6 +54,7 @@ namespace Blopnote
             this.TextBoxForAuthor.Name = "TextBoxForAuthor";
             this.TextBoxForAuthor.Size = new System.Drawing.Size(432, 30);
             this.TextBoxForAuthor.TabIndex = 1;
+            this.TextBoxForAuthor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SongOrAuthor_KeyPress);
             // 
             // TextBoxForLyrics
             // 
@@ -95,6 +96,7 @@ namespace Blopnote
             this.TextBoxForSong.Name = "TextBoxForSong";
             this.TextBoxForSong.Size = new System.Drawing.Size(432, 30);
             this.TextBoxForSong.TabIndex = 2;
+            this.TextBoxForSong.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SongOrAuthor_KeyPress);
             // 
             // label3
             // 
@@ -124,6 +126,14 @@ namespace Blopnote
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void SongOrAuthor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '-')
+            {
+                e.Handled = true;
+            }
         }
     }
 }

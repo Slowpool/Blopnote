@@ -40,7 +40,7 @@ namespace Blopnote
             programStatus.Text = "Create or open any file";
         }
 
-        internal void CheckLyrics(string lyrics)
+        internal void LyricsExistCheck(string lyrics)
         {
             if (string.IsNullOrEmpty(lyrics))
             {

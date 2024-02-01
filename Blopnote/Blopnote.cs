@@ -23,19 +23,20 @@ namespace Blopnote
 
         private Size WorkSpace => new Size(ClientSize.Width, ClientSize.Height - menuStrip1.Height - statusStrip1.Height);
 
-        private const string DEFAULT_PATH_FOR_FILES = @"C:/Users/azgel/Desktop/translations";
+        private const string DEFAULT_PATH_FOR_FILES = "C:\\Users\\azgel\\Desktop\\translations";
         private const int FREQUENT_OF_AUTOSAVE_IN_SECONDS = 5;
         public Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
             folderBrowserDialog1.Description = "The default path is " + DEFAULT_PATH_FOR_FILES;
+            openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
             timer1.Interval = FREQUENT_OF_AUTOSAVE_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
-            fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox);
+            fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
             dataInputWindow = new FileNameAndLyricsInputWindow();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
@@ -98,12 +99,15 @@ namespace Blopnote
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            DialogResult answer = openFileDialog1.ShowDialog();
+            if (answer == DialogResult.OK)
+            {
+                fileProcessor.OpenTranslation(openFileDialog1.FileName);
+            }
         }
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-            timer1.Stop();
             timer1.Start();
         }
 
@@ -126,8 +130,9 @@ namespace Blopnote
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            fileCondition.DoesNotExist();
             ShowLyrics.Enabled = false;
+            fileCondition.DoesNotExist();
+            timer1.Stop();
             RegulateTextWithLyrics();
         }
 
@@ -155,6 +160,7 @@ namespace Blopnote
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            timer1.Stop();
             try
             {
                 fileProcessor.WriteText();
@@ -164,7 +170,6 @@ namespace Blopnote
                 MessageBox.Show(caption: "File writing error",
                                 text: "Error: " + exception.Message);
             }
-            timer1.Stop();
         }
     }
 }

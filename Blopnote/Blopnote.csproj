@@ -69,6 +69,7 @@
     <Compile Include="Blopnote.Designer.cs">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </Compile>
+    <Compile Include="Extensions.cs" />
     <Compile Include="FileCondition.cs" />
     <Compile Include="FileNameAndLyricsInputWindow.cs">
       <SubType>Form</SubType>
