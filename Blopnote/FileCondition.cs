@@ -54,9 +54,8 @@ namespace Blopnote
 
         internal void RefreshStatus()
         {
-            int lastIndexOfLastSlash = FileName.LastIndexOf('\\');
-            int IndexOfLastPoint = FileName.LastIndexOf('.');
-            string song = FileName.Substring(lastIndexOfLastSlash + 1, IndexOfLastPoint);
+            int indexOfLastPoint = FileName.LastIndexOf('.');
+            string song = FileName.Substring(0, indexOfLastPoint);
             programStatus.Text = "Song: " + song;
         }
     }

@@ -1,5 +1,4 @@
 ﻿using Blopnote.Properties;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -95,6 +94,8 @@ namespace Blopnote
             {
                 ShowLyrics.PerformClick();
             }
+
+            RegulateTextWithLyrics();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -102,7 +103,10 @@ namespace Blopnote
             DialogResult answer = openFileDialog1.ShowDialog();
             if (answer == DialogResult.OK)
             {
+                lyricsBox.ClearPreviousLyricsDisplayIfNeed();
+
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
+                PrepareComponentsForDisplayingOfNewTranslation();
             }
         }
 
@@ -169,6 +173,18 @@ namespace Blopnote
             {
                 MessageBox.Show(caption: "File writing error",
                                 text: "Error: " + exception.Message);
+            }
+        }
+
+        private void TextBoxWithText_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Back)
+            {
+                e.SuppressKeyPress = true;
+                if (TextBoxWithText.SelectionStart > 0)
+                {
+                    SendKeys.Send("+{LEFT}{DEL}");
+                }
             }
         }
     }

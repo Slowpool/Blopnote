@@ -64,6 +64,7 @@
             this.TextBoxWithText.Size = new System.Drawing.Size(488, 303);
             this.TextBoxWithText.TabIndex = 0;
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
+            this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
             // 
             // menuStrip1
             // 

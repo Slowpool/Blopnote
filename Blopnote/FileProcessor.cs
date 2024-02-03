@@ -77,7 +77,6 @@ namespace Blopnote
                 //  Q do I really need this?
                 lyricsBox.NoLyrics();
             }
-
         }
 
         private void PrepareTranslation(string fileName, string lyrics)
@@ -107,20 +106,24 @@ namespace Blopnote
             }
         }
 
-        internal void OpenTranslation(string fileName)
+        internal void OpenTranslation(string FullFileName)
         {
-            string lyrics = FindLyricsOf(fileName);
+            string lyrics = FindLyricsOf(FullFileName);
+            string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
+            string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
+            ChangeDirectory(directory);
             PrepareTranslation(fileName, lyrics);
+            lyricsBox.BuildNewLyrics(lyrics);
+            
         }
 
-#error idk how it works
-        private string FindLyricsOf(string fileName)
+        private string FindLyricsOf(string FullFileName)
         {
             // C:\Users\azgel\Desktop\translations\ic3peak - no death.txt
-            string lyricsPath = fileName.Insert(fileName.Length - 4, " lyrics");
+            string lyricsPath = FullFileName.Insert(FullFileName.Length - 4, " lyrics").Insert(FullFileName.LastIndexOf('\\'), "\\lyrics");
             if (File.Exists(lyricsPath))
             {
-                using(var reader = new StreamReader(path: lyricsPath))
+                using(var reader = new StreamReader(path: lyricsPath, encoding: Encoding.UTF8))
                 {
                     return reader.ReadToEnd();
                 }
