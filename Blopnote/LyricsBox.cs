@@ -287,7 +287,7 @@ namespace Blopnote
             }
             else
             {
-                return lines[rowIndex].StartsWith("]") && lines[rowIndex].EndsWith("]");
+                return lines[rowIndex].StartsWith("[") && lines[rowIndex].EndsWith("]");
             }
         }
 
