@@ -93,19 +93,16 @@ namespace Blopnote
 
         private void AddDistanceBeforeKeyWords()
         {
-            int countOfInsertedLines = 0;
-            int actualIndex;
-            int linesAmount = lines.Count;
-            for (int i = 1; i < linesAmount - 2; i++)
+            int added = 0;
+            int indexInMinOfAdded;
+            int amountOfLines = lines.Count;
+            for (int i = 0; i < amountOfLines; i++)
             {
-                actualIndex = i + countOfInsertedLines;
-                if (IsKeyword(lines[actualIndex]))
+                indexInMinOfAdded = i + added;
+                if (IsKeyword(lines[indexInMinOfAdded]))
                 {
-                    if (lines[actualIndex - 1] != "")
-                    {
-                        lines.Insert(actualIndex, "");
-                        countOfInsertedLines++;
-                    }
+                    lines.Insert(indexInMinOfAdded, "");
+                    added++;
                 }
             }
         }
@@ -278,21 +275,21 @@ namespace Blopnote
             }
         }
 
-        internal bool IsKeywordAtLine(int rowIndex)
+        internal bool IsKeywordAtLine(int lineIndex)
         {
-            if (rowIndex >= lines.Count)
+            if (lineIndex >= lines.Count)
             {
                 return false;
             }
             else
             {
-                return lines[rowIndex].StartsWith("[") && lines[rowIndex].EndsWith("]");
+                return IsKeyword(lines[lineIndex]);
             }
         }
 
         private bool IsKeyword(string word)
         {
-            return KeyWords.Contains(word);
+            return word.StartsWith("[") && word.EndsWith("]");
         }
     }
 }

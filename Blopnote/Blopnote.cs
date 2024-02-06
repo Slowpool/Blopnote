@@ -174,19 +174,19 @@ namespace Blopnote
 
         private void TrySaveFile()
         {
-            try
-            {
-                timer1.Stop();
-                fileProcessor.Save();
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(caption: "File writing error",
-                                text: "Error: " + exception.Message);
-            }
+            
             if (!string.IsNullOrEmpty(fileCondition.FileName))
             {
-                
+                try
+                {
+                    timer1.Stop();
+                    fileProcessor.Save();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(caption: "File writing error",
+                                    text: "Error: " + exception.Message);
+                }
             }
         }
 
@@ -221,11 +221,12 @@ namespace Blopnote
 
         private void TryingPastControlWord()
         {
-            int nextLineIndex = TextBoxWithText.Lines.Length;
+#warning shitcode
+            int nextLineIndex = TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
             
             if (lyricsBox.IsKeywordAtLine(nextLineIndex))
             {
-                TextBoxWithText.Text += lyricsBox[nextLineIndex] + "\r\n";
+                TextBoxWithText.Text += "\r\n" + lyricsBox[nextLineIndex] + "\r\n";
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
             }
         }
