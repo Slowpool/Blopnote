@@ -11,7 +11,15 @@ namespace Blopnote
     internal class TextField
     {
         private readonly TextBox TextBoxWithText;
-        internal string Text => TextBoxWithText.Text;
+        internal string Text
+        {
+            get => TextBoxWithText.Text;
+            set
+            {
+                TextBoxWithText.Text = value;
+            }
+            
+        }
 
         internal TextField(TextBox TextBoxWithText)
         {

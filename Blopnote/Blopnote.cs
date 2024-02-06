@@ -61,7 +61,7 @@ namespace Blopnote
                 #warning awful + dirty code
                 lyricsBox.ClearPreviousLyricsDisplayIfNeed();
                 HandleInsertedData();
-                PrepareComponentsForDisplayingOfNewTranslation();
+                PrepareComponentsForDisplayingOfNewTranslation(clearText: true);
             }
         }
 
@@ -83,10 +83,13 @@ namespace Blopnote
             //}
         }
 
-        private void PrepareComponentsForDisplayingOfNewTranslation()
+        private void PrepareComponentsForDisplayingOfNewTranslation(bool clearText)
         {
             textField.Enable();
-            textField.Clear();
+            if (clearText)
+            {
+                textField.Clear();
+            }
             ShowLyrics.Enabled = fileCondition.LyricsExists;
 
             // Auto enabling of lyrics when user entered it
@@ -107,7 +110,7 @@ namespace Blopnote
                 lyricsBox.ClearPreviousLyricsDisplayIfNeed();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
-                PrepareComponentsForDisplayingOfNewTranslation();
+                PrepareComponentsForDisplayingOfNewTranslation(clearText: false);
             }
         }
 
@@ -199,17 +202,6 @@ namespace Blopnote
             }
         }
 
-        private void TryingPastControlWord()
-        {
-            int lineIndex = TextBoxWithText.Lines.Length;
-            
-            if (lyricsBox.IsKeywordAtLine(lineIndex))
-            {
-                TextBoxWithText.Text += lyricsBox[lineIndex] + "\r\n";
-                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
-            }
-        }
-
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
@@ -224,6 +216,17 @@ namespace Blopnote
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
                 TryingPastControlWord();
                 TryingPastLinesWhichAlreadyTranslated();
+            }
+        }
+
+        private void TryingPastControlWord()
+        {
+            int nextLineIndex = TextBoxWithText.Lines.Length;
+            
+            if (lyricsBox.IsKeywordAtLine(nextLineIndex))
+            {
+                TextBoxWithText.Text += lyricsBox[nextLineIndex] + "\r\n";
+                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
             }
         }
 

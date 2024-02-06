@@ -77,7 +77,7 @@ namespace Blopnote
         /// which are not inserted by user. Also they have a some background color, e.g. green for chorus.
         /// </summary>
         /// <param name="lyrics"></param>
-        internal void BuildNewLyrics(string lyrics)
+        internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
         {
 #warning unfinished
             // Q Remove empty lines or not?
@@ -88,6 +88,7 @@ namespace Blopnote
             ConfigureLabels();
             CalculateWidth();
             ScaleScrollBar();
+            return lines.Aggregate("", (total, line) => total + line + "\r\n");
         }
 
         private void AddDistanceBeforeKeyWords()
@@ -98,8 +99,7 @@ namespace Blopnote
             for (int i = 1; i < linesAmount - 2; i++)
             {
                 actualIndex = i + countOfInsertedLines;
-                #warning a little wrong because here i should check on keyword instead of just square parents
-                if (lines[actualIndex].StartsWith("[") && lines[actualIndex].EndsWith("]"))
+                if (IsKeyword(lines[actualIndex]))
                 {
                     if (lines[actualIndex - 1] != "")
                     {
@@ -168,6 +168,7 @@ namespace Blopnote
 
         private static Color ContainedKeyword(string text)
         {
+#warning terrible dream of developer
             string lowerCaseText = text.ToLower();
             foreach (string keyword in KeyWords)
             {
@@ -216,9 +217,7 @@ namespace Blopnote
             Hide();
             ClearPreviousLyricsDisplayIfNeed();
 
-            // Q I'm not sure
             lines = null;
-            //labelsWithLyrics = null;
         }
 
         internal void Display()

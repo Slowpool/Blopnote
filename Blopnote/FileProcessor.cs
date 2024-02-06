@@ -69,8 +69,8 @@ namespace Blopnote
 
             if (fileCondition.LyricsExists)
             {
-                WriteLyrics(lyrics);
-                lyricsBox.BuildNewLyrics(lyrics);
+                WriteLyrics(lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics));
+                
             }
             else
             {
@@ -113,8 +113,17 @@ namespace Blopnote
             string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
             ChangeDirectory(directory);
             PrepareTranslation(fileName, lyrics);
-            lyricsBox.BuildNewLyrics(lyrics);
+            ReadText(FullFileName);
+            lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics);
             
+        }
+
+        private void ReadText(string FullFileName)
+        {
+            using(var reader = new StreamReader(FullFileName, Encoding.UTF8))
+            {
+                textField.Text = reader.ReadToEnd();
+            }
         }
 
         private string FindLyricsOf(string FullFileName)
