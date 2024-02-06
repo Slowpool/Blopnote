@@ -96,6 +96,7 @@ namespace Blopnote
             }
 
             RegulateTextWithLyrics();
+            TryingPastControlWord();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -134,6 +135,7 @@ namespace Blopnote
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            TrySaveFile();
             ShowLyrics.Enabled = false;
             fileCondition.DoesNotExist();
             timer1.Stop();
@@ -164,15 +166,24 @@ namespace Blopnote
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            timer1.Stop();
+            TrySaveFile();
+        }
+
+        private void TrySaveFile()
+        {
             try
             {
-                fileProcessor.WriteText();
+                timer1.Stop();
+                fileProcessor.Save();
             }
             catch (Exception exception)
             {
                 MessageBox.Show(caption: "File writing error",
                                 text: "Error: " + exception.Message);
+            }
+            if (!string.IsNullOrEmpty(fileCondition.FileName))
+            {
+                
             }
         }
 
@@ -186,6 +197,39 @@ namespace Blopnote
                     SendKeys.Send("+{LEFT}{DEL}");
                 }
             }
+        }
+
+        private void TryingPastControlWord()
+        {
+            int lineIndex = TextBoxWithText.Lines.Length;
+            
+            if (lyricsBox.IsKeywordAtLine(lineIndex))
+            {
+                TextBoxWithText.Text += lyricsBox[lineIndex] + "\r\n";
+                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+            }
+        }
+
+        private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            closeToolStripMenuItem.PerformClick();
+        }
+
+        private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((int)e.KeyChar == (int)Keys.Enter)
+            {
+                e.Handled = true;
+                TextBoxWithText.Text += "\r\n";
+                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+                TryingPastControlWord();
+                TryingPastLinesWhichAlreadyTranslated();
+            }
+        }
+
+        private void TryingPastLinesWhichAlreadyTranslated()
+        {
+
         }
     }
 }

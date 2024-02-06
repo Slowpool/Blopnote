@@ -86,7 +86,7 @@ namespace Blopnote
             fileCondition.RefreshStatus();
         }
 
-        internal void WriteText()
+        internal void Save()
         {
             WriteInFile(FilePath, textField.Text);
         }

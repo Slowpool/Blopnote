@@ -63,8 +63,10 @@
             this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TextBoxWithText.Size = new System.Drawing.Size(488, 303);
             this.TextBoxWithText.TabIndex = 0;
+            this.TextBoxWithText.WordWrap = false;
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
+            this.TextBoxWithText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxWithText_KeyPress);
             // 
             // menuStrip1
             // 
@@ -91,21 +93,21 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -191,6 +193,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Blopnote";
             this.Text = "Blopnote";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Blopnote_FormClosing);
             this.Load += new System.EventHandler(this.Blopnote_Load);
             this.SizeChanged += new System.EventHandler(this.Blopnote_SizeChanged);
             this.menuStrip1.ResumeLayout(false);

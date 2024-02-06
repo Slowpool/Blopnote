@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
 namespace Blopnote
 {
@@ -57,6 +58,11 @@ namespace Blopnote
             this.font = font;
             this.scrollBar = scrollBar;
             scrollBar.ValueChanged += ScrollBar_ValueChanged;
+        }
+
+        internal string this[int rowIndex]
+        {
+            get => lines[rowIndex];
         }
 
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
@@ -154,13 +160,13 @@ namespace Blopnote
         {
             if (text.StartsWith("[") && text.EndsWith("]"))
             {
-                return ContainedKeyWord(text);
+                return ContainedKeyword(text);
             }
 
             return Color.Transparent;
         }
 
-        private static Color ContainedKeyWord(string text)
+        private static Color ContainedKeyword(string text)
         {
             string lowerCaseText = text.ToLower();
             foreach (string keyword in KeyWords)
@@ -271,6 +277,23 @@ namespace Blopnote
                                                          .Skip(1)
                                                          .ToList());
             }
+        }
+
+        internal bool IsKeywordAtLine(int rowIndex)
+        {
+            if (rowIndex >= lines.Count)
+            {
+                return false;
+            }
+            else
+            {
+                return lines[rowIndex].StartsWith("]") && lines[rowIndex].EndsWith("]");
+            }
+        }
+
+        private bool IsKeyword(string word)
+        {
+            return KeyWords.Contains(word);
         }
     }
 }
