@@ -18,8 +18,9 @@ namespace Blopnote
             {
                 TextBoxWithText.Text = value;
             }
-            
         }
+
+        internal int realTextBoxLinesIndex => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
         internal TextField(TextBox TextBoxWithText)
         {

@@ -222,7 +222,7 @@ namespace Blopnote
         private void TryingPastControlWord()
         {
 #warning shitcode
-            int nextLineIndex = TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
+            int nextLineIndex = textField.realTextBoxLinesIndex;
             
             if (lyricsBox.IsKeywordAtLine(nextLineIndex))
             {
@@ -233,7 +233,13 @@ namespace Blopnote
 
         private void TryingPastLinesWhichAlreadyTranslated()
         {
-
+            int lineIndex = textField.realTextBoxLinesIndex - 1;
+            while(lyricsBox.LineIsRepeated(lineIndex))
+            {
+                TextBoxWithText.Text += lyricsBox[lineIndex];
+                SendKeys.Send("{ENTER}");
+                lineIndex++;
+            }
         }
     }
 }

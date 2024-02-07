@@ -60,9 +60,9 @@ namespace Blopnote
             scrollBar.ValueChanged += ScrollBar_ValueChanged;
         }
 
-        internal string this[int rowIndex]
+        internal string this[int lineIndex]
         {
-            get => lines[rowIndex];
+            get => lines[lineIndex];
         }
 
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
@@ -290,6 +290,22 @@ namespace Blopnote
         private bool IsKeyword(string word)
         {
             return word.StartsWith("[") && word.EndsWith("]");
+        }
+
+        internal bool LineIsRepeated(int lineIndex)
+        {
+            if (lineIndex >= lines.Count)
+            {
+                return false;
+            }
+            for(int i = 0; i < lineIndex; i++)
+            {
+                if (lines[i] == lines[lineIndex])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
