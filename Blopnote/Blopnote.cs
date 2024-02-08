@@ -234,9 +234,11 @@ namespace Blopnote
         private void TryingPastLinesWhichAlreadyTranslated()
         {
             int lineIndex = textField.realTextBoxLinesIndex - 1;
-            while(lyricsBox.LineIsRepeated(lineIndex))
+            int alreadyExistingLineIndex;
+            while(lyricsBox.IsRepeatedLineWithoutKeyword(lineIndex))
             {
-                TextBoxWithText.Text += lyricsBox[lineIndex];
+                alreadyExistingLineIndex = lyricsBox.IndexOfFirstOccurenceOfSameLine(lineIndex);
+                TextBoxWithText.Text += TextBoxWithText.Lines[alreadyExistingLineIndex];
                 SendKeys.Send("{ENTER}");
                 lineIndex++;
             }

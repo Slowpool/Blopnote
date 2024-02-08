@@ -94,15 +94,18 @@ namespace Blopnote
         private void AddDistanceBeforeKeyWords()
         {
             int added = 0;
-            int indexInMinOfAdded;
+            int indexConsideringOfAdded;
             int amountOfLines = lines.Count;
             for (int i = 0; i < amountOfLines; i++)
             {
-                indexInMinOfAdded = i + added;
-                if (IsKeyword(lines[indexInMinOfAdded]))
+                indexConsideringOfAdded = i + added;
+                if (IsKeyword(lines[indexConsideringOfAdded]))
                 {
-                    lines.Insert(indexInMinOfAdded, "");
-                    added++;
+                    if (indexConsideringOfAdded == 0 || lines[indexConsideringOfAdded - 1] != "")
+                    {
+                        lines.Insert(indexConsideringOfAdded, "");
+                        added++;
+                    }
                 }
             }
         }
@@ -292,12 +295,18 @@ namespace Blopnote
             return word.StartsWith("[") && word.EndsWith("]");
         }
 
-        internal bool LineIsRepeated(int lineIndex)
+        internal bool IsRepeatedLineWithoutKeyword(int lineIndex)
         {
             if (lineIndex >= lines.Count)
             {
                 return false;
             }
+            
+            if (IsKeyword(lines[lineIndex]))
+            {
+                return false;
+            }
+
             for(int i = 0; i < lineIndex; i++)
             {
                 if (lines[i] == lines[lineIndex])
@@ -306,6 +315,12 @@ namespace Blopnote
                 }
             }
             return false;
+        }
+
+        internal int IndexOfFirstOccurenceOfSameLine(int lineIndex)
+        {
+            string line = lines[lineIndex];
+            return lines.IndexOf(line);
         }
     }
 }
