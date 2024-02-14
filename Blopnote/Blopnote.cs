@@ -45,6 +45,7 @@ namespace Blopnote
         private void Blopnote_SizeChanged(object sender, EventArgs e)
         {
             RegulateTextWithLyrics();
+            lyricsBox.AdjustScrollBar();
         }
 
         private void RegulateTextWithLyrics()
@@ -99,7 +100,7 @@ namespace Blopnote
             }
 
             RegulateTextWithLyrics();
-            TryingPastControlWord();
+            TryAutoCompleteText();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -214,33 +215,32 @@ namespace Blopnote
                 e.Handled = true;
                 TextBoxWithText.Text += "\r\n";
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
-                TryingPastControlWord();
-                TryingPastLinesWhichAlreadyTranslated();
+                TryAutoCompleteText();
             }
         }
 
-        private void TryingPastControlWord()
-        {
-#warning shitcode
-            int nextLineIndex = textField.realTextBoxLinesIndex;
-            
-            if (lyricsBox.IsKeywordAtLine(nextLineIndex))
-            {
-                TextBoxWithText.Text += "\r\n" + lyricsBox[nextLineIndex] + "\r\n";
-                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
-            }
-        }
-
-        private void TryingPastLinesWhichAlreadyTranslated()
+        private void TryAutoCompleteText()
         {
             int lineIndex = textField.realTextBoxLinesIndex - 1;
-            int alreadyExistingLineIndex;
-            while(lyricsBox.IsRepeatedLineWithoutKeyword(lineIndex))
+            int lyricsBoxLineIndex;
+            TypesOfLine lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
+            while (lineType != TypesOfLine.New)
             {
-                alreadyExistingLineIndex = lyricsBox.IndexOfFirstOccurenceOfSameLine(lineIndex);
-                TextBoxWithText.Text += TextBoxWithText.Lines[alreadyExistingLineIndex];
-                SendKeys.Send("{ENTER}");
+                switch (lineType)
+                {
+                    case TypesOfLine.Repeated:
+                        lyricsBoxLineIndex = lyricsBox.IndexOfFirstOccurenceOfSameLine(lineIndex);
+                        TextBoxWithText.Text += TextBoxWithText.Lines[lyricsBoxLineIndex];
+                        break;
+                    case TypesOfLine.Keyword:
+                        TextBoxWithText.Text += lyricsBox[lineIndex];
+                        break;
+                }
+                TextBoxWithText.Text += "\r\n";
+                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+
                 lineIndex++;
+                lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
             }
         }
     }

@@ -46,6 +46,8 @@ namespace Blopnote
             }
         }
 
+        public int AmountOfVisibleLabels => labelsWithLyrics.Length - GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList());
+
         const int WIDTH_PADDING = 10;
         const int HEIGHT_PADDING = 10;
 
@@ -68,7 +70,7 @@ namespace Blopnote
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
         {
             // Q I should lift up some labels, hide the topmost and show the lowest
-
+            PlaceLabels();
         }
 
         /// <summary>
@@ -80,14 +82,13 @@ namespace Blopnote
         internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
         {
 #warning unfinished
-            // Q Remove empty lines or not?
             lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
             AddDistanceBeforeKeyWords();
             labelsWithLyrics = new Label[lines.Count];
             ConfigureLabels();
             CalculateWidth();
-            ScaleScrollBar();
+            AdjustScrollBar();
             return lines.Aggregate("", (total, line) => total + line + "\r\n");
         }
 
@@ -129,29 +130,55 @@ namespace Blopnote
 
         private void ConfigureLabels()
         {
-            int y = 0;
-            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
-            int lineHeight = font.Height - 1;
             for (int i = 0; i < labelsWithLyrics.Length; i++)
             {
                 labelsWithLyrics[i] = new Label();
                 labelsWithLyrics[i].Font = font;
                 labelsWithLyrics[i].Text = lines[i];
 
-                labelsWithLyrics[i].Top = y;
                 labelsWithLyrics[i].Left = WIDTH_PADDING;
                 labelsWithLyrics[i].AutoSize = true;
-                ChangeBackColorIfKeywordWord(labelsWithLyrics[i]);
+                ChangeBackColorIfContainsKeyword(labelsWithLyrics[i]);
                 panel.Controls.Add(labelsWithLyrics[i]);
+            }
+            PlaceLabels();
+        }
 
-                y += lineHeight;
+        private void PlaceLabels()
+        {
+#warning i have three ideas here and both are awkward: 
+            // 1. at first disable all labels, next enable needed
+            // 2. a) disable before needed
+            // b) enable needed
+            // c) disable after needed
+            // 3. reproduce step 2 using one cycle
+            int y = 0;
+            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
+            int lineHeight = font.Height - 1;
+            for (int i = 0; i < labelsWithLyrics.Length; i++)
+            {
+                if (i < scrollBar.Value)
+                {
+                    labelsWithLyrics[i].Visible = false;
+                }
+                else if (i < scrollBar.Value + AmountOfVisibleLabels)
+                {
+                    labelsWithLyrics[i].Visible = true;
+                    labelsWithLyrics[i].Top = y;
+                    y += lineHeight;
+                }
+                else
+                {
+                    labelsWithLyrics[i].Visible = false;
+                }
             }
         }
+
         /// <summary>
         /// This method analyzes label and looking for keyword like [chorus] and then changes color if label contains keyword.
         /// </summary>
         /// <param name="label"></param>
-        private void ChangeBackColorIfKeywordWord(Label label)
+        private void ChangeBackColorIfContainsKeyword(Label label)
         {
             label.BackColor = GetNeedyColor(label.Text);
         }
@@ -202,14 +229,8 @@ namespace Blopnote
 
         private void CalculateWidth()
         {
-            int maxWidth = labelsWithLyrics.Max(label => label.Width);
-            Width = WIDTH_PADDING + maxWidth + WIDTH_PADDING + scrollBar.Width;
-        }
-
-        private void ScaleScrollBar()
-        {
-            // Q it works little incorrect when application works in window mode I think
-            scrollBar.Maximum = labelsWithLyrics.Length;
+            int maxWidthOfLines = labelsWithLyrics.Max(label => label.Width);
+            Width = WIDTH_PADDING + maxWidthOfLines + WIDTH_PADDING + scrollBar.Width;
         }
 
         internal void NoLyrics()
@@ -248,8 +269,7 @@ namespace Blopnote
 
         internal void AdjustScrollBar()
         {
-#warning it doesn't work
-            scrollBar.Maximum = GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList());
+            scrollBar.Maximum = GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList()) + 9;
         }
 
         private bool LabelIsNotVisible(Label label)
@@ -295,26 +315,32 @@ namespace Blopnote
             return word.StartsWith("[") && word.EndsWith("]");
         }
 
-        internal bool IsRepeatedLineWithoutKeyword(int lineIndex)
+        internal TypesOfLine IsRepeatedLineOrKeyword(int lineIndex)
         {
             if (lineIndex >= lines.Count)
             {
-                return false;
+                return TypesOfLine.New;
             }
             
+            if (lines[lineIndex] == string.Empty)
+            {
+                return TypesOfLine.Empty;
+            }
+
             if (IsKeyword(lines[lineIndex]))
             {
-                return false;
+                return TypesOfLine.Keyword;
             }
 
             for(int i = 0; i < lineIndex; i++)
             {
                 if (lines[i] == lines[lineIndex])
                 {
-                    return true;
+                    return TypesOfLine.Repeated;
                 }
             }
-            return false;
+
+            return TypesOfLine.New;
         }
 
         internal int IndexOfFirstOccurenceOfSameLine(int lineIndex)
