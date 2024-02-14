@@ -28,6 +28,8 @@ namespace Blopnote
                 
                 lyricsBox.AdjustHeightTo(size.Height);
                 lyricsBox.AdjustScrollBar();
+                lyricsBox.PlaceLabels();
+
                 textField.AdjustSizeTo(SizeForTextField);
             }
             else

@@ -45,7 +45,6 @@ namespace Blopnote
         private void Blopnote_SizeChanged(object sender, EventArgs e)
         {
             RegulateTextWithLyrics();
-            lyricsBox.AdjustScrollBar();
         }
 
         private void RegulateTextWithLyrics()
@@ -71,17 +70,15 @@ namespace Blopnote
             string fileName = dataInputWindow.FileName;
             string lyrics = dataInputWindow.Lyrics;
 
-            fileProcessor.CreateNewTranslation(fileName, lyrics);
-
-#warning hidden for debug
-            //try
-            //{
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show(caption: "File error",
-            //        text: "File wasn't created.\nCause: " + e.Message);
-            //}
+            try
+            {
+                fileProcessor.CreateNewTranslation(fileName, lyrics);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(caption: "File error",
+                    text: "File wasn't created.\nCause: " + e.Message);
+            }
         }
 
         private void PrepareComponentsForDisplayingOfNewTranslation(bool clearText)
@@ -118,6 +115,7 @@ namespace Blopnote
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
             timer1.Start();
+            HighlightCurrentLine();
         }
 
         private void Blopnote_Load(object sender, EventArgs e)
@@ -126,7 +124,7 @@ namespace Blopnote
             fileProcessor.ChangeDirectory(DEFAULT_PATH_FOR_FILES);
             lyricsBox.Hide();
 
-            RegulateTextWithLyrics();
+            sizeRegulator.RegulateTo(WorkSpace);
         }
 
         private void changeFilePathToolStripMenuItem_Click(object sender, EventArgs e)
@@ -219,9 +217,15 @@ namespace Blopnote
             }
         }
 
+        private void HighlightCurrentLine()
+        {
+            int currentLineIndex = textField.realTextBoxLinesLength - 1;
+            lyricsBox.HighlightAt(currentLineIndex);
+        }
+
         private void TryAutoCompleteText()
         {
-            int lineIndex = textField.realTextBoxLinesIndex - 1;
+            int lineIndex = textField.realTextBoxLinesLength - 1;
             int lyricsBoxLineIndex;
             TypesOfLine lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
             while (lineType != TypesOfLine.New)

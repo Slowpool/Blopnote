@@ -20,6 +20,8 @@ namespace Blopnote
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] labelsWithLyrics { get; set; }
 
+        private Label PreviousHighlightedLabel { get; set; }
+
         // I think it's bad idea to use so many levels of incapsulation for properties...
         internal int Width
         {
@@ -46,7 +48,9 @@ namespace Blopnote
             }
         }
 
-        public int AmountOfVisibleLabels => labelsWithLyrics.Length - GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList());
+        private int LinesCapacity => (panel.Height - HEIGHT_PADDING) / lineHeight;
+        private int AmountOfInvisibleLabels => lines.Count - LinesCapacity;
+
 
         const int WIDTH_PADDING = 10;
         const int HEIGHT_PADDING = 10;
@@ -54,12 +58,17 @@ namespace Blopnote
         const string EXCESS_PHRASE = "You might also like";
         const int LINES_AMOUNT_AFTER_EXCESS_PHRASE = 7;
 
+        private readonly int lineHeight;
+
         internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar)
         {
             this.panel = panel;
             this.font = font;
             this.scrollBar = scrollBar;
+
             scrollBar.ValueChanged += ScrollBar_ValueChanged;
+            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
+            lineHeight = font.Height - 1;
         }
 
         internal string this[int lineIndex]
@@ -144,7 +153,7 @@ namespace Blopnote
             PlaceLabels();
         }
 
-        private void PlaceLabels()
+        internal void PlaceLabels()
         {
 #warning i have three ideas here and both are awkward: 
             // 1. at first disable all labels, next enable needed
@@ -153,15 +162,13 @@ namespace Blopnote
             // c) disable after needed
             // 3. reproduce step 2 using one cycle
             int y = 0;
-            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
-            int lineHeight = font.Height - 1;
             for (int i = 0; i < labelsWithLyrics.Length; i++)
             {
                 if (i < scrollBar.Value)
                 {
                     labelsWithLyrics[i].Visible = false;
                 }
-                else if (i < scrollBar.Value + AmountOfVisibleLabels)
+                else if (i < scrollBar.Value + LinesCapacity)
                 {
                     labelsWithLyrics[i].Visible = true;
                     labelsWithLyrics[i].Top = y;
@@ -269,33 +276,7 @@ namespace Blopnote
 
         internal void AdjustScrollBar()
         {
-            scrollBar.Maximum = GetAmountOfNotVisibleLabels(labelsWithLyrics.ToList()) + 9;
-        }
-
-        private bool LabelIsNotVisible(Label label)
-        {
-            return label.Top >= Height;
-        }
-
-        private int GetAmountOfNotVisibleLabels(List<Label> labels)
-        {
-            if (labels.Count == 0)
-            {
-                return 0;
-            }
-
-            Label midLabel = labels[labels.Count / 2];
-            if (LabelIsNotVisible(midLabel))
-            {
-                return 1 + labels.Count / 2 + GetAmountOfNotVisibleLabels(labels.TakeWhile(label => label != midLabel).ToList());
-            }
-
-            else
-            {
-                return GetAmountOfNotVisibleLabels(labels.SkipWhile(label => label != midLabel)
-                                                         .Skip(1)
-                                                         .ToList());
-            }
+            scrollBar.Maximum = AmountOfInvisibleLabels + 9;
         }
 
         internal bool IsKeywordAtLine(int lineIndex)
@@ -347,6 +328,44 @@ namespace Blopnote
         {
             string line = lines[lineIndex];
             return lines.IndexOf(line);
+        }
+
+        internal void HighlightAt(int lineIndex)
+        {
+            if (lineIndex >= lines.Count)
+            {
+                ReleaseHighlightedLabel();
+                return;
+            }
+
+            Label currentLabel = labelsWithLyrics[lineIndex];
+
+            if (currentLabel == PreviousHighlightedLabel)
+            {
+                return;
+            }
+
+            if (!IsKeyword(currentLabel.Text))
+            {
+                ReleaseHighlightedLabel();
+                currentLabel.BackColor = Color.LightSteelBlue;
+                PreviousHighlightedLabel = currentLabel;
+            }
+            else
+            {
+                ReleaseHighlightedLabel();
+            }
+        }
+
+        private void ReleaseHighlightedLabel()
+        {
+            // In case when previous label is keyword, than it'll be null
+            try
+            {
+                PreviousHighlightedLabel.BackColor = Color.Transparent;
+            }
+            catch { }
+            PreviousHighlightedLabel = null;
         }
     }
 }
