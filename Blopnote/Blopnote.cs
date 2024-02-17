@@ -32,6 +32,7 @@ namespace Blopnote
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
             timer1.Interval = FREQUENT_OF_AUTOSAVE_IN_SECONDS * 1000;
 
+
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
@@ -41,7 +42,7 @@ namespace Blopnote
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
         }
-        
+
         private void Blopnote_SizeChanged(object sender, EventArgs e)
         {
             RegulateTextWithLyrics();
@@ -94,10 +95,10 @@ namespace Blopnote
             if (fileCondition.LyricsExists && ShowLyrics.Checked == false)
             {
                 ShowLyrics.PerformClick();
+                TryAutoCompleteText();
             }
 
             RegulateTextWithLyrics();
-            TryAutoCompleteText();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -115,7 +116,10 @@ namespace Blopnote
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
             timer1.Start();
-            HighlightCurrentLine();
+            if (ShowLyrics.Checked)
+            {
+                HighlightCurrentLine();
+            }
         }
 
         private void Blopnote_Load(object sender, EventArgs e)
@@ -208,10 +212,10 @@ namespace Blopnote
 
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if ((int)e.KeyChar == (int)Keys.Enter)
+            if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
             {
                 e.Handled = true;
-                TextBoxWithText.Text += "\r\n";
+                TextBoxWithText.AppendText("\r\n");
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
                 TryAutoCompleteText();
             }
@@ -234,18 +238,23 @@ namespace Blopnote
                 {
                     case TypesOfLine.Repeated:
                         lyricsBoxLineIndex = lyricsBox.IndexOfFirstOccurenceOfSameLine(lineIndex);
-                        TextBoxWithText.Text += TextBoxWithText.Lines[lyricsBoxLineIndex];
+                        TextBoxWithText.AppendText(TextBoxWithText.Lines[lyricsBoxLineIndex]);
                         break;
                     case TypesOfLine.Keyword:
-                        TextBoxWithText.Text += lyricsBox[lineIndex];
+                        TextBoxWithText.AppendText(lyricsBox[lineIndex]);
                         break;
                 }
-                TextBoxWithText.Text += "\r\n";
+                TextBoxWithText.AppendText("\r\n");
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
 
                 lineIndex++;
                 lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
             }
+        }
+
+        private void PanelForLyricsBox_MouseEnter(object sender, EventArgs e)
+        {
+            PanelForLyricsBox.Focus();
         }
     }
 }

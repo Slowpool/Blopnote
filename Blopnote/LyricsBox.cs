@@ -51,6 +51,17 @@ namespace Blopnote
         private int LinesCapacity => (panel.Height - HEIGHT_PADDING) / lineHeight;
         private int AmountOfInvisibleLabels => lines.Count - LinesCapacity;
 
+        private int scrollBarValue
+        {
+            get => scrollBar.Value;
+            set
+            {
+                if (value >= scrollBar.Minimum && value <= scrollBar.Maximum - 9)
+                {
+                    scrollBar.Value = value;
+                }
+            }
+        }
 
         const int WIDTH_PADDING = 10;
         const int HEIGHT_PADDING = 10;
@@ -66,9 +77,16 @@ namespace Blopnote
             this.font = font;
             this.scrollBar = scrollBar;
 
+            panel.MouseWheel += PanelForLyricsBox_MouseWheel;
             scrollBar.ValueChanged += ScrollBar_ValueChanged;
             // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
             lineHeight = font.Height - 1;
+        }
+
+        private void PanelForLyricsBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int deltaValue = e.Delta / 120;
+            scrollBarValue -= deltaValue;
         }
 
         internal string this[int lineIndex]
@@ -332,7 +350,7 @@ namespace Blopnote
 
         internal void HighlightAt(int lineIndex)
         {
-            if (lineIndex >= lines.Count)
+            if (lines == null || lineIndex >= lines.Count)
             {
                 ReleaseHighlightedLabel();
                 return;
@@ -345,15 +363,11 @@ namespace Blopnote
                 return;
             }
 
+            ReleaseHighlightedLabel();
             if (!IsKeyword(currentLabel.Text))
             {
-                ReleaseHighlightedLabel();
                 currentLabel.BackColor = Color.LightSteelBlue;
                 PreviousHighlightedLabel = currentLabel;
-            }
-            else
-            {
-                ReleaseHighlightedLabel();
             }
         }
 
