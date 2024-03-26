@@ -53,5 +53,10 @@ namespace Blopnote
         {
             TextBoxWithText.Clear();
         }
+
+        internal void CopyCurrentLineToClipBoard()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

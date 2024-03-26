@@ -67,6 +67,7 @@
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
             this.TextBoxWithText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxWithText_KeyPress);
+            this.TextBoxWithText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyUp);
             // 
             // menuStrip1
             // 
@@ -124,7 +125,7 @@
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
             this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
@@ -169,6 +170,7 @@
             this.PanelForLyricsBox.Size = new System.Drawing.Size(342, 225);
             this.PanelForLyricsBox.TabIndex = 4;
             this.PanelForLyricsBox.MouseEnter += new System.EventHandler(this.PanelForLyricsBox_MouseEnter);
+            this.PanelForLyricsBox.MouseLeave += new System.EventHandler(this.PanelForLyricsBox_MouseLeave);
             // 
             // VScrollBarForLyrics
             // 

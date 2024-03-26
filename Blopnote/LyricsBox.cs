@@ -101,7 +101,7 @@ namespace Blopnote
         }
 
         /// <summary>
-        /// This method create panel with labels. One line of text = one lable.
+        /// This method creates panel with labels. One line of text = one lable.
         /// Text has a keywords, like [Pre-Chorus], [Chorus], [Бридж], [Переход],
         /// which are not inserted by user. Also they have a some background color, e.g. green for chorus.
         /// </summary>
@@ -333,10 +333,18 @@ namespace Blopnote
 
             for(int i = 0; i < lineIndex; i++)
             {
-                if (lines[i] == lines[lineIndex])
+                string s1 = string.Intern(lines[i]);
+                string s2 = string.Intern(lines[lineIndex]);
+#warning dude remove it
+                //char[] s1Characters = s1.ToCharArray();
+                //char[] s2Characters = s2.ToCharArray();
+                if (s1 == s2)
                 {
                     return TypesOfLine.Repeated;
                 }
+                //int number = s1Characters.Length;
+                //int number2 = s2Characters.Length;
+                //int age = number + number2;
             }
 
             return TypesOfLine.New;

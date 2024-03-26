@@ -32,7 +32,6 @@ namespace Blopnote
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
             timer1.Interval = FREQUENT_OF_AUTOSAVE_IN_SECONDS * 1000;
 
-
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
@@ -91,11 +90,15 @@ namespace Blopnote
             }
             ShowLyrics.Enabled = fileCondition.LyricsExists;
 
-            // Auto enabling of lyrics when user entered it
-            if (fileCondition.LyricsExists && ShowLyrics.Checked == false)
+            if (fileCondition.LyricsExists)
             {
-                ShowLyrics.PerformClick();
                 TryAutoCompleteText();
+                
+                // Auto enabling of lyrics when user entered it
+                if (!ShowLyrics.Checked)
+                {
+                    ShowLyrics.PerformClick();
+                }
             }
 
             RegulateTextWithLyrics();
@@ -255,6 +258,19 @@ namespace Blopnote
         private void PanelForLyricsBox_MouseEnter(object sender, EventArgs e)
         {
             PanelForLyricsBox.Focus();
+        }
+
+        private void TextBoxWithText_KeyUp(object sender, KeyEventArgs e)
+        {
+            //if (e.KeyCode == Keys.Control && e.KeyCode == Keys.C && )
+            //{
+            //    textField.CopyCurrentLineToClipBoard();
+            //}
+        }
+
+        private void PanelForLyricsBox_MouseLeave(object sender, EventArgs e)
+        {
+            TextBoxWithText.Focus();
         }
     }
 }
