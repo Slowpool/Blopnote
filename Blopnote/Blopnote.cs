@@ -118,6 +118,9 @@ namespace Blopnote
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
+#warning bug searching
+            TextBoxWithText.Focus();
+            TextBoxWithText.Focus();
             timer1.Start();
             if (ShowLyrics.Checked)
             {

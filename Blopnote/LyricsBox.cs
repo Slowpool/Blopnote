@@ -96,7 +96,6 @@ namespace Blopnote
 
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
         {
-            // Q I should lift up some labels, hide the topmost and show the lowest
             PlaceLabels();
         }
 
