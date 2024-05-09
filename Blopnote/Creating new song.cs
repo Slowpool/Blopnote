@@ -26,10 +26,46 @@ namespace Blopnote
                                      && !string.IsNullOrEmpty(Song);
 
         private ChromeDriver driver;
+        private int lyricsId;
+        private List<string> references;
+        private readonly List<string> DownloadedLyrics = new List<string>();
+        private int LyricsId
+        {
+            get => lyricsId;
+            set
+            {
+                lyricsId = value;
+                if (LyricsId < DownloadedLyrics.Count)
+                {
+                    UpdateLyricsSelector();
+                }
+            }
+        }
+
+        private void UpdateLyricsSelector()
+        {
+            buttonPreviousLyrics.Enabled = lyricsId != 0;
+            buttonNextLyrics.Enabled = lyricsId != references.Count - 1;
+        }
 
         internal FileNameAndLyricsInputWindow()
         {
             InitializeComponent();
+        }
+
+        private void FileNameAndLyricsInputWindow_Load(object sender, EventArgs e)
+        {
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--headless"); // Hide the browser window
+            options.AddArgument("--disable-extensions");
+            options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
+            options.PageLoadStrategy = PageLoadStrategy.Eager;
+
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+            service.HideCommandPromptWindow = true;
+
+            driver = new ChromeDriver(service, options);
+            driver.Manage().Window.Maximize();
         }
 
         [STAThread]
@@ -83,7 +119,8 @@ namespace Blopnote
 
         private void FileNameAndLyricsInputWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            driver.Close();
+            driver.Dispose();
         }
 
         private void OK_Click(object sender, EventArgs e)
@@ -99,59 +136,58 @@ namespace Blopnote
             }
         }
 
-        private void buttonSearchOnGenius_Click(object sender, EventArgs e)
+        private async void buttonSearchOnGenius_Click(object sender, EventArgs e)
         {
+            LyricsId = 0;
             if (TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0)
             {
                 string songName = TextBoxForAuthor.Text + " " + TextBoxForSong.Text;
-                var references = RequestForSimilarSongs(songName);
+                references = await RequestForSimilarSongs(songName);
                 if (references.Count == 0)
                 {
+                    buttonNextLyrics.Visible = false;
                     labelSearchResult.Text = "Song wasn't found";
                 }
                 else
                 {
-
-                    labelSearchResult.Text = "Current lyrics belong the song: " + "songNameFromRequest";
+                    buttonNextLyrics.Visible = true;
+                    labelSearchResult.Text = string.Format("Successfuly find {0} lyrics", references.Count);
+                    DownloadedLyrics.Clear();
+                    LyricsId = 0;
+                    DisplayLyrics();
                 }
             }
         }
 
-        private void FileNameAndLyricsInputWindow_Load(object sender, EventArgs e)
-        {
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--detach");
-            options.PageLoadStrategy = PageLoadStrategy.Eager;
-            driver = new ChromeDriver(options);
-        }
-
-        private List<string> RequestForSimilarSongs(string songName)
+        private async Task<List<string>> RequestForSimilarSongs(string songName)
         {
             driver.Navigate().GoToUrl("http://Genius.com");
             var query = driver.FindElement(By.Name("q"));
             query.Clear();
             query.SendKeys(songName);
             query.SendKeys(SeleniumKeys.Return);
+            await Task.Delay(1000);
 
-            var cards = driver.FindElements(By.ClassName("mini_card"))
+            IEnumerable<IWebElement> cards = driver.FindElements(By.ClassName("mini_card"))
                               .Skip(1)
                               .Take(5);
+
             List<string> references = new List<string>();
             string reference;
             foreach (var card in cards)
             {
                 reference = card.GetAttribute("href");
-                Debug.WriteLine(reference);
-                references.Add(reference);
+                if (!references.Contains(reference))
+                    references.Add(reference);
             }
-#error it doesn't always work
             return references;
         }
 
-        internal string GetLyrics(string GeniusSongURL)
+        internal async Task<string> GetLyrics(string GeniusSongURL)
         {
             driver.Navigate().GoToUrl(GeniusSongURL);
-            var divs = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1 kUgSbL"));
+            await Task.Delay(1000);
+            IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
             string lyrics = string.Empty;
             foreach (var div in divs)
             {
@@ -162,7 +198,36 @@ namespace Blopnote
 
         internal string GetPartOfLyrics(IWebElement div)
         {
-            return string.Empty;
+            return div.Text;
+        }
+
+        private void buttonNextLyrics_Click(object sender, EventArgs e)
+        {
+            LyricsId++;
+            DisplayLyrics();
+        }
+
+        private void buttonPreviousLyrics_Click(object sender, EventArgs e)
+        {
+            LyricsId--;
+            DisplayLyrics();
+        }
+
+        private async void DisplayLyrics()
+        {
+            try
+            {
+                TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
+            }
+            catch
+            {
+                DownloadedLyrics.Add(await GetLyrics(references[LyricsId]));
+                TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
+            }
+            finally
+            {
+                UpdateLyricsSelector();
+            }
         }
     }
 }
