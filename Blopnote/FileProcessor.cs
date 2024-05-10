@@ -18,14 +18,15 @@ namespace Blopnote
 
         private DirectoryInfo directory;
 
-        private string FilePath => directory.FullName + "\\" + fileCondition.FileName;
+        private string FilePath => Path.Combine(directory.FullName, fileCondition.FileName);
         private string LyricsPath => EditFilePathToLyricsPath();
 
         private string EditFilePathToLyricsPath()
         {
-            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " lyrics");
+#warning dirty and obfuscated
+            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " " + Names.LyricsFolder);
             int indexOfLastSlash = FilePath.LastIndexOf('\\');
-            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\lyrics");
+            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\" + Names.LyricsFolder);
             return lyricsPath;
         }
 
@@ -37,29 +38,40 @@ namespace Blopnote
             this.openFileDialog = openFileDialog;
         }
 
-        // Q it doesn't matter for me now
         internal void ChangeDirectory(string directoryName)
         {
             directory = new DirectoryInfo(directoryName);
+            EnsureLyricsFolder();
             openFileDialog.InitialDirectory = directoryName;
         }
 
-        // Q it doesn't matter for me now
-        //internal void CreateLyricsInCurrentDirectoryIfNeed()
-        //{
-        //    bool lyricsExists = (from dir in directory.GetDirectories()
-        //                        where dir.Name == "lyrics"
-        //                        select dir)
-        //                        .Count() == 1;
-        //    if (lyricsExists)
-        //    {
-        //        return;
-        //    }
-        //    else
-        //    {
+        private void EnsureLyricsFolder() 
+        {
+            var subDirectories = (from dir in directory.GetDirectories()
+                                  where dir.Name.ToLower() == Names.LyricsFolder
+                                  select dir);
+            try
+            {
+                EnsureNameInLowerCase(subDirectories.First());
+            }
+            catch (InvalidOperationException)
+            {
+                directory.CreateSubdirectory(Names.LyricsFolder);
+            }
+        }
 
-        //    }
-        //}
+        private void EnsureNameInLowerCase(DirectoryInfo lyricsDirectory)
+        {
+            if (lyricsDirectory == null)
+            {
+                throw new ArgumentException("directory can't be null");
+            }
+
+            if (lyricsDirectory.Name != Names.LyricsFolder)
+            {
+                lyricsDirectory.NameToLower();
+            }
+        }
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
@@ -70,7 +82,6 @@ namespace Blopnote
             if (fileCondition.LyricsExists)
             {
                 WriteLyrics(lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics));
-                
             }
             else
             {

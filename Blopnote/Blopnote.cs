@@ -1,13 +1,11 @@
 ﻿using Blopnote.Properties;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace Blopnote
 {
@@ -22,15 +20,14 @@ namespace Blopnote
 
         private Size WorkSpace => new Size(ClientSize.Width, ClientSize.Height - menuStrip1.Height - statusStrip1.Height);
 
-        private const string DEFAULT_PATH_FOR_FILES = "C:\\Users\\azgel\\Desktop\\translations";
-        private const int FREQUENT_OF_AUTOSAVE_IN_SECONDS = 5;
+        private const int AUTOSAVE_FREQUENCY_IN_SECONDS = 5;
+        private const string CONFIG_FOLDER_ATTRIBUTE = "folderWithTranslationsPath";
         public Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
-            folderBrowserDialog1.Description = "The default path is " + DEFAULT_PATH_FOR_FILES;
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
-            timer1.Interval = FREQUENT_OF_AUTOSAVE_IN_SECONDS * 1000;
+            timer1.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
@@ -120,7 +117,6 @@ namespace Blopnote
         {
 #warning bug searching
             TextBoxWithText.Focus();
-            TextBoxWithText.Focus();
             timer1.Start();
             if (ShowLyrics.Checked)
             {
@@ -131,17 +127,31 @@ namespace Blopnote
         private void Blopnote_Load(object sender, EventArgs e)
         {
             fileCondition.DoesNotExist();
-            fileProcessor.ChangeDirectory(DEFAULT_PATH_FOR_FILES);
             lyricsBox.Hide();
 
             sizeRegulator.RegulateTo(WorkSpace);
         }
 
-        private void changeFilePathToolStripMenuItem_Click(object sender, EventArgs e)
+        private void UpdateConfig(string key, string value)
         {
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            var config = ConfigurationManager.OpenExeConfiguration(Environment.CurrentDirectory + @"\Blopnote.exe");
+            config.AppSettings.Settings[key].Value = value;
+            config.Save();
+        }
+
+        private string AskUserForPath()
+        {
+            folderBrowserDialog1.ShowDialog();
+            return folderBrowserDialog1.SelectedPath;
+        }
+
+        private void changeFolderPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+#warning DRY
+            string folderPath = AskUserForPath();
+            if (!string.IsNullOrEmpty(folderPath))
             {
-                fileProcessor.ChangeDirectory(folderBrowserDialog1.SelectedPath);
+                fileProcessor.ChangeDirectory(folderPath);
             }
         }
 
@@ -274,6 +284,34 @@ namespace Blopnote
         private void PanelForLyricsBox_MouseLeave(object sender, EventArgs e)
         {
             TextBoxWithText.Focus();
+        }
+
+        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void Blopnote_Shown(object sender, EventArgs e)
+        {
+            Enabled = false;
+            string folderPath = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
+            if (string.IsNullOrEmpty(folderPath))
+            {
+                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'lyrics' inside.";
+#warning DRY
+                folderPath = AskUserForPath();
+                if (string.IsNullOrEmpty(folderPath))
+                {
+                    this.Close();
+                    //Application.Exit();
+                }
+                else
+                {
+                    UpdateConfig(CONFIG_FOLDER_ATTRIBUTE, folderPath);
+                }
+            }
+            fileProcessor.ChangeDirectory(folderPath);
+            Enabled = true;
         }
     }
 }

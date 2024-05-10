@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.IO;
+using IronPython.Runtime;
 
 namespace Blopnote
 {
@@ -13,6 +15,13 @@ namespace Blopnote
         {
             timer.Stop();
             timer.Start();
+        }
+
+        internal static void NameToLower(this DirectoryInfo directory)
+        {
+            string nameInLowerCase = directory.Name.ToLower();
+            directory.MoveTo(Path.Combine(directory.Parent.FullName, "temp"));
+            directory.MoveTo(Path.Combine(directory.Parent.FullName, nameInLowerCase));
         }
     }
 }

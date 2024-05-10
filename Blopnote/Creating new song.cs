@@ -138,6 +138,7 @@ namespace Blopnote
 
         private async void buttonSearchOnGenius_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             LyricsId = 0;
             if (TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0)
             {
@@ -146,17 +147,18 @@ namespace Blopnote
                 if (references.Count == 0)
                 {
                     buttonNextLyrics.Visible = false;
-                    labelSearchResult.Text = "Song wasn't found";
+                    labelSearchResult.Text = "Lyrics wasn't found";
                 }
                 else
                 {
                     buttonNextLyrics.Visible = true;
-                    labelSearchResult.Text = string.Format("Successfuly find {0} lyrics", references.Count);
+                    labelSearchResult.Text = string.Format("{0} lyrics were successfully found", references.Count);
                     DownloadedLyrics.Clear();
                     LyricsId = 0;
                     DisplayLyrics();
                 }
             }
+            Cursor.Current = Cursors.Default;
         }
 
         private async Task<List<string>> RequestForSimilarSongs(string songName)
@@ -215,6 +217,7 @@ namespace Blopnote
 
         private async void DisplayLyrics()
         {
+            Cursor.Current = Cursors.WaitCursor;
             try
             {
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
@@ -224,10 +227,8 @@ namespace Blopnote
                 DownloadedLyrics.Add(await GetLyrics(references[LyricsId]));
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
             }
-            finally
-            {
-                UpdateLyricsSelector();
-            }
+            UpdateLyricsSelector();
+            Cursor.Current = Cursors.Default;
         }
     }
 }

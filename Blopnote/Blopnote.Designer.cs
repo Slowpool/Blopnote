@@ -38,7 +38,7 @@
             this.lyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShowLyrics = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -133,17 +133,17 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.changeFilePathToolStripMenuItem});
+            this.changeFolderToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
-            // changeFilePathToolStripMenuItem
+            // changeFolderToolStripMenuItem
             // 
-            this.changeFilePathToolStripMenuItem.Name = "changeFilePathToolStripMenuItem";
-            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.changeFilePathToolStripMenuItem.Text = "Change file path";
-            this.changeFilePathToolStripMenuItem.Click += new System.EventHandler(this.changeFilePathToolStripMenuItem_Click);
+            this.changeFolderToolStripMenuItem.Name = "changeFolderToolStripMenuItem";
+            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeFolderToolStripMenuItem.Text = "Change folder";
+            this.changeFolderToolStripMenuItem.Click += new System.EventHandler(this.changeFolderPathToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -198,6 +198,7 @@
             this.Text = "Blopnote";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Blopnote_FormClosing);
             this.Load += new System.EventHandler(this.Blopnote_Load);
+            this.Shown += new System.EventHandler(this.Blopnote_Shown);
             this.SizeChanged += new System.EventHandler(this.Blopnote_SizeChanged);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -221,7 +222,7 @@
         private System.Windows.Forms.ToolStripMenuItem ShowLyrics;
         private System.Windows.Forms.ToolStripStatusLabel status;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem changeFilePathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Panel PanelForLyricsBox;
