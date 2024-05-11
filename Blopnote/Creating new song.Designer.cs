@@ -93,6 +93,7 @@ namespace Blopnote
             this.TextBoxForLyrics.Location = new System.Drawing.Point(209, 246);
             this.TextBoxForLyrics.Multiline = true;
             this.TextBoxForLyrics.Name = "TextBoxForLyrics";
+            this.TextBoxForLyrics.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TextBoxForLyrics.Size = new System.Drawing.Size(562, 208);
             this.TextBoxForLyrics.TabIndex = 4;
             // 

@@ -39,12 +39,50 @@ namespace Blopnote
             textField.PlaceOnce(topMargin: menuStrip1.Height);
         }
 
-        private void Blopnote_SizeChanged(object sender, EventArgs e)
+        #region FormEvents
+        private void Blopnote_Load(object sender, EventArgs e)
         {
-            RegulateTextWithLyrics();
+            fileCondition.DoesNotExist();
+            lyricsBox.Hide();
+
+            sizeRegulator.RegulateTo(WorkSpace);
         }
 
-        private void RegulateTextWithLyrics()
+        private void Blopnote_Shown(object sender, EventArgs e)
+        {
+            Enabled = false;
+            string folderPath = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
+            if (string.IsNullOrEmpty(folderPath))
+            {
+                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'lyrics' inside.";
+#warning DRY
+                folderPath = AskUserForPath();
+                if (string.IsNullOrEmpty(folderPath))
+                {
+                    this.Close();
+                    //Application.Exit();
+                }
+                else
+                {
+                    UpdateConfig(CONFIG_FOLDER_ATTRIBUTE, folderPath);
+                }
+            }
+            fileProcessor.ChangeDirectory(folderPath);
+            Enabled = true;
+        }
+
+        private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            closeToolStripMenuItem.PerformClick();
+        }
+
+        private void Blopnote_SizeChanged(object sender, EventArgs e)
+        {
+            RegulateTextAndLyricsBoxes();
+        }
+        #endregion
+
+        private void RegulateTextAndLyricsBoxes()
         {
             sizeRegulator.RegulateTo(WorkSpace);
             lyricsBox.Left = TextBoxWithText.Right;
@@ -58,7 +96,7 @@ namespace Blopnote
                 #warning awful + dirty code
                 lyricsBox.ClearPreviousLyricsDisplayIfNeed();
                 HandleInsertedData();
-                PrepareComponentsForDisplayingOfNewTranslation(clearText: true);
+                PrepareComponentsToDisplayNewTranslation(clearText: true);
             }
         }
 
@@ -78,9 +116,10 @@ namespace Blopnote
             }
         }
 
-        private void PrepareComponentsForDisplayingOfNewTranslation(bool clearText)
+        private void PrepareComponentsToDisplayNewTranslation(bool clearText)
         {
             textField.Enable();
+            closeToolStripMenuItem.Enabled = true;
             if (clearText)
             {
                 textField.Clear();
@@ -98,7 +137,7 @@ namespace Blopnote
                 }
             }
 
-            RegulateTextWithLyrics();
+            RegulateTextAndLyricsBoxes();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -106,10 +145,12 @@ namespace Blopnote
             DialogResult answer = openFileDialog1.ShowDialog();
             if (answer == DialogResult.OK)
             {
+#error if file exists but i wanna put it in new method
+                StopTimerAndTrySaveFile();
                 lyricsBox.ClearPreviousLyricsDisplayIfNeed();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
-                PrepareComponentsForDisplayingOfNewTranslation(clearText: false);
+                PrepareComponentsToDisplayNewTranslation(clearText: false);
             }
         }
 
@@ -117,19 +158,10 @@ namespace Blopnote
         {
 #warning bug searching
             TextBoxWithText.Focus();
-            timer1.Start();
             if (ShowLyrics.Checked)
             {
                 HighlightCurrentLine();
             }
-        }
-
-        private void Blopnote_Load(object sender, EventArgs e)
-        {
-            fileCondition.DoesNotExist();
-            lyricsBox.Hide();
-
-            sizeRegulator.RegulateTo(WorkSpace);
         }
 
         private void UpdateConfig(string key, string value)
@@ -157,11 +189,11 @@ namespace Blopnote
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TrySaveFile();
+            StopTimerAndTrySaveFile();
+            closeToolStripMenuItem.Enabled = false;
             ShowLyrics.Enabled = false;
             fileCondition.DoesNotExist();
-            timer1.Stop();
-            RegulateTextWithLyrics();
+            RegulateTextAndLyricsBoxes();
         }
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -174,7 +206,7 @@ namespace Blopnote
             {
                 lyricsBox.Hide();
             }
-            RegulateTextWithLyrics();
+            RegulateTextAndLyricsBoxes();
         }
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
@@ -188,24 +220,20 @@ namespace Blopnote
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            TrySaveFile();
+            StopTimerAndTrySaveFile();
         }
 
-        private void TrySaveFile()
+        private void StopTimerAndTrySaveFile()
         {
-            
-            if (!string.IsNullOrEmpty(fileCondition.FileName))
+            timer1.Stop();
+            try
             {
-                try
-                {
-                    timer1.Stop();
-                    fileProcessor.Save();
-                }
-                catch (Exception exception)
-                {
-                    MessageBox.Show(caption: "File writing error",
-                                    text: "Error: " + exception.Message);
-                }
+                fileProcessor.Save();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(caption: "File saving error",
+                                text: "Error text: " + exception.Message);
             }
         }
 
@@ -221,11 +249,6 @@ namespace Blopnote
             }
         }
 
-        private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            closeToolStripMenuItem.PerformClick();
-        }
-
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
@@ -235,6 +258,15 @@ namespace Blopnote
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
                 TryAutoCompleteText();
             }
+        }
+
+        private void TextBoxWithText_KeyUp(object sender, KeyEventArgs e)
+        {
+#warning impelement ctrl+c and ctrl+d 
+            //if (e.KeyCode == Keys.Control && e.KeyCode == Keys.C && )
+            //{
+            //    textField.CopyCurrentLineToClipBoard();
+            //}
         }
 
         private void HighlightCurrentLine()
@@ -273,45 +305,9 @@ namespace Blopnote
             PanelForLyricsBox.Focus();
         }
 
-        private void TextBoxWithText_KeyUp(object sender, KeyEventArgs e)
-        {
-            //if (e.KeyCode == Keys.Control && e.KeyCode == Keys.C && )
-            //{
-            //    textField.CopyCurrentLineToClipBoard();
-            //}
-        }
-
         private void PanelForLyricsBox_MouseLeave(object sender, EventArgs e)
         {
             TextBoxWithText.Focus();
-        }
-
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
-        private void Blopnote_Shown(object sender, EventArgs e)
-        {
-            Enabled = false;
-            string folderPath = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
-            if (string.IsNullOrEmpty(folderPath))
-            {
-                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'lyrics' inside.";
-#warning DRY
-                folderPath = AskUserForPath();
-                if (string.IsNullOrEmpty(folderPath))
-                {
-                    this.Close();
-                    //Application.Exit();
-                }
-                else
-                {
-                    UpdateConfig(CONFIG_FOLDER_ATTRIBUTE, folderPath);
-                }
-            }
-            fileProcessor.ChangeDirectory(folderPath);
-            Enabled = true;
         }
     }
 }

@@ -102,12 +102,11 @@ namespace Blopnote
         /// <summary>
         /// This method creates panel with labels. One line of text = one lable.
         /// Text has a keywords, like [Pre-Chorus], [Chorus], [Бридж], [Переход],
-        /// which are not inserted by user. Also they have a some background color, e.g. green for chorus.
+        /// which mustn't be inserted by user. Also they have a some background color, e.g. green for chorus.
         /// </summary>
         /// <param name="lyrics"></param>
         internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
         {
-#warning unfinished
             lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
             AddDistanceBeforeKeyWords();

@@ -26,9 +26,10 @@ namespace Blopnote
                                      && !string.IsNullOrEmpty(Song);
 
         private ChromeDriver driver;
-        private int lyricsId;
-        private List<string> references;
+        private List<string> references = new List<string>();
         private readonly List<string> DownloadedLyrics = new List<string>();
+
+        private int lyricsId;
         private int LyricsId
         {
             get => lyricsId;
@@ -42,16 +43,17 @@ namespace Blopnote
             }
         }
 
-        private void UpdateLyricsSelector()
-        {
-            buttonPreviousLyrics.Enabled = lyricsId != 0;
-            buttonNextLyrics.Enabled = lyricsId != references.Count - 1;
-        }
-
         internal FileNameAndLyricsInputWindow()
         {
             InitializeComponent();
         }
+
+        private void UpdateLyricsSelector()
+        {
+            buttonPreviousLyrics.Enabled = LyricsId > 0;
+            buttonNextLyrics.Enabled = LyricsId < references.Count - 1;
+        }
+
 
         private void FileNameAndLyricsInputWindow_Load(object sender, EventArgs e)
         {
@@ -72,11 +74,8 @@ namespace Blopnote
         internal void ShowForDataInput()
         {
             ResetAllComponents();
-            TextBoxForAuthor.Text = "dekma";
-            TextBoxForSong.Text = "меня нет";
 
             DialogResult userAnswer = this.ShowDialog();
-
             if (userAnswer == DialogResult.OK)
             {
                 Author = TextBoxForAuthor.Text;
@@ -94,6 +93,10 @@ namespace Blopnote
             TextBoxForSong.Clear();
             TextBoxForLyrics.Clear();
             CheckBoxUseLyrics.Checked = true;
+            labelSearchResult.Text = string.Empty;
+            DownloadedLyrics.Clear();
+            references.Clear();
+            UpdateLyricsSelector();
         }
 
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
@@ -152,10 +155,10 @@ namespace Blopnote
                 else
                 {
                     buttonNextLyrics.Visible = true;
-                    labelSearchResult.Text = string.Format("{0} lyrics were successfully found", references.Count);
+                    labelSearchResult.Text = string.Format("{0} lyrics were successfully found.", references.Count);
                     DownloadedLyrics.Clear();
                     LyricsId = 0;
-                    DisplayLyrics();
+                    MoveLyricsToTextBox();
                 }
             }
             Cursor.Current = Cursors.Default;
@@ -190,32 +193,22 @@ namespace Blopnote
             driver.Navigate().GoToUrl(GeniusSongURL);
             await Task.Delay(1000);
             IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
-            string lyrics = string.Empty;
-            foreach (var div in divs)
-            {
-                lyrics += GetPartOfLyrics(div);
-            }
-            return lyrics;
-        }
-
-        internal string GetPartOfLyrics(IWebElement div)
-        {
-            return div.Text;
+            return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
         }
 
         private void buttonNextLyrics_Click(object sender, EventArgs e)
         {
             LyricsId++;
-            DisplayLyrics();
+            MoveLyricsToTextBox();
         }
 
         private void buttonPreviousLyrics_Click(object sender, EventArgs e)
         {
             LyricsId--;
-            DisplayLyrics();
+            MoveLyricsToTextBox();
         }
 
-        private async void DisplayLyrics()
+        private async void MoveLyricsToTextBox()
         {
             Cursor.Current = Cursors.WaitCursor;
             try
