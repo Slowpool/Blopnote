@@ -145,8 +145,7 @@ namespace Blopnote
             DialogResult answer = openFileDialog1.ShowDialog();
             if (answer == DialogResult.OK)
             {
-#error if file exists but i wanna put it in new method
-                StopTimerAndTrySaveFile();
+                StopTimerAndTrySaveFile(false);
                 lyricsBox.ClearPreviousLyricsDisplayIfNeed();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
@@ -189,7 +188,7 @@ namespace Blopnote
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StopTimerAndTrySaveFile();
+            StopTimerAndTrySaveFile(true);
             closeToolStripMenuItem.Enabled = false;
             ShowLyrics.Enabled = false;
             fileCondition.DoesNotExist();
@@ -220,11 +219,12 @@ namespace Blopnote
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            StopTimerAndTrySaveFile();
+            StopTimerAndTrySaveFile(true);
         }
 
-        private void StopTimerAndTrySaveFile()
+        private void StopTimerAndTrySaveFile(bool mandatorySave)
         {
+#warning dirty
             timer1.Stop();
             try
             {
@@ -232,8 +232,11 @@ namespace Blopnote
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: "File saving error",
-                                text: "Error text: " + exception.Message);
+                if (mandatorySave)
+                {
+                    MessageBox.Show(caption: "File saving error",
+                                    text: "Error text: " + exception.Message);
+                }
             }
         }
 

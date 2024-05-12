@@ -15,9 +15,9 @@ namespace Blopnote
         private Button ButtonOK;
         private TextBox TextBoxForSong;
         private Label label3;
-        private Button buttonSearchOnGenius;
-        private Button buttonSearchOnYoutube;
-        private ToolTip toolTip1;
+        private Button buttonLyricsRequest;
+        private Button buttonAudioFileRequest;
+        private ToolTip toolTipLyricsRequest;
         private System.ComponentModel.IContainer components;
         private Label label2;
 
@@ -51,12 +51,13 @@ namespace Blopnote
             this.ButtonOK = new System.Windows.Forms.Button();
             this.TextBoxForSong = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.buttonSearchOnGenius = new System.Windows.Forms.Button();
-            this.buttonSearchOnYoutube = new System.Windows.Forms.Button();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.buttonLyricsRequest = new System.Windows.Forms.Button();
+            this.buttonAudioFileRequest = new System.Windows.Forms.Button();
+            this.toolTipLyricsRequest = new System.Windows.Forms.ToolTip(this.components);
             this.buttonNextLyrics = new System.Windows.Forms.Button();
             this.buttonPreviousLyrics = new System.Windows.Forms.Button();
-            this.labelSearchResult = new System.Windows.Forms.Label();
+            this.labelRequestResult = new System.Windows.Forms.Label();
+            this.toolTipAudioFileRequest = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -82,7 +83,7 @@ namespace Blopnote
             this.TextBoxForAuthor.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.TextBoxForAuthor.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxForAuthor.Location = new System.Drawing.Point(209, 32);
-            this.TextBoxForAuthor.MaxLength = 120;
+            this.TextBoxForAuthor.MaxLength = 100;
             this.TextBoxForAuthor.Name = "TextBoxForAuthor";
             this.TextBoxForAuthor.Size = new System.Drawing.Size(562, 30);
             this.TextBoxForAuthor.TabIndex = 1;
@@ -125,7 +126,7 @@ namespace Blopnote
             this.TextBoxForSong.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.TextBoxForSong.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxForSong.Location = new System.Drawing.Point(209, 80);
-            this.TextBoxForSong.MaxLength = 120;
+            this.TextBoxForSong.MaxLength = 100;
             this.TextBoxForSong.Name = "TextBoxForSong";
             this.TextBoxForSong.Size = new System.Drawing.Size(562, 30);
             this.TextBoxForSong.TabIndex = 2;
@@ -140,34 +141,34 @@ namespace Blopnote
             this.label3.TabIndex = 7;
             this.label3.Text = "Song:";
             // 
-            // buttonSearchOnGenius
+            // buttonLyricsRequest
             // 
-            this.buttonSearchOnGenius.Location = new System.Drawing.Point(209, 130);
-            this.buttonSearchOnGenius.Name = "buttonSearchOnGenius";
-            this.buttonSearchOnGenius.Size = new System.Drawing.Size(231, 30);
-            this.buttonSearchOnGenius.TabIndex = 8;
-            this.buttonSearchOnGenius.Text = "Request for lyrics";
-            this.toolTip1.SetToolTip(this.buttonSearchOnGenius, "It yields no more than 5 lyrics.");
-            this.buttonSearchOnGenius.UseVisualStyleBackColor = true;
-            this.buttonSearchOnGenius.Click += new System.EventHandler(this.buttonSearchOnGenius_Click);
+            this.buttonLyricsRequest.Location = new System.Drawing.Point(209, 130);
+            this.buttonLyricsRequest.Name = "buttonLyricsRequest";
+            this.buttonLyricsRequest.Size = new System.Drawing.Size(231, 30);
+            this.buttonLyricsRequest.TabIndex = 8;
+            this.buttonLyricsRequest.Text = "Request for lyrics";
+            this.toolTipLyricsRequest.SetToolTip(this.buttonLyricsRequest, "It yields no more than 5 lyrics.");
+            this.buttonLyricsRequest.UseVisualStyleBackColor = true;
+            this.buttonLyricsRequest.Click += new System.EventHandler(this.buttonSearchOnGenius_Click);
             // 
-            // buttonSearchOnYoutube
+            // buttonAudioFileRequest
             // 
-            this.buttonSearchOnYoutube.Location = new System.Drawing.Point(505, 130);
-            this.buttonSearchOnYoutube.Name = "buttonSearchOnYoutube";
-            this.buttonSearchOnYoutube.Size = new System.Drawing.Size(266, 30);
-            this.buttonSearchOnYoutube.TabIndex = 9;
-            this.buttonSearchOnYoutube.Text = "Request for audio file";
-            this.toolTip1.SetToolTip(this.buttonSearchOnYoutube, "It yields no more than 5 audio files.");
-            this.buttonSearchOnYoutube.UseVisualStyleBackColor = true;
+            this.buttonAudioFileRequest.Location = new System.Drawing.Point(505, 130);
+            this.buttonAudioFileRequest.Name = "buttonAudioFileRequest";
+            this.buttonAudioFileRequest.Size = new System.Drawing.Size(266, 30);
+            this.buttonAudioFileRequest.TabIndex = 9;
+            this.buttonAudioFileRequest.Text = "Request for audio file";
+            this.toolTipAudioFileRequest.SetToolTip(this.buttonAudioFileRequest, "It yields no more than 5 audio files.");
+            this.buttonAudioFileRequest.UseVisualStyleBackColor = true;
             // 
-            // toolTip1
+            // toolTipLyricsRequest
             // 
-            this.toolTip1.AutoPopDelay = 32767;
-            this.toolTip1.InitialDelay = 200;
-            this.toolTip1.IsBalloon = true;
-            this.toolTip1.ReshowDelay = 100;
-            this.toolTip1.ToolTipTitle = "Execute song search request";
+            this.toolTipLyricsRequest.AutoPopDelay = 32767;
+            this.toolTipLyricsRequest.InitialDelay = 200;
+            this.toolTipLyricsRequest.IsBalloon = true;
+            this.toolTipLyricsRequest.ReshowDelay = 100;
+            this.toolTipLyricsRequest.ToolTipTitle = "Execute song search request on Genius.com";
             // 
             // buttonNextLyrics
             // 
@@ -189,22 +190,30 @@ namespace Blopnote
             this.buttonPreviousLyrics.UseVisualStyleBackColor = true;
             this.buttonPreviousLyrics.Click += new System.EventHandler(this.buttonPreviousLyrics_Click);
             // 
-            // labelSearchResult
+            // labelRequestResult
             // 
-            this.labelSearchResult.AutoSize = true;
-            this.labelSearchResult.Location = new System.Drawing.Point(215, 176);
-            this.labelSearchResult.Name = "labelSearchResult";
-            this.labelSearchResult.Size = new System.Drawing.Size(0, 22);
-            this.labelSearchResult.TabIndex = 10;
+            this.labelRequestResult.AutoSize = true;
+            this.labelRequestResult.Location = new System.Drawing.Point(215, 176);
+            this.labelRequestResult.Name = "labelRequestResult";
+            this.labelRequestResult.Size = new System.Drawing.Size(0, 22);
+            this.labelRequestResult.TabIndex = 10;
+            // 
+            // toolTipAudioFileRequest
+            // 
+            this.toolTipAudioFileRequest.AutoPopDelay = 32767;
+            this.toolTipAudioFileRequest.InitialDelay = 200;
+            this.toolTipAudioFileRequest.IsBalloon = true;
+            this.toolTipAudioFileRequest.ReshowDelay = 100;
+            this.toolTipAudioFileRequest.ToolTipTitle = "Execute audio file searching on *website*";
             // 
             // FileNameAndLyricsInputWindow
             // 
             this.ClientSize = new System.Drawing.Size(914, 559);
             this.Controls.Add(this.buttonPreviousLyrics);
             this.Controls.Add(this.buttonNextLyrics);
-            this.Controls.Add(this.labelSearchResult);
-            this.Controls.Add(this.buttonSearchOnYoutube);
-            this.Controls.Add(this.buttonSearchOnGenius);
+            this.Controls.Add(this.labelRequestResult);
+            this.Controls.Add(this.buttonAudioFileRequest);
+            this.Controls.Add(this.buttonLyricsRequest);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.TextBoxForSong);
             this.Controls.Add(this.ButtonOK);
@@ -227,8 +236,9 @@ namespace Blopnote
         }
         #endregion
 
-        private Label labelSearchResult;
+        private Label labelRequestResult;
         private Button buttonNextLyrics;
         private Button buttonPreviousLyrics;
+        private ToolTip toolTipAudioFileRequest;
     }
 }

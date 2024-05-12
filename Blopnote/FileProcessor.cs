@@ -75,7 +75,7 @@ namespace Blopnote
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
-            PrepareTranslation(fileName, lyrics);
+            fileCondition.PrepareTranslation(fileName, lyrics);
 
             File.Create(FilePath).Dispose();
 
@@ -88,13 +88,6 @@ namespace Blopnote
                 //  Q do I really need this?
                 lyricsBox.NoLyrics();
             }
-        }
-
-        private void PrepareTranslation(string fileName, string lyrics)
-        {
-            fileCondition.FileName = fileName;
-            fileCondition.LyricsExistCheck(lyrics);
-            fileCondition.RefreshStatus();
         }
 
         internal void Save()
@@ -123,7 +116,7 @@ namespace Blopnote
             string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
             string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
             ChangeDirectory(directory);
-            PrepareTranslation(fileName, lyrics);
+            fileCondition.PrepareTranslation(fileName, lyrics);
             ReadText(FullFileName);
             lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics);
             

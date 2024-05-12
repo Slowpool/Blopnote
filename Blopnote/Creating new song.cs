@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing;
-using System.IO;
+using Blopnote.Properties;
+
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using SeleniumKeys = OpenQA.Selenium.Keys;
-using System.Diagnostics;
 
 namespace Blopnote
 {
@@ -46,14 +44,8 @@ namespace Blopnote
         internal FileNameAndLyricsInputWindow()
         {
             InitializeComponent();
+            Icon = Resources.icon;
         }
-
-        private void UpdateLyricsSelector()
-        {
-            buttonPreviousLyrics.Enabled = LyricsId > 0;
-            buttonNextLyrics.Enabled = LyricsId < references.Count - 1;
-        }
-
 
         private void FileNameAndLyricsInputWindow_Load(object sender, EventArgs e)
         {
@@ -73,46 +65,56 @@ namespace Blopnote
         [STAThread]
         internal void ShowForDataInput()
         {
-            ResetAllComponents();
+            ClearAll();
 
             DialogResult userAnswer = this.ShowDialog();
             if (userAnswer == DialogResult.OK)
             {
                 Author = TextBoxForAuthor.Text;
                 Song = TextBoxForSong.Text;
-                ReadLyricsIfItUsed();
+                ReadLyricsIfItIsUsed();
             }
         }
 
-        private void ResetAllComponents()
+        private void ClearAll()
         {
             Author = null;
             Song = null;
-            Lyrics = null;
             TextBoxForAuthor.Clear();
             TextBoxForSong.Clear();
-            TextBoxForLyrics.Clear();
             CheckBoxUseLyrics.Checked = true;
-            labelSearchResult.Text = string.Empty;
-            DownloadedLyrics.Clear();
-            references.Clear();
+
+            ClearAllRelatedToLyrics();
             UpdateLyricsSelector();
+        }
+
+        private void UpdateLyricsSelector()
+        {
+            buttonPreviousLyrics.Enabled = CheckBoxUseLyrics.Checked && LyricsId > 0;
+            buttonNextLyrics.Enabled = CheckBoxUseLyrics.Checked && LyricsId < references.Count - 1;
+        }
+
+        private void ClearAllRelatedToLyrics()
+        {
+            labelRequestResult.Text = string.Empty;
+            Lyrics = null;
+#warning magic const
+            LyricsId = -1;
+            references.Clear();
+            TextBoxForLyrics.Clear();
+            DownloadedLyrics.Clear();
         }
 
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
         {
-            if (CheckBoxUseLyrics.Checked)
-            {
-                TextBoxForLyrics.Enabled = true;
-            }
-            else
-            {
-                TextBoxForLyrics.Enabled = false;
-                TextBoxForLyrics.Clear();
-            }
+            TextBoxForLyrics.Enabled = CheckBoxUseLyrics.Checked;
+            buttonLyricsRequest.Enabled = CheckBoxUseLyrics.Checked;
+            labelRequestResult.Enabled = CheckBoxUseLyrics.Checked;
+            ClearAllRelatedToLyrics();
+            UpdateLyricsSelector();
         }
 
-        private void ReadLyricsIfItUsed()
+        private void ReadLyricsIfItIsUsed()
         {
             if (CheckBoxUseLyrics.Checked)
             {
@@ -149,16 +151,14 @@ namespace Blopnote
                 references = await RequestForSimilarSongs(songName);
                 if (references.Count == 0)
                 {
-                    buttonNextLyrics.Visible = false;
-                    labelSearchResult.Text = "Lyrics wasn't found";
+                    labelRequestResult.Text = "Lyrics wasn't found";
                 }
                 else
                 {
-                    buttonNextLyrics.Visible = true;
-                    labelSearchResult.Text = string.Format("{0} lyrics were successfully found.", references.Count);
+                    labelRequestResult.Text = string.Format("{0} lyrics were successfully found.", references.Count);
                     DownloadedLyrics.Clear();
                     LyricsId = 0;
-                    MoveLyricsToTextBox();
+                    LoadLyricsToTextBox();
                 }
             }
             Cursor.Current = Cursors.Default;
@@ -166,6 +166,7 @@ namespace Blopnote
 
         private async Task<List<string>> RequestForSimilarSongs(string songName)
         {
+            Cursor.Current = Cursors.WaitCursor;
             driver.Navigate().GoToUrl("http://Genius.com");
             var query = driver.FindElement(By.Name("q"));
             query.Clear();
@@ -185,6 +186,7 @@ namespace Blopnote
                 if (!references.Contains(reference))
                     references.Add(reference);
             }
+            Cursor.Current = Cursors.Default;
             return references;
         }
 
@@ -199,16 +201,16 @@ namespace Blopnote
         private void buttonNextLyrics_Click(object sender, EventArgs e)
         {
             LyricsId++;
-            MoveLyricsToTextBox();
+            LoadLyricsToTextBox();
         }
 
         private void buttonPreviousLyrics_Click(object sender, EventArgs e)
         {
             LyricsId--;
-            MoveLyricsToTextBox();
+            LoadLyricsToTextBox();
         }
 
-        private async void MoveLyricsToTextBox()
+        private async void LoadLyricsToTextBox()
         {
             Cursor.Current = Cursors.WaitCursor;
             try
