@@ -14,7 +14,7 @@ namespace Blopnote
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
         private readonly FileCondition fileCondition;
-        private readonly FileNameAndLyricsInputWindow dataInputWindow;
+        private readonly CreateNewTranslationWindow createNewTranslation;
         private readonly LyricsBox lyricsBox;
         private readonly SizeRegulator sizeRegulator;
 
@@ -33,7 +33,7 @@ namespace Blopnote
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
-            dataInputWindow = new FileNameAndLyricsInputWindow();
+            createNewTranslation = new CreateNewTranslationWindow();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
@@ -90,8 +90,7 @@ namespace Blopnote
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataInputWindow.ShowForDataInput();
-            if (dataInputWindow.IsDataInserted)
+            if (createNewTranslation.ShowForDataInput() == DialogResult.OK)
             {
                 #warning awful + dirty code
                 lyricsBox.ClearPreviousLyricsDisplayIfNeed();
@@ -102,8 +101,8 @@ namespace Blopnote
 
         private void HandleInsertedData()
         {
-            string fileName = dataInputWindow.FileName;
-            string lyrics = dataInputWindow.Lyrics;
+            string fileName = createNewTranslation.FileName;
+            string lyrics = createNewTranslation.Lyrics;
 
             try
             {

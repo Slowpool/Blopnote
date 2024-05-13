@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Blopnote
 {
-    partial class FileNameAndLyricsInputWindow
+    partial class CreateNewTranslationWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -12,7 +12,7 @@ namespace Blopnote
         private TextBox TextBoxForAuthor;
         private TextBox TextBoxForLyrics;
         private CheckBox CheckBoxUseLyrics;
-        private Button ButtonOK;
+        private Button buttonOK;
         private TextBox TextBoxForSong;
         private Label label3;
         private Button buttonLyricsRequest;
@@ -48,7 +48,7 @@ namespace Blopnote
             this.TextBoxForAuthor = new System.Windows.Forms.TextBox();
             this.TextBoxForLyrics = new System.Windows.Forms.TextBox();
             this.CheckBoxUseLyrics = new System.Windows.Forms.CheckBox();
-            this.ButtonOK = new System.Windows.Forms.Button();
+            this.buttonOK = new System.Windows.Forms.Button();
             this.TextBoxForSong = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.buttonLyricsRequest = new System.Windows.Forms.Button();
@@ -109,17 +109,17 @@ namespace Blopnote
             this.CheckBoxUseLyrics.UseVisualStyleBackColor = true;
             this.CheckBoxUseLyrics.CheckedChanged += new System.EventHandler(this.CheckBoxUseLyrics_CheckedChanged);
             // 
-            // ButtonOK
+            // buttonOK
             // 
-            this.ButtonOK.AutoSize = true;
-            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.Location = new System.Drawing.Point(378, 515);
-            this.ButtonOK.Name = "ButtonOK";
-            this.ButtonOK.Size = new System.Drawing.Size(160, 32);
-            this.ButtonOK.TabIndex = 5;
-            this.ButtonOK.Text = "OK";
-            this.ButtonOK.UseVisualStyleBackColor = true;
-            this.ButtonOK.Click += new System.EventHandler(this.OK_Click);
+            this.buttonOK.AutoSize = true;
+            this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.buttonOK.Location = new System.Drawing.Point(378, 515);
+            this.buttonOK.Name = "buttonOK";
+            this.buttonOK.Size = new System.Drawing.Size(160, 32);
+            this.buttonOK.TabIndex = 5;
+            this.buttonOK.Text = "OK";
+            this.buttonOK.UseVisualStyleBackColor = true;
+            this.buttonOK.Click += new System.EventHandler(this.OK_Click);
             // 
             // TextBoxForSong
             // 
@@ -206,7 +206,7 @@ namespace Blopnote
             this.toolTipAudioFileRequest.ReshowDelay = 100;
             this.toolTipAudioFileRequest.ToolTipTitle = "Execute audio file searching on *website*";
             // 
-            // FileNameAndLyricsInputWindow
+            // CreateNewTranslationWindow
             // 
             this.ClientSize = new System.Drawing.Size(914, 559);
             this.Controls.Add(this.buttonPreviousLyrics);
@@ -216,7 +216,7 @@ namespace Blopnote
             this.Controls.Add(this.buttonLyricsRequest);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.TextBoxForSong);
-            this.Controls.Add(this.ButtonOK);
+            this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.CheckBoxUseLyrics);
             this.Controls.Add(this.TextBoxForLyrics);
             this.Controls.Add(this.TextBoxForAuthor);
@@ -226,7 +226,7 @@ namespace Blopnote
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FileNameAndLyricsInputWindow";
+            this.Name = "CreateNewTranslationWindow";
             this.Text = "New file creating";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FileNameAndLyricsInputWindow_FormClosing);
             this.Load += new System.EventHandler(this.FileNameAndLyricsInputWindow_Load);

@@ -33,7 +33,7 @@ namespace Blopnote
 
         internal void PrepareTranslation(string newFileName, string newLyrics)
         {
-            LyricsExists = string.IsNullOrEmpty(newLyrics);
+            LyricsExists = !string.IsNullOrEmpty(newLyrics);
             FileName = newFileName;
             string fullSongName = FileName.Substring(0, FileName.LastIndexOf('.'));
             programStatus.Text = "Song: " + fullSongName;

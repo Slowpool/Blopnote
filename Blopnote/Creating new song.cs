@@ -8,20 +8,27 @@ using Blopnote.Properties;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using SeleniumKeys = OpenQA.Selenium.Keys;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Blopnote
 {
-    public partial class FileNameAndLyricsInputWindow : Form
+    public partial class CreateNewTranslationWindow : Form
     {
         internal string FileName => Author + " - " + Song + ".txt";
 
         private string Author { get; set; }
         private string Song { get; set; }
-
         internal string Lyrics { get; set; }
 
-        internal bool IsDataInserted => !string.IsNullOrEmpty(Author)
-                                     && !string.IsNullOrEmpty(Song);
+        private bool AuthorIsCorrect => !string.IsNullOrEmpty(Author);
+        private bool SongIsCorrect => !string.IsNullOrEmpty(Song);
+        private bool LyricsIsCorrect => !(CheckBoxUseLyrics.Checked ^ !string.IsNullOrEmpty(Lyrics));
+
+        internal bool InsertedDataIsComplete => AuthorIsCorrect
+                                         && LyricsIsCorrect
+                                         && SongIsCorrect;
+
+        private const string FIELD_X_IS_EMPTY = "Field \"{0}\" is empty.\n";
 
         private ChromeDriver driver;
         private List<string> references = new List<string>();
@@ -41,7 +48,7 @@ namespace Blopnote
             }
         }
 
-        internal FileNameAndLyricsInputWindow()
+        internal CreateNewTranslationWindow()
         {
             InitializeComponent();
             Icon = Resources.icon;
@@ -63,17 +70,11 @@ namespace Blopnote
         }
 
         [STAThread]
-        internal void ShowForDataInput()
+        internal DialogResult ShowForDataInput()
         {
             ClearAll();
-
-            DialogResult userAnswer = this.ShowDialog();
-            if (userAnswer == DialogResult.OK)
-            {
-                Author = TextBoxForAuthor.Text;
-                Song = TextBoxForSong.Text;
-                ReadLyricsIfItIsUsed();
-            }
+            DialogResult userAnswer = ShowDialog();
+            return userAnswer;
         }
 
         private void ClearAll()
@@ -114,14 +115,6 @@ namespace Blopnote
             UpdateLyricsSelector();
         }
 
-        private void ReadLyricsIfItIsUsed()
-        {
-            if (CheckBoxUseLyrics.Checked)
-            {
-                Lyrics = TextBoxForLyrics.Text;
-            }
-        }
-
         private void FileNameAndLyricsInputWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             driver.Close();
@@ -130,7 +123,20 @@ namespace Blopnote
 
         private void OK_Click(object sender, EventArgs e)
         {
+            Author = TextBoxForAuthor.Text;
+            Song = TextBoxForSong.Text;
+            Lyrics = TextBoxForLyrics.Text;
 
+            if (!InsertedDataIsComplete)
+            {
+#warning is it dry violation?
+                string messageText = AuthorIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Author");
+                messageText += SongIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Song");
+                messageText += LyricsIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Lyrics");
+                MessageBox.Show(caption: "Incomplite data",
+                    text: messageText);
+                this.DialogResult = DialogResult.None;
+            }
         }
 
         private void TextBoxForAuthor_KeyPress(object sender, KeyPressEventArgs e)
