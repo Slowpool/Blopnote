@@ -24,8 +24,8 @@ namespace Blopnote
         private bool LyricsIsCorrect => !(CheckBoxUseLyrics.Checked ^ !string.IsNullOrEmpty(Lyrics));
 
         internal bool InsertedDataIsComplete => AuthorIsCorrect
-                                         && LyricsIsCorrect
-                                         && SongIsCorrect;
+                                             && LyricsIsCorrect
+                                             && SongIsCorrect;
 
         private const string FIELD_X_IS_EMPTY = "Field \"{0}\" is empty.\n";
 #warning what if i use mac? it has to be gotten dinamically
@@ -239,8 +239,8 @@ namespace Blopnote
             // path/to/folder/future_file_name.txt
             int fieldMaxLength = PATH_MAX - length;
             // so now authorMaxLength is
-            // /future_file_name.txt which includes Author and Song which are joined with three characters
-            // " - "
+            // /future_file_name.txt which includes Author and Song
+            // which are joined with three characters: " - "
             fieldMaxLength -= 3;
             // /future_file_name.txt => future_file_name.txt
             fieldMaxLength -= 1;

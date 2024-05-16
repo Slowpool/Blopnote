@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using static IronPython.Modules._ast;
 
 namespace Blopnote
 {
@@ -100,40 +101,94 @@ namespace Blopnote
         }
 
         /// <summary>
-        /// This method creates panel with labels. One line of text = one lable.
-        /// Text has a keywords, like [Pre-Chorus], [Chorus], [Бридж], [Переход],
-        /// which mustn't be inserted by user. Also they have a some background color, e.g. green for chorus.
+        /// This method displays panel with labels. One line of text = one lable.
+        /// In Genius.com text has a keywords like [Pre-Chorus], [Chorus], [Бридж], [Переход],
+        /// that the user shouldn't enter. Also they have a some background color,
+        /// e.g. green for [Chorus] and etc. It's supposed that these keywords will help user
+        /// better navigate the text
         /// </summary>
         /// <param name="lyrics"></param>
         internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
         {
+#warning I think somewhere here must be checking for max length and handling too long lines
             lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
-            AddDistanceBeforeKeyWords();
+            SelectKeywords();
             labelsWithLyrics = new Label[lines.Count];
             ConfigureLabels();
             CalculateWidth();
             AdjustScrollBar();
-            return lines.Aggregate("", (total, line) => total + line + "\r\n");
+            return lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         }
 
-        private void AddDistanceBeforeKeyWords()
+        private void SelectKeywords()
         {
-            int added = 0;
-            int indexConsideringOfAdded;
-            int amountOfLines = lines.Count;
-            for (int i = 0; i < amountOfLines; i++)
+            int added = SelectKeywordsAsIndividualLines(0);
+            int numberOfLines = lines.Count;
+            // last line can't be keyword and first line is already correct
+            // so they don't need to be checked
+            // and even if last line is keyword it's ok
+            // but if the last line looks like [chorus]lyrics lyrics[chorus][bridge]
+            // then it's kind of strage and i'll ignore that
+            for (int i = 1; i < numberOfLines - 1; i++)
             {
-                indexConsideringOfAdded = i + added;
-                if (IsKeyword(lines[indexConsideringOfAdded]))
+                int realIndex = i + added;
+                if (ContainsKeyword(lines[realIndex]))
                 {
-                    if (indexConsideringOfAdded == 0 || lines[indexConsideringOfAdded - 1] != "")
-                    {
-                        lines.Insert(indexConsideringOfAdded, "");
-                        added++;
-                    }
+                    added += SelectKeywordsAsIndividualLines(realIndex);
+                    realIndex = i + added;
+                    added += AddIntendBefore(realIndex);
                 }
             }
+        }
+
+        private int SelectKeywordsAsIndividualLines(int lineIndex)
+        {
+            if (IsKeyword(lines[lineIndex]))
+            {
+                return 0;
+            }
+
+            // it looks like issue from leetcode like:
+            // given a string of words, namespaces and other characters and substrings
+            // that contain some phrases in brackets. example:
+            //
+            //   haha[nice] that was a [mistake][to trust the bread] after all he did for you
+            //
+            // you have to select words and keywords in individual lines like:
+            //
+            //   haha
+            //   [nice]
+            //    that was a
+            //   [mistake]
+            //   [to trust the bread]
+            //    after all he did for you
+            //
+            // I'm a little tired already, so i'll solute it later.
+#warning perform
+        }
+
+        private int AddIntendBefore(int lineIndex)
+        {
+            if (lines[lineIndex - 1] != string.Empty)
+            {
+                lines.Insert(lineIndex, string.Empty);
+                return 1;
+            }
+            return 0;
+        }
+
+        private int CheckBothSidesOfLine(int lineIndex)
+        {
+#warning I could divide into more one method this part of code but didn't do it
+            int added = 0;
+            
+            if (lines[lineIndex + added + 1] != string.Empty)
+            {
+                lines.Insert(lineIndex, string.Empty);
+                added++;
+            }
+            return added;
         }
 
         /// <summary>
@@ -259,7 +314,7 @@ namespace Blopnote
         internal void NoLyrics()
         {
             Hide();
-            ClearPreviousLyricsDisplayIfNeed();
+            ClearPreviousLyricsIfNeed();
 
             lines = null;
         }
@@ -279,7 +334,7 @@ namespace Blopnote
             Height = height;
         }
 
-        internal void ClearPreviousLyricsDisplayIfNeed()
+        internal void ClearPreviousLyricsIfNeed()
         {
             if (panel.Controls.Count != 1)
             {
@@ -295,16 +350,13 @@ namespace Blopnote
             scrollBar.Maximum = AmountOfInvisibleLabels + 9;
         }
 
-        internal bool IsKeywordAtLine(int lineIndex)
+        internal bool ContainsKeyword(string line)
         {
-            if (lineIndex >= lines.Count)
-            {
-                return false;
-            }
-            else
-            {
-                return IsKeyword(lines[lineIndex]);
-            }
+            int openingBracketIndex = line.IndexOf('[');
+            int closingBracketIndex = line.IndexOf(']');
+            return openingBracketIndex != -1
+                && closingBracketIndex != -1
+                && openingBracketIndex < closingBracketIndex;
         }
 
         private bool IsKeyword(string word)

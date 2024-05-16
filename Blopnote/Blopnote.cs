@@ -96,7 +96,7 @@ namespace Blopnote
             if (createNewTranslation.ShowForDataInput() == DialogResult.OK)
             {
                 #warning awful + dirty code
-                lyricsBox.ClearPreviousLyricsDisplayIfNeed();
+                lyricsBox.ClearPreviousLyricsIfNeed();
                 HandleInsertedData();
                 PrepareComponentsToDisplayNewTranslation(clearText: true);
             }
@@ -148,7 +148,7 @@ namespace Blopnote
             if (answer == DialogResult.OK)
             {
                 StopTimerAndTrySaveFile(false);
-                lyricsBox.ClearPreviousLyricsDisplayIfNeed();
+                lyricsBox.ClearPreviousLyricsIfNeed();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
                 PrepareComponentsToDisplayNewTranslation(clearText: false);
