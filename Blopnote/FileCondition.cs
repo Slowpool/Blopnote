@@ -14,6 +14,7 @@ namespace Blopnote
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
 
+
         internal string FileName { get; set; }
         internal bool LyricsExists { get; set; }
 

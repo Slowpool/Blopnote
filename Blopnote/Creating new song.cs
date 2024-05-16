@@ -8,7 +8,6 @@ using Blopnote.Properties;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using SeleniumKeys = OpenQA.Selenium.Keys;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Blopnote
 {
@@ -29,6 +28,8 @@ namespace Blopnote
                                          && SongIsCorrect;
 
         private const string FIELD_X_IS_EMPTY = "Field \"{0}\" is empty.\n";
+#warning what if i use mac? it has to be gotten dinamically
+        private const int PATH_MAX = 255;
 
         private ChromeDriver driver;
         private List<string> references = new List<string>();
@@ -73,8 +74,7 @@ namespace Blopnote
         internal DialogResult ShowForDataInput()
         {
             ClearAll();
-            DialogResult userAnswer = ShowDialog();
-            return userAnswer;
+            return ShowDialog();
         }
 
         private void ClearAll()
@@ -230,6 +230,32 @@ namespace Blopnote
             }
             UpdateLyricsSelector();
             Cursor.Current = Cursors.Default;
+        }
+
+        internal void UpdateMaxLength(int length)
+        {
+            // length is
+            // |_____________|
+            // path/to/folder/future_file_name.txt
+            int fieldMaxLength = PATH_MAX - length;
+            // so now authorMaxLength is
+            // /future_file_name.txt which includes Author and Song which are joined with three characters
+            // " - "
+            fieldMaxLength -= 3;
+            // /future_file_name.txt => future_file_name.txt
+            fieldMaxLength -= 1;
+            // and ".txt" at the end, so we must subtract 3 and then 4
+            fieldMaxLength -= 4;
+            // also path/to/folder has folder lyrics/ which adds 7 characters
+            fieldMaxLength -= 7;
+            // and then in lyrics folder could be future_file_name lyrics.txt
+            // which adds to length 7 characters so subtract them also
+            fieldMaxLength -= 7;
+            // than we must divide by 2 because filename is author_name + song_name where both
+            // had better to have the same length
+            fieldMaxLength /= 2;
+            TextBoxForAuthor.MaxLength = fieldMaxLength;
+            TextBoxForSong.MaxLength = fieldMaxLength;
         }
     }
 }

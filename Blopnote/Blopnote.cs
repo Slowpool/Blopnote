@@ -33,6 +33,10 @@ namespace Blopnote
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
+            fileProcessor.DirectoryChanged += (sender, e) =>
+            {
+                createNewTranslation.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
+            };
             createNewTranslation = new CreateNewTranslationWindow();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
@@ -60,7 +64,6 @@ namespace Blopnote
                 if (string.IsNullOrEmpty(folderPath))
                 {
                     this.Close();
-                    //Application.Exit();
                 }
                 else
                 {

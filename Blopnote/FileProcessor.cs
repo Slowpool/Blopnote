@@ -17,6 +17,9 @@ namespace Blopnote
         private readonly OpenFileDialog openFileDialog;
 
         private DirectoryInfo directory;
+        internal event EventHandler DirectoryChanged;
+
+        internal int DirectoryLength => directory.FullName.Length;
 
         private string FilePath => Path.Combine(directory.FullName, fileCondition.FileName);
         private string LyricsPath => EditFilePathToLyricsPath();
@@ -43,6 +46,7 @@ namespace Blopnote
             directory = new DirectoryInfo(directoryName);
             EnsureLyricsFolder();
             openFileDialog.InitialDirectory = directoryName;
+            DirectoryChanged(this, null);
         }
 
         private void EnsureLyricsFolder() 
