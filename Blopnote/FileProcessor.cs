@@ -79,7 +79,7 @@ namespace Blopnote
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
-            fileCondition.PrepareTranslation(fileName, lyrics);
+            fileCondition.PrepareTranslation(fileName, lyrics, directory);
 
             File.Create(FilePath).Dispose();
 
@@ -120,10 +120,9 @@ namespace Blopnote
             string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
             string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
             ChangeDirectory(directory);
-            fileCondition.PrepareTranslation(fileName, lyrics);
+            fileCondition.PrepareTranslation(fileName, lyrics, this.directory);
             ReadText(FullFileName);
             lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics);
-            
         }
 
         private void ReadText(string FullFileName)

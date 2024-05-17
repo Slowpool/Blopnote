@@ -114,6 +114,7 @@ namespace Blopnote
             lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
             SelectKeywords();
+            TrimLines();
             labelsWithLyrics = new Label[lines.Count];
             ConfigureLabels();
             CalculateWidth();
@@ -121,36 +122,55 @@ namespace Blopnote
             return lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         }
 
+        private void TrimLines()
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].StartsWith(" ") || lines[i].EndsWith(" "))
+                {
+                    lines[i] = lines[i].Trim();
+                }
+            }
+        }
+
         private void SelectKeywords()
         {
-            int added = SelectKeywordsAsIndividualLines(0);
+            SelectKeywordsAsIndividualLines(0);
+            int realIndex;
+            int added = 0;
             int numberOfLines = lines.Count;
             // last line can't be keyword and first line is already correct
             // so they don't need to be checked
             // and even if last line is keyword it's ok
             // but if the last line looks like [chorus]lyrics lyrics[chorus][bridge]
             // then it's kind of strage and i'll ignore that
-            for (int i = 1; i < numberOfLines - 1; i++)
+
+            for (int i = 1; i < numberOfLines; i++)
             {
-                int realIndex = i + added;
+                realIndex = i + added;
                 if (ContainsKeyword(lines[realIndex]))
                 {
                     added += SelectKeywordsAsIndividualLines(realIndex);
-                    realIndex = i + added;
-                    added += AddIntendBefore(realIndex);
+                }
+            }
+            added = 0;
+            numberOfLines = lines.Count;
+            for (int i = 1; i < numberOfLines - 1; i++)
+            {
+                realIndex = i + added;
+                if (ContainsKeyword(lines[realIndex]))
+                {
+                    added += EnsureIntendBefore(realIndex);
                 }
             }
         }
 
         private int SelectKeywordsAsIndividualLines(int lineIndex)
         {
-            if (IsKeyword(lines[lineIndex]))
-            {
-                return 0;
-            }
-
+#warning still bad code even after remaking
+            #region interesting note
             // it looks like issue from leetcode like:
-            // given a string of words, namespaces and other characters and substrings
+            // given a string of words, spaces and other characters and substrings
             // that contain some phrases in brackets. example:
             //
             //   haha[nice] that was a [mistake][to trust the bread] after all he did for you
@@ -163,12 +183,37 @@ namespace Blopnote
             //   [mistake]
             //   [to trust the bread]
             //    after all he did for you
-            //
-            // I'm a little tired already, so i'll solute it later.
-#warning perform
+            #endregion
+
+            // "[keyword]" or "text"
+            if (IsKeyword(lines[lineIndex]) || !ContainsKeyword(lines[lineIndex]))
+            {
+                return 0;
+            }
+            // [key]any_text[word]
+            if (lines[lineIndex].StartsWith("["))
+            {
+                string[] twoParts = lines[lineIndex].Split(new[] { ']' }, 2);
+                //string keyword = lines[lineIndex].Substring(0, lines[lineIndex].IndexOf(']') + 1);
+                string keyword = twoParts[0] + ']';
+                string restOfLine = twoParts[1];
+                lines.Insert(lineIndex, keyword);
+                lineIndex++;
+                lines[lineIndex] = restOfLine;
+            }
+            else
+            {
+                string[] twoParts = lines[lineIndex].Split(new[] { '[' }, 2);
+                //string keyword = lines[lineIndex].Substring(0, lines[lineIndex].IndexOf(']') + 1);
+                string text = twoParts[0];
+                string restOfLine = '[' + twoParts[1];
+                lines.Insert(lineIndex, text);
+                lines[++lineIndex] = restOfLine;
+            }
+            return 1 + SelectKeywordsAsIndividualLines(lineIndex);
         }
 
-        private int AddIntendBefore(int lineIndex)
+        private int EnsureIntendBefore(int lineIndex)
         {
             if (lines[lineIndex - 1] != string.Empty)
             {
@@ -180,7 +225,6 @@ namespace Blopnote
 
         private int CheckBothSidesOfLine(int lineIndex)
         {
-#warning I could divide into more one method this part of code but didn't do it
             int added = 0;
             
             if (lines[lineIndex + added + 1] != string.Empty)
@@ -361,7 +405,11 @@ namespace Blopnote
 
         private bool IsKeyword(string word)
         {
-            return word.StartsWith("[") && word.EndsWith("]");
+            return word.StartsWith("[")
+                && word.EndsWith("]")
+                // checking for [some key word]. word also could be like [some]text[key]text[word]
+                // that'll return true cause '[' at the beginning and ']' at the end
+                && word.IndexOf(']') == word.Length - 1;
         }
 
         internal TypesOfLine IsRepeatedLineOrKeyword(int lineIndex)

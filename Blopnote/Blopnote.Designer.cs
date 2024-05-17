@@ -94,14 +94,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -109,7 +109,7 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -160,8 +160,8 @@
             // 
             this.status.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(180, 22);
-            this.status.Text = "initialize status";
+            this.status.Size = new System.Drawing.Size(440, 22);
+            this.status.Text = "if you can see it then somehting has broken";
             // 
             // PanelForLyricsBox
             // 
@@ -170,8 +170,6 @@
             this.PanelForLyricsBox.Name = "PanelForLyricsBox";
             this.PanelForLyricsBox.Size = new System.Drawing.Size(342, 225);
             this.PanelForLyricsBox.TabIndex = 4;
-            this.PanelForLyricsBox.MouseEnter += new System.EventHandler(this.PanelForLyricsBox_MouseEnter);
-            this.PanelForLyricsBox.MouseLeave += new System.EventHandler(this.PanelForLyricsBox_MouseLeave);
             // 
             // VScrollBarForLyrics
             // 

@@ -58,5 +58,11 @@ namespace Blopnote
         {
             throw new NotImplementedException();
         }
+
+        internal void Focus()
+        {
+            TextBoxWithText.Focus();
+            TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+        }
     }
 }

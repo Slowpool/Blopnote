@@ -147,18 +147,21 @@ namespace Blopnote
             DialogResult answer = openFileDialog1.ShowDialog();
             if (answer == DialogResult.OK)
             {
+#warning maybe handle opened and empty file with different ways?
                 StopTimerAndTrySaveFile(false);
                 lyricsBox.ClearPreviousLyricsIfNeed();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
                 PrepareComponentsToDisplayNewTranslation(clearText: false);
+
+                textField.Focus();
             }
         }
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
 #warning bug searching
-            TextBoxWithText.Focus();
+            textField.Focus();
             if (ShowLyrics.Checked)
             {
                 HighlightCurrentLine();
@@ -303,16 +306,6 @@ namespace Blopnote
                 lineIndex++;
                 lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
             }
-        }
-
-        private void PanelForLyricsBox_MouseEnter(object sender, EventArgs e)
-        {
-            PanelForLyricsBox.Focus();
-        }
-
-        private void PanelForLyricsBox_MouseLeave(object sender, EventArgs e)
-        {
-            TextBoxWithText.Focus();
         }
     }
 }
