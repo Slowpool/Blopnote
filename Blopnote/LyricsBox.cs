@@ -17,9 +17,9 @@ namespace Blopnote
         private readonly VScrollBar scrollBar;
         internal bool Enabled => panel.Visible;
         
-        private List<string> lines { get; set; }
+        private List<string> Lines { get; set; }
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
-        private Label[] labelsWithLyrics { get; set; }
+        private Label[] LabelsWithLyrics { get; set; }
 
         private Label PreviousHighlightedLabel { get; set; }
 
@@ -49,8 +49,8 @@ namespace Blopnote
             }
         }
 
-        private int LinesCapacity => (panel.Height - HEIGHT_PADDING) / lineHeight;
-        private int AmountOfInvisibleLabels => lines.Count - LinesCapacity;
+        private int LinesCapacity => (panel.Height - VERTICAL_PADDING) / lineHeight;
+        private int AmountOfInvisibleLabels => Lines.Count - LinesCapacity;
 
         private int scrollBarValue
         {
@@ -64,11 +64,12 @@ namespace Blopnote
             }
         }
 
-        const int WIDTH_PADDING = 10;
-        const int HEIGHT_PADDING = 10;
-
-        const string EXCESS_PHRASE = "You might also like";
-        const int LINES_AMOUNT_AFTER_EXCESS_PHRASE = 7;
+        private const int HORIZONTAL_PADDING = 10;
+        private const int VERTICAL_PADDING = 10;
+        private const int MAX_WIDTH = 800;
+        // manually copied text from genius could contain such an redundant infromation
+        private const string EXCESS_PHRASE = "You might also like";
+        private const int LINES_AFTER_EXCESS_PHRASE = 7;
 
         private readonly int lineHeight;
 
@@ -92,7 +93,7 @@ namespace Blopnote
 
         internal string this[int lineIndex]
         {
-            get => lines[lineIndex];
+            get => Lines[lineIndex];
         }
 
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
@@ -111,24 +112,24 @@ namespace Blopnote
         internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
         {
 #warning I think somewhere here must be checking for max length and handling too long lines
-            lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
+            Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
             SelectKeywords();
             TrimLines();
-            labelsWithLyrics = new Label[lines.Count];
+            LabelsWithLyrics = new Label[Lines.Count];
             ConfigureLabels();
             CalculateWidth();
             AdjustScrollBar();
-            return lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
+            return Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         }
 
         private void TrimLines()
         {
-            for (int i = 0; i < lines.Count; i++)
+            for (int i = 0; i < Lines.Count; i++)
             {
-                if (lines[i].StartsWith(" ") || lines[i].EndsWith(" "))
+                if (Lines[i].StartsWith(" ") || Lines[i].EndsWith(" "))
                 {
-                    lines[i] = lines[i].Trim();
+                    Lines[i] = Lines[i].Trim();
                 }
             }
         }
@@ -138,7 +139,7 @@ namespace Blopnote
             SelectKeywordsAsIndividualLines(0);
             int realIndex;
             int added = 0;
-            int numberOfLines = lines.Count;
+            int numberOfLines = Lines.Count;
             // last line can't be keyword and first line is already correct
             // so they don't need to be checked
             // and even if last line is keyword it's ok
@@ -148,17 +149,17 @@ namespace Blopnote
             for (int i = 1; i < numberOfLines; i++)
             {
                 realIndex = i + added;
-                if (ContainsKeyword(lines[realIndex]))
+                if (ContainsKeyword(Lines[realIndex]))
                 {
                     added += SelectKeywordsAsIndividualLines(realIndex);
                 }
             }
             added = 0;
-            numberOfLines = lines.Count;
+            numberOfLines = Lines.Count;
             for (int i = 1; i < numberOfLines - 1; i++)
             {
                 realIndex = i + added;
-                if (ContainsKeyword(lines[realIndex]))
+                if (ContainsKeyword(Lines[realIndex]))
                 {
                     added += EnsureIntendBefore(realIndex);
                 }
@@ -186,38 +187,38 @@ namespace Blopnote
             #endregion
 
             // "[keyword]" or "text"
-            if (IsKeyword(lines[lineIndex]) || !ContainsKeyword(lines[lineIndex]))
+            if (IsKeyword(Lines[lineIndex]) || !ContainsKeyword(Lines[lineIndex]))
             {
                 return 0;
             }
             // [key]any_text[word]
-            if (lines[lineIndex].StartsWith("["))
+            if (Lines[lineIndex].StartsWith("["))
             {
-                string[] twoParts = lines[lineIndex].Split(new[] { ']' }, 2);
+                string[] twoParts = Lines[lineIndex].Split(new[] { ']' }, 2);
                 //string keyword = lines[lineIndex].Substring(0, lines[lineIndex].IndexOf(']') + 1);
                 string keyword = twoParts[0] + ']';
                 string restOfLine = twoParts[1];
-                lines.Insert(lineIndex, keyword);
+                Lines.Insert(lineIndex, keyword);
                 lineIndex++;
-                lines[lineIndex] = restOfLine;
+                Lines[lineIndex] = restOfLine;
             }
             else
             {
-                string[] twoParts = lines[lineIndex].Split(new[] { '[' }, 2);
+                string[] twoParts = Lines[lineIndex].Split(new[] { '[' }, 2);
                 //string keyword = lines[lineIndex].Substring(0, lines[lineIndex].IndexOf(']') + 1);
                 string text = twoParts[0];
                 string restOfLine = '[' + twoParts[1];
-                lines.Insert(lineIndex, text);
-                lines[++lineIndex] = restOfLine;
+                Lines.Insert(lineIndex, text);
+                Lines[++lineIndex] = restOfLine;
             }
             return 1 + SelectKeywordsAsIndividualLines(lineIndex);
         }
 
         private int EnsureIntendBefore(int lineIndex)
         {
-            if (lines[lineIndex - 1] != string.Empty)
+            if (Lines[lineIndex - 1] != string.Empty)
             {
-                lines.Insert(lineIndex, string.Empty);
+                Lines.Insert(lineIndex, string.Empty);
                 return 1;
             }
             return 0;
@@ -227,9 +228,9 @@ namespace Blopnote
         {
             int added = 0;
             
-            if (lines[lineIndex + added + 1] != string.Empty)
+            if (Lines[lineIndex + added + 1] != string.Empty)
             {
-                lines.Insert(lineIndex, string.Empty);
+                Lines.Insert(lineIndex, string.Empty);
                 added++;
             }
             return added;
@@ -242,28 +243,28 @@ namespace Blopnote
         /// <returns></returns>
         private void CutExcessPhrase()
         {
-            if (lines.Contains(EXCESS_PHRASE))
+            if (Lines.Contains(EXCESS_PHRASE))
             {
-                int ExcessPhraseIndex = lines.IndexOf(EXCESS_PHRASE);
-                for(int i = 0; i < LINES_AMOUNT_AFTER_EXCESS_PHRASE; i++)
+                int ExcessPhraseIndex = Lines.IndexOf(EXCESS_PHRASE);
+                for(int i = 0; i < LINES_AFTER_EXCESS_PHRASE; i++)
                 {
-                    lines.RemoveAt(ExcessPhraseIndex);
+                    Lines.RemoveAt(ExcessPhraseIndex);
                 }
             }
         }
 
         private void ConfigureLabels()
         {
-            for (int i = 0; i < labelsWithLyrics.Length; i++)
+            for (int i = 0; i < LabelsWithLyrics.Length; i++)
             {
-                labelsWithLyrics[i] = new Label();
-                labelsWithLyrics[i].Font = font;
-                labelsWithLyrics[i].Text = lines[i];
+                LabelsWithLyrics[i] = new Label();
+                LabelsWithLyrics[i].Font = font;
+                LabelsWithLyrics[i].Text = Lines[i];
 
-                labelsWithLyrics[i].Left = WIDTH_PADDING;
-                labelsWithLyrics[i].AutoSize = true;
-                ChangeBackColorIfContainsKeyword(labelsWithLyrics[i]);
-                panel.Controls.Add(labelsWithLyrics[i]);
+                LabelsWithLyrics[i].Left = HORIZONTAL_PADDING;
+                LabelsWithLyrics[i].AutoSize = true;
+                ChangeBackColorIfContainsKeyword(LabelsWithLyrics[i]);
+                panel.Controls.Add(LabelsWithLyrics[i]);
             }
             PlaceLabels();
         }
@@ -277,21 +278,21 @@ namespace Blopnote
             // c) disable after needed
             // 3. reproduce step 2 using one cycle
             int y = 0;
-            for (int i = 0; i < labelsWithLyrics.Length; i++)
+            for (int i = 0; i < LabelsWithLyrics.Length; i++)
             {
                 if (i < scrollBar.Value)
                 {
-                    labelsWithLyrics[i].Visible = false;
+                    LabelsWithLyrics[i].Visible = false;
                 }
                 else if (i < scrollBar.Value + LinesCapacity)
                 {
-                    labelsWithLyrics[i].Visible = true;
-                    labelsWithLyrics[i].Top = y;
+                    LabelsWithLyrics[i].Visible = true;
+                    LabelsWithLyrics[i].Top = y;
                     y += lineHeight;
                 }
                 else
                 {
-                    labelsWithLyrics[i].Visible = false;
+                    LabelsWithLyrics[i].Visible = false;
                 }
             }
         }
@@ -351,8 +352,12 @@ namespace Blopnote
 
         private void CalculateWidth()
         {
-            int maxWidthOfLines = labelsWithLyrics.Max(label => label.Width);
-            Width = WIDTH_PADDING + maxWidthOfLines + WIDTH_PADDING + scrollBar.Width;
+            int maxWidthOfLines = LabelsWithLyrics.Max(label => label.Width);
+            Width = HORIZONTAL_PADDING + maxWidthOfLines + HORIZONTAL_PADDING + scrollBar.Width;
+            if (Width > MAX_WIDTH)
+            {
+                Width = MAX_WIDTH;
+            }
         }
 
         internal void NoLyrics()
@@ -360,7 +365,7 @@ namespace Blopnote
             Hide();
             ClearPreviousLyricsIfNeed();
 
-            lines = null;
+            Lines = null;
         }
 
         internal void Display()
@@ -382,7 +387,7 @@ namespace Blopnote
         {
             if (panel.Controls.Count != 1)
             {
-                foreach (var label in labelsWithLyrics)
+                foreach (var label in LabelsWithLyrics)
                 {
                     label.Dispose();
                 }
@@ -414,25 +419,25 @@ namespace Blopnote
 
         internal TypesOfLine IsRepeatedLineOrKeyword(int lineIndex)
         {
-            if (lineIndex >= lines.Count)
+            if (lineIndex >= Lines.Count)
             {
                 return TypesOfLine.New;
             }
             
-            if (lines[lineIndex] == string.Empty)
+            if (Lines[lineIndex] == string.Empty)
             {
                 return TypesOfLine.Empty;
             }
 
-            if (IsKeyword(lines[lineIndex]))
+            if (IsKeyword(Lines[lineIndex]))
             {
                 return TypesOfLine.Keyword;
             }
 
             for(int i = 0; i < lineIndex; i++)
             {
-                string s1 = string.Intern(lines[i]);
-                string s2 = string.Intern(lines[lineIndex]);
+                string s1 = string.Intern(Lines[i]);
+                string s2 = string.Intern(Lines[lineIndex]);
 #warning dude remove it
                 //char[] s1Characters = s1.ToCharArray();
                 //char[] s2Characters = s2.ToCharArray();
@@ -450,19 +455,19 @@ namespace Blopnote
 
         internal int IndexOfFirstOccurenceOfSameLine(int lineIndex)
         {
-            string line = lines[lineIndex];
-            return lines.IndexOf(line);
+            string line = Lines[lineIndex];
+            return Lines.IndexOf(line);
         }
 
         internal void HighlightAt(int lineIndex)
         {
-            if (lines == null || lineIndex >= lines.Count)
+            if (Lines == null || lineIndex >= Lines.Count)
             {
                 ReleaseHighlightedLabel();
                 return;
             }
 
-            Label currentLabel = labelsWithLyrics[lineIndex];
+            Label currentLabel = LabelsWithLyrics[lineIndex];
 
             if (currentLabel == PreviousHighlightedLabel)
             {
