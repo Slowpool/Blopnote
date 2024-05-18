@@ -56,7 +56,16 @@ namespace Blopnote
 
         internal void CopyCurrentLineToClipBoard()
         {
-            throw new NotImplementedException();
+            int lineIndex = TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
+            string line = TextBoxWithText.Lines[lineIndex];
+            try
+            {
+                Clipboard.SetText(line);
+            }
+            catch
+            {
+                // Great. Somebody tried to copy 0 characters.
+            }
         }
 
         internal void Focus()

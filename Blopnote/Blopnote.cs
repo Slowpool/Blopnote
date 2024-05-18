@@ -122,6 +122,7 @@ namespace Blopnote
         {
             textField.Enable();
             closeToolStripMenuItem.Enabled = true;
+            changeFolderToolStripMenuItem.Enabled = false;
             if (clearText)
             {
                 textField.Clear();
@@ -195,6 +196,7 @@ namespace Blopnote
         {
             StopTimerAndTrySaveFile(true);
             closeToolStripMenuItem.Enabled = false;
+            changeFolderToolStripMenuItem.Enabled = true;
             ShowLyrics.Enabled = false;
             fileCondition.DoesNotExist();
             RegulateTextAndLyricsBoxes();
@@ -255,6 +257,11 @@ namespace Blopnote
                     SendKeys.Send("+{LEFT}{DEL}");
                 }
             }
+
+            if (e.KeyData  == (Keys.Control | Keys.C))
+            {
+                textField.CopyCurrentLineToClipBoard();
+            }
         }
 
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
@@ -270,11 +277,7 @@ namespace Blopnote
 
         private void TextBoxWithText_KeyUp(object sender, KeyEventArgs e)
         {
-#warning impelement ctrl+c and ctrl+d 
-            //if (e.KeyCode == Keys.Control && e.KeyCode == Keys.C && )
-            //{
-            //    textField.CopyCurrentLineToClipBoard();
-            //}
+
         }
 
         private void HighlightCurrentLine()
