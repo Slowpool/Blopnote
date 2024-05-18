@@ -14,71 +14,87 @@ namespace Blopnote
         private readonly TextField textField;
         private readonly FileCondition fileCondition;
         private readonly LyricsBox lyricsBox;
+        private readonly OpenFileDialog openFileDialog;
 
         private DirectoryInfo directory;
+        internal event EventHandler DirectoryChanged;
 
-        private string FilePath => directory.FullName + "\\" + fileCondition.FileName;
+        internal int DirectoryLength => directory.FullName.Length;
+
+        private string FilePath => Path.Combine(directory.FullName, fileCondition.FileName);
         private string LyricsPath => EditFilePathToLyricsPath();
 
         private string EditFilePathToLyricsPath()
         {
-            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " lyrics");
+#warning dirty and obfuscated
+            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " " + Names.LyricsFolder);
             int indexOfLastSlash = FilePath.LastIndexOf('\\');
-            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\lyrics");
+            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\" + Names.LyricsFolder);
             return lyricsPath;
         }
 
-        internal FileProcessor(TextField textField, FileCondition fileCondition, LyricsBox lyricsBox)
+        internal FileProcessor(TextField textField, FileCondition fileCondition, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
         {
             this.textField = textField;
             this.fileCondition = fileCondition;
             this.lyricsBox = lyricsBox;
+            this.openFileDialog = openFileDialog;
         }
 
-        // Q it doesn't matter for me now
         internal void ChangeDirectory(string directoryName)
         {
             directory = new DirectoryInfo(directoryName);
+            EnsureLyricsFolder();
+            openFileDialog.InitialDirectory = directoryName;
+            DirectoryChanged(this, null);
         }
 
-        // Q it doesn't matter for me now
-        //internal void CreateLyricsInCurrentDirectoryIfNeed()
-        //{
-        //    bool lyricsExists = (from dir in directory.GetDirectories()
-        //                        where dir.Name == "lyrics"
-        //                        select dir)
-        //                        .Count() == 1;
-        //    if (lyricsExists)
-        //    {
-        //        return;
-        //    }
-        //    else
-        //    {
+        private void EnsureLyricsFolder() 
+        {
+            var subDirectories = (from dir in directory.GetDirectories()
+                                  where dir.Name.ToLower() == Names.LyricsFolder
+                                  select dir);
+            try
+            {
+                EnsureNameInLowerCase(subDirectories.First());
+            }
+            catch (InvalidOperationException)
+            {
+                directory.CreateSubdirectory(Names.LyricsFolder);
+            }
+        }
 
-        //    }
-        //}
+        private void EnsureNameInLowerCase(DirectoryInfo lyricsDirectory)
+        {
+            if (lyricsDirectory == null)
+            {
+                throw new ArgumentException("directory can't be null");
+            }
+
+            if (lyricsDirectory.Name != Names.LyricsFolder)
+            {
+                lyricsDirectory.NameToLower();
+            }
+        }
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
-            fileCondition.FileName = fileName;
+            fileCondition.PrepareTranslation(fileName, lyrics, directory);
+
             File.Create(FilePath).Dispose();
 
-            fileCondition.CheckLyrics(lyrics);
             if (fileCondition.LyricsExists)
             {
-                WriteLyrics(lyrics);
-                lyricsBox.BuildNewLyrics(lyrics);
+                WriteLyrics(lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics));
             }
             else
             {
                 //  Q do I really need this?
                 lyricsBox.NoLyrics();
             }
-
-            fileCondition.RefreshStatus();
         }
 
-        internal void WriteText()
+        internal void Save()
         {
             WriteInFile(FilePath, textField.Text);
         }
@@ -95,6 +111,42 @@ namespace Blopnote
                                                  encoding: Encoding.UTF8))
             {
                 writer.Write(text);
+            }
+        }
+
+        internal void OpenTranslation(string FullFileName)
+        {
+            string lyrics = FindLyricsOf(FullFileName);
+            string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
+            string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
+            ChangeDirectory(directory);
+            fileCondition.PrepareTranslation(fileName, lyrics, this.directory);
+            ReadText(FullFileName);
+            lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics);
+        }
+
+        private void ReadText(string FullFileName)
+        {
+            using(var reader = new StreamReader(FullFileName, Encoding.UTF8))
+            {
+                textField.Text = reader.ReadToEnd();
+            }
+        }
+
+        private string FindLyricsOf(string FullFileName)
+        {
+            // C:\Users\azgel\Desktop\translations\ic3peak - no death.txt
+            string lyricsPath = FullFileName.Insert(FullFileName.Length - 4, " lyrics").Insert(FullFileName.LastIndexOf('\\'), "\\lyrics");
+            if (File.Exists(lyricsPath))
+            {
+                using(var reader = new StreamReader(path: lyricsPath, encoding: Encoding.UTF8))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            else
+            {
+                return string.Empty;
             }
         }
     }

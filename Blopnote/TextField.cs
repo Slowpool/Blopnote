@@ -11,7 +11,16 @@ namespace Blopnote
     internal class TextField
     {
         private readonly TextBox TextBoxWithText;
-        internal string Text => TextBoxWithText.Text;
+        internal string Text
+        {
+            get => TextBoxWithText.Text;
+            set
+            {
+                TextBoxWithText.Text = value;
+            }
+        }
+
+        internal int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
         internal TextField(TextBox TextBoxWithText)
         {
@@ -43,6 +52,17 @@ namespace Blopnote
         internal void Clear()
         {
             TextBoxWithText.Clear();
+        }
+
+        internal void CopyCurrentLineToClipBoard()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Focus()
+        {
+            TextBoxWithText.Focus();
+            TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
         }
     }
 }
