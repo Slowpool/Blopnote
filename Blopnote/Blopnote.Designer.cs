@@ -38,7 +38,7 @@
             this.lyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShowLyrics = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeFilePathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -63,8 +63,11 @@
             this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TextBoxWithText.Size = new System.Drawing.Size(488, 303);
             this.TextBoxWithText.TabIndex = 0;
+            this.TextBoxWithText.WordWrap = false;
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
+            this.TextBoxWithText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxWithText_KeyPress);
+            this.TextBoxWithText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyUp);
             // 
             // menuStrip1
             // 
@@ -91,21 +94,22 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Create";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.saveToolStripMenuItem.Text = "Open";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
+            this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -130,17 +134,17 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.changeFilePathToolStripMenuItem});
+            this.changeFolderToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             // 
-            // changeFilePathToolStripMenuItem
+            // changeFolderToolStripMenuItem
             // 
-            this.changeFilePathToolStripMenuItem.Name = "changeFilePathToolStripMenuItem";
-            this.changeFilePathToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.changeFilePathToolStripMenuItem.Text = "Change file path";
-            this.changeFilePathToolStripMenuItem.Click += new System.EventHandler(this.changeFilePathToolStripMenuItem_Click);
+            this.changeFolderToolStripMenuItem.Name = "changeFolderToolStripMenuItem";
+            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.changeFolderToolStripMenuItem.Text = "Change folder";
+            this.changeFolderToolStripMenuItem.Click += new System.EventHandler(this.changeFolderPathToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -156,8 +160,8 @@
             // 
             this.status.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(180, 22);
-            this.status.Text = "initialize status";
+            this.status.Size = new System.Drawing.Size(440, 22);
+            this.status.Text = "if you can see it then somehting has broken";
             // 
             // PanelForLyricsBox
             // 
@@ -191,7 +195,9 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Blopnote";
             this.Text = "Blopnote";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Blopnote_FormClosing);
             this.Load += new System.EventHandler(this.Blopnote_Load);
+            this.Shown += new System.EventHandler(this.Blopnote_Shown);
             this.SizeChanged += new System.EventHandler(this.Blopnote_SizeChanged);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -215,7 +221,7 @@
         private System.Windows.Forms.ToolStripMenuItem ShowLyrics;
         private System.Windows.Forms.ToolStripStatusLabel status;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem changeFilePathToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Panel PanelForLyricsBox;

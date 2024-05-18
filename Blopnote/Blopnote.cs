@@ -1,13 +1,11 @@
 ﻿using Blopnote.Properties;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace Blopnote
 {
@@ -16,38 +14,78 @@ namespace Blopnote
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
         private readonly FileCondition fileCondition;
-        private readonly FileNameAndLyricsInputWindow dataInputWindow;
+        private readonly CreateNewTranslationWindow createNewTranslation;
         private readonly LyricsBox lyricsBox;
         private readonly SizeRegulator sizeRegulator;
 
         private Size WorkSpace => new Size(ClientSize.Width, ClientSize.Height - menuStrip1.Height - statusStrip1.Height);
 
-        private const string DEFAULT_PATH_FOR_FILES = "C:\\Users\\azgel\\Desktop\\translations";
-        private const int FREQUENT_OF_AUTOSAVE_IN_SECONDS = 5;
+        private const int AUTOSAVE_FREQUENCY_IN_SECONDS = 5;
+        private const string CONFIG_FOLDER_ATTRIBUTE = "folderWithTranslationsPath";
         public Blopnote()
         {
             InitializeComponent();
             this.Icon = Resources.icon;
-            folderBrowserDialog1.Description = "The default path is " + DEFAULT_PATH_FOR_FILES;
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
-            timer1.Interval = FREQUENT_OF_AUTOSAVE_IN_SECONDS * 1000;
+            timer1.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
-            dataInputWindow = new FileNameAndLyricsInputWindow();
+            fileProcessor.DirectoryChanged += (sender, e) =>
+            {
+                createNewTranslation.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
+            };
+            createNewTranslation = new CreateNewTranslationWindow();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
         }
-        
-        private void Blopnote_SizeChanged(object sender, EventArgs e)
+
+        #region FormEvents
+        private void Blopnote_Load(object sender, EventArgs e)
         {
-            RegulateTextWithLyrics();
+            fileCondition.DoesNotExist();
+            lyricsBox.Hide();
+
+            sizeRegulator.RegulateTo(WorkSpace);
         }
 
-        private void RegulateTextWithLyrics()
+        private void Blopnote_Shown(object sender, EventArgs e)
+        {
+            Enabled = false;
+            string folderPath = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
+            if (string.IsNullOrEmpty(folderPath))
+            {
+                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'lyrics' inside.";
+#warning DRY
+                folderPath = AskUserForPath();
+                if (string.IsNullOrEmpty(folderPath))
+                {
+                    this.Close();
+                }
+                else
+                {
+                    UpdateConfig(CONFIG_FOLDER_ATTRIBUTE, folderPath);
+                }
+            }
+            fileProcessor.ChangeDirectory(folderPath);
+            Enabled = true;
+        }
+
+        private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            closeToolStripMenuItem.PerformClick();
+        }
+
+        private void Blopnote_SizeChanged(object sender, EventArgs e)
+        {
+            RegulateTextAndLyricsBoxes();
+        }
+        #endregion
+
+        private void RegulateTextAndLyricsBoxes()
         {
             sizeRegulator.RegulateTo(WorkSpace);
             lyricsBox.Left = TextBoxWithText.Right;
@@ -55,47 +93,53 @@ namespace Blopnote
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataInputWindow.ShowForDataInput();
-            if (dataInputWindow.IsDataInserted)
+            if (createNewTranslation.ShowForDataInput() == DialogResult.OK)
             {
                 #warning awful + dirty code
-                lyricsBox.ClearPreviousLyricsDisplayIfNeed();
+                lyricsBox.ClearPreviousLyricsIfNeed();
                 HandleInsertedData();
-                PrepareComponentsForDisplayingOfNewTranslation();
+                PrepareComponentsToDisplayNewTranslation(clearText: true);
             }
         }
 
         private void HandleInsertedData()
         {
-            string fileName = dataInputWindow.FileName;
-            string lyrics = dataInputWindow.Lyrics;
+            string fileName = createNewTranslation.FileName;
+            string lyrics = createNewTranslation.Lyrics;
 
-            fileProcessor.CreateNewTranslation(fileName, lyrics);
-
-#warning hidden for debug
-            //try
-            //{
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show(caption: "File error",
-            //        text: "File wasn't created.\nCause: " + e.Message);
-            //}
+            try
+            {
+                fileProcessor.CreateNewTranslation(fileName, lyrics);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(caption: "File error",
+                    text: "File wasn't created.\nCause: " + e.Message);
+            }
         }
 
-        private void PrepareComponentsForDisplayingOfNewTranslation()
+        private void PrepareComponentsToDisplayNewTranslation(bool clearText)
         {
             textField.Enable();
-            textField.Clear();
+            closeToolStripMenuItem.Enabled = true;
+            if (clearText)
+            {
+                textField.Clear();
+            }
             ShowLyrics.Enabled = fileCondition.LyricsExists;
 
-            // Auto enabling of lyrics when user entered it
-            if (fileCondition.LyricsExists && ShowLyrics.Checked == false)
+            if (fileCondition.LyricsExists)
             {
-                ShowLyrics.PerformClick();
+                TryAutoCompleteText();
+                
+                // Auto enabling of lyrics when user entered it
+                if (!ShowLyrics.Checked)
+                {
+                    ShowLyrics.PerformClick();
+                }
             }
 
-            RegulateTextWithLyrics();
+            RegulateTextAndLyricsBoxes();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -103,41 +147,57 @@ namespace Blopnote
             DialogResult answer = openFileDialog1.ShowDialog();
             if (answer == DialogResult.OK)
             {
-                lyricsBox.ClearPreviousLyricsDisplayIfNeed();
+#warning maybe handle opened and empty file with different ways?
+                StopTimerAndTrySaveFile(false);
+                lyricsBox.ClearPreviousLyricsIfNeed();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
-                PrepareComponentsForDisplayingOfNewTranslation();
+                PrepareComponentsToDisplayNewTranslation(clearText: false);
+
+                textField.Focus();
             }
         }
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-            timer1.Start();
-        }
-
-        private void Blopnote_Load(object sender, EventArgs e)
-        {
-            fileCondition.DoesNotExist();
-            fileProcessor.ChangeDirectory(DEFAULT_PATH_FOR_FILES);
-            lyricsBox.Hide();
-
-            RegulateTextWithLyrics();
-        }
-
-        private void changeFilePathToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+#warning bug searching
+            textField.Focus();
+            if (ShowLyrics.Checked)
             {
-                fileProcessor.ChangeDirectory(folderBrowserDialog1.SelectedPath);
+                HighlightCurrentLine();
+            }
+        }
+
+        private void UpdateConfig(string key, string value)
+        {
+            var config = ConfigurationManager.OpenExeConfiguration(Environment.CurrentDirectory + @"\Blopnote.exe");
+            config.AppSettings.Settings[key].Value = value;
+            config.Save();
+        }
+
+        private string AskUserForPath()
+        {
+            folderBrowserDialog1.ShowDialog();
+            return folderBrowserDialog1.SelectedPath;
+        }
+
+        private void changeFolderPathToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+#warning DRY
+            string folderPath = AskUserForPath();
+            if (!string.IsNullOrEmpty(folderPath))
+            {
+                fileProcessor.ChangeDirectory(folderPath);
             }
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            StopTimerAndTrySaveFile(true);
+            closeToolStripMenuItem.Enabled = false;
             ShowLyrics.Enabled = false;
             fileCondition.DoesNotExist();
-            timer1.Stop();
-            RegulateTextWithLyrics();
+            RegulateTextAndLyricsBoxes();
         }
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -150,7 +210,7 @@ namespace Blopnote
             {
                 lyricsBox.Hide();
             }
-            RegulateTextWithLyrics();
+            RegulateTextAndLyricsBoxes();
         }
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
@@ -164,15 +224,24 @@ namespace Blopnote
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            StopTimerAndTrySaveFile(true);
+        }
+
+        private void StopTimerAndTrySaveFile(bool mandatorySave)
+        {
+#warning dirty
             timer1.Stop();
             try
             {
-                fileProcessor.WriteText();
+                fileProcessor.Save();
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: "File writing error",
-                                text: "Error: " + exception.Message);
+                if (mandatorySave)
+                {
+                    MessageBox.Show(caption: "File saving error",
+                                    text: "Error text: " + exception.Message);
+                }
             }
         }
 
@@ -185,6 +254,57 @@ namespace Blopnote
                 {
                     SendKeys.Send("+{LEFT}{DEL}");
                 }
+            }
+        }
+
+        private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
+            {
+                e.Handled = true;
+                TextBoxWithText.AppendText("\r\n");
+                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+                TryAutoCompleteText();
+            }
+        }
+
+        private void TextBoxWithText_KeyUp(object sender, KeyEventArgs e)
+        {
+#warning impelement ctrl+c and ctrl+d 
+            //if (e.KeyCode == Keys.Control && e.KeyCode == Keys.C && )
+            //{
+            //    textField.CopyCurrentLineToClipBoard();
+            //}
+        }
+
+        private void HighlightCurrentLine()
+        {
+            int currentLineIndex = textField.realTextBoxLinesLength - 1;
+            lyricsBox.HighlightAt(currentLineIndex);
+        }
+
+        private void TryAutoCompleteText()
+        {
+            int lineIndex = textField.realTextBoxLinesLength - 1;
+            int lyricsBoxLineIndex;
+            TypesOfLine lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
+            while (lineType != TypesOfLine.New)
+            {
+                switch (lineType)
+                {
+                    case TypesOfLine.Repeated:
+                        lyricsBoxLineIndex = lyricsBox.IndexOfFirstOccurenceOfSameLine(lineIndex);
+                        TextBoxWithText.AppendText(TextBoxWithText.Lines[lyricsBoxLineIndex]);
+                        break;
+                    case TypesOfLine.Keyword:
+                        TextBoxWithText.AppendText(lyricsBox[lineIndex]);
+                        break;
+                }
+                TextBoxWithText.AppendText("\r\n");
+                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+
+                lineIndex++;
+                lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
             }
         }
     }

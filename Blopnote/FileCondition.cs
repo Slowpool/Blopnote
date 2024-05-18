@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Blopnote
 {
@@ -14,16 +14,7 @@ namespace Blopnote
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
 
-        private string fileName;
-        internal string FileName
-        {
-            get => fileName;
-            set
-            {
-                fileName = value;
-            }
-        }
-
+        internal string FileName { get; set; }
         internal bool LyricsExists { get; set; }
 
         internal FileCondition(ToolStripStatusLabel programStatus, TextField textField)
@@ -40,23 +31,12 @@ namespace Blopnote
             programStatus.Text = "Create or open any file";
         }
 
-        internal void LyricsExistCheck(string lyrics)
+        internal void PrepareTranslation(string newFileName, string newLyrics, DirectoryInfo directory)
         {
-            if (string.IsNullOrEmpty(lyrics))
-            {
-                LyricsExists = false;
-            }
-            else
-            {
-                LyricsExists = true;
-            }
-        }
-
-        internal void RefreshStatus()
-        {
-            int indexOfLastPoint = FileName.LastIndexOf('.');
-            string song = FileName.Substring(0, indexOfLastPoint);
-            programStatus.Text = "Song: " + song;
+            LyricsExists = !string.IsNullOrEmpty(newLyrics);
+            FileName = newFileName;
+            string fullSongName = FileName.Substring(0, FileName.LastIndexOf('.'));
+            programStatus.Text = "Song: " + Path.Combine(directory.FullName, fullSongName);
         }
     }
 }

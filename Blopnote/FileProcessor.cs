@@ -17,15 +17,19 @@ namespace Blopnote
         private readonly OpenFileDialog openFileDialog;
 
         private DirectoryInfo directory;
+        internal event EventHandler DirectoryChanged;
 
-        private string FilePath => directory.FullName + "\\" + fileCondition.FileName;
+        internal int DirectoryLength => directory.FullName.Length;
+
+        private string FilePath => Path.Combine(directory.FullName, fileCondition.FileName);
         private string LyricsPath => EditFilePathToLyricsPath();
 
         private string EditFilePathToLyricsPath()
         {
-            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " lyrics");
+#warning dirty and obfuscated
+            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " " + Names.LyricsFolder);
             int indexOfLastSlash = FilePath.LastIndexOf('\\');
-            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\lyrics");
+            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\" + Names.LyricsFolder);
             return lyricsPath;
         }
 
@@ -37,40 +41,51 @@ namespace Blopnote
             this.openFileDialog = openFileDialog;
         }
 
-        // Q it doesn't matter for me now
         internal void ChangeDirectory(string directoryName)
         {
             directory = new DirectoryInfo(directoryName);
+            EnsureLyricsFolder();
             openFileDialog.InitialDirectory = directoryName;
+            DirectoryChanged(this, null);
         }
 
-        // Q it doesn't matter for me now
-        //internal void CreateLyricsInCurrentDirectoryIfNeed()
-        //{
-        //    bool lyricsExists = (from dir in directory.GetDirectories()
-        //                        where dir.Name == "lyrics"
-        //                        select dir)
-        //                        .Count() == 1;
-        //    if (lyricsExists)
-        //    {
-        //        return;
-        //    }
-        //    else
-        //    {
+        private void EnsureLyricsFolder() 
+        {
+            var subDirectories = (from dir in directory.GetDirectories()
+                                  where dir.Name.ToLower() == Names.LyricsFolder
+                                  select dir);
+            try
+            {
+                EnsureNameInLowerCase(subDirectories.First());
+            }
+            catch (InvalidOperationException)
+            {
+                directory.CreateSubdirectory(Names.LyricsFolder);
+            }
+        }
 
-        //    }
-        //}
+        private void EnsureNameInLowerCase(DirectoryInfo lyricsDirectory)
+        {
+            if (lyricsDirectory == null)
+            {
+                throw new ArgumentException("directory can't be null");
+            }
+
+            if (lyricsDirectory.Name != Names.LyricsFolder)
+            {
+                lyricsDirectory.NameToLower();
+            }
+        }
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
-            PrepareTranslation(fileName, lyrics);
+            fileCondition.PrepareTranslation(fileName, lyrics, directory);
 
             File.Create(FilePath).Dispose();
 
             if (fileCondition.LyricsExists)
             {
-                WriteLyrics(lyrics);
-                lyricsBox.BuildNewLyrics(lyrics);
+                WriteLyrics(lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics));
             }
             else
             {
@@ -79,14 +94,7 @@ namespace Blopnote
             }
         }
 
-        private void PrepareTranslation(string fileName, string lyrics)
-        {
-            fileCondition.FileName = fileName;
-            fileCondition.LyricsExistCheck(lyrics);
-            fileCondition.RefreshStatus();
-        }
-
-        internal void WriteText()
+        internal void Save()
         {
             WriteInFile(FilePath, textField.Text);
         }
@@ -112,9 +120,17 @@ namespace Blopnote
             string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
             string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
             ChangeDirectory(directory);
-            PrepareTranslation(fileName, lyrics);
-            lyricsBox.BuildNewLyrics(lyrics);
-            
+            fileCondition.PrepareTranslation(fileName, lyrics, this.directory);
+            ReadText(FullFileName);
+            lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics);
+        }
+
+        private void ReadText(string FullFileName)
+        {
+            using(var reader = new StreamReader(FullFileName, Encoding.UTF8))
+            {
+                textField.Text = reader.ReadToEnd();
+            }
         }
 
         private string FindLyricsOf(string FullFileName)
