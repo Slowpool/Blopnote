@@ -436,6 +436,7 @@ namespace Blopnote
 
             for(int i = 0; i < lineIndex; i++)
             {
+#warning why did i use string interning here???
                 string s1 = string.Intern(Lines[i]);
                 string s2 = string.Intern(Lines[lineIndex]);
 #warning dude remove it
