@@ -67,7 +67,6 @@
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
             this.TextBoxWithText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxWithText_KeyPress);
-            this.TextBoxWithText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyUp);
             // 
             // menuStrip1
             // 

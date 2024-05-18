@@ -95,7 +95,7 @@ namespace Blopnote
         {
             if (createNewTranslation.ShowForDataInput() == DialogResult.OK)
             {
-                #warning awful + dirty code
+#warning awful + dirty code
                 lyricsBox.ClearPreviousLyricsIfNeed();
                 HandleInsertedData();
                 PrepareComponentsToDisplayNewTranslation(clearText: true);
@@ -132,7 +132,7 @@ namespace Blopnote
             if (fileCondition.LyricsExists)
             {
                 TryAutoCompleteText();
-                
+
                 // Auto enabling of lyrics when user entered it
                 if (!ShowLyrics.Checked)
                 {
@@ -161,8 +161,9 @@ namespace Blopnote
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-#warning bug searching
-            textField.Focus();
+#warning why did I use it before?
+            //textField.Focus();
+
             if (ShowLyrics.Checked)
             {
                 HighlightCurrentLine();
@@ -249,20 +250,40 @@ namespace Blopnote
 
         private void TextBoxWithText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.Back)
+            switch (e.KeyData)
             {
-                e.SuppressKeyPress = true;
-                if (TextBoxWithText.SelectionStart > 0)
-                {
-                    SendKeys.Send("+{LEFT}{DEL}");
-                }
-            }
-
-            if (e.KeyData  == (Keys.Control | Keys.C))
-            {
-                textField.CopyCurrentLineToClipBoard();
+                case Keys.Control | Keys.Back:
+                    e.SuppressKeyPress = true;
+                    if (TextBoxWithText.SelectionStart > 0)
+                    {
+                        SendKeys.Send("+{LEFT}{DEL}");
+                    }
+                    break;
+                case Keys.Control | Keys.C:
+                    e.SuppressKeyPress = true;
+                    textField.CopyCurrentLineToClipBoard();
+                    break;
+                case Keys.Control | Keys.W:
+                    e.SuppressKeyPress = true;
+                    Application.Exit();
+                    break;
+                default:
+                    e.SuppressKeyPress = false;
+                    break;
             }
         }
+
+       // It's pointless to process ctrl+w in current version of app, but it's an another way to
+       // process the hotkey everywhere in application.
+       //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+       //{
+       //    if (keyData == (Keys.Control | Keys.W))
+       //    {
+       //        Application.Exit();
+       //        return true;
+       //    }
+       //    return base.ProcessCmdKey(ref msg, keyData);
+       //}
 
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -273,11 +294,6 @@ namespace Blopnote
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
                 TryAutoCompleteText();
             }
-        }
-
-        private void TextBoxWithText_KeyUp(object sender, KeyEventArgs e)
-        {
-
         }
 
         private void HighlightCurrentLine()
