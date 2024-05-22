@@ -32,6 +32,7 @@ namespace Blopnote
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
+            lyricsBox.SongIsWritten += SongIsWritten_Handler;
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
@@ -41,6 +42,15 @@ namespace Blopnote
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
+        }
+
+        private void SongIsWritten_Handler(object sender, EventArgs e)
+        {
+            MessageBox.Show(caption: "Completed",
+                            text: "Congratulations! Song was successfully written!",
+                            buttons: MessageBoxButtons.OK,
+                            icon: MessageBoxIcon.Information
+                            );
         }
 
         #region FormEvents
@@ -161,9 +171,6 @@ namespace Blopnote
 
         private void TextBoxWithText_TextChanged(object sender, EventArgs e)
         {
-#warning why did I use it before?
-            //textField.Focus();
-
             if (ShowLyrics.Checked)
             {
                 HighlightCurrentLine();

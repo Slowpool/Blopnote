@@ -23,8 +23,10 @@ namespace Blopnote
 
         private Label PreviousHighlightedLabel { get; set; }
 
+        internal event EventHandler SongIsWritten;
+
         // I think it's bad idea to use so many levels of incapsulation for properties...
-        internal int Width
+        internal int LyricsBoxWidth
         {
             get => panel.Width;
             set
@@ -32,7 +34,7 @@ namespace Blopnote
                 panel.Width = value;
             }
         }
-        private int Height
+        private int LyricsBoxHeight
         {
             get => panel.Height;
             set
@@ -353,10 +355,10 @@ namespace Blopnote
         private void CalculateWidth()
         {
             int maxWidthOfLines = LabelsWithLyrics.Max(label => label.Width);
-            Width = HORIZONTAL_PADDING + maxWidthOfLines + HORIZONTAL_PADDING + scrollBar.Width;
-            if (Width > MAX_WIDTH)
+            LyricsBoxWidth = HORIZONTAL_PADDING + maxWidthOfLines + HORIZONTAL_PADDING + scrollBar.Width;
+            if (LyricsBoxWidth > MAX_WIDTH)
             {
-                Width = MAX_WIDTH;
+                LyricsBoxWidth = MAX_WIDTH;
             }
         }
 
@@ -380,7 +382,7 @@ namespace Blopnote
 
         internal void AdjustHeightTo(int height)
         {
-            Height = height;
+            LyricsBoxHeight = height;
         }
 
         internal void ClearPreviousLyricsIfNeed()
@@ -462,9 +464,16 @@ namespace Blopnote
 
         internal void HighlightAt(int lineIndex)
         {
-            if (Lines == null || lineIndex >= Lines.Count)
+            if (Lines == null)
             {
-                ReleaseHighlightedLabel();
+#warning maybe wrong
+                //ReleaseHighlightedLabel();
+                return;
+            }
+
+            if (lineIndex >= Lines.Count)
+            {
+                SongIsWritten(this, null);
                 return;
             }
 
