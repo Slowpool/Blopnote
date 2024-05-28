@@ -8,16 +8,20 @@ using Blopnote.Properties;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using SeleniumKeys = OpenQA.Selenium.Keys;
+using static Blopnote.Browser;
 
 namespace Blopnote
 {
     public partial class CreateNewTranslationWindow : Form
     {
-        internal string FileName => Author + " - " + Song + ".txt";
-
-        private string Author { get; set; }
-        private string Song { get; set; }
+        private string Author => TextBoxForAuthor.Text;
+        private string Song => TextBoxForSong.Text;
         internal string Lyrics { get; set; }
+
+        private string SongAuthor => Author + " - " + Song;
+        internal string FileName { get; set; }
+
+        private bool SongInserted => TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0;
 
         private bool AuthorIsCorrect => !string.IsNullOrEmpty(Author);
         private bool SongIsCorrect => !string.IsNullOrEmpty(Song);
@@ -31,7 +35,6 @@ namespace Blopnote
 #warning what if i use mac? it has to be gotten dinamically
         private const int PATH_MAX = 255;
 
-        private ChromeDriver driver;
         private List<string> references = new List<string>();
         private readonly List<string> DownloadedLyrics = new List<string>();
 
@@ -57,17 +60,7 @@ namespace Blopnote
 
         private void FileNameAndLyricsInputWindow_Load(object sender, EventArgs e)
         {
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--headless"); // Hide the browser window
-            options.AddArgument("--disable-extensions");
-            options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
-            options.PageLoadStrategy = PageLoadStrategy.Eager;
-
-            ChromeDriverService service = ChromeDriverService.CreateDefaultService();
-            service.HideCommandPromptWindow = true;
-
-            driver = new ChromeDriver(service, options);
-            driver.Manage().Window.Maximize();
+            
         }
 
         [STAThread]
@@ -79,8 +72,6 @@ namespace Blopnote
 
         private void ClearAll()
         {
-            Author = null;
-            Song = null;
             TextBoxForAuthor.Clear();
             TextBoxForSong.Clear();
             CheckBoxUseLyrics.Checked = true;
@@ -97,7 +88,7 @@ namespace Blopnote
 
         private void ClearAllRelatedToLyrics()
         {
-            labelRequestResult.Text = string.Empty;
+            labelLyricsRequestResult.Text = string.Empty;
             Lyrics = null;
 #warning magic const
             LyricsId = -1;
@@ -110,7 +101,7 @@ namespace Blopnote
         {
             TextBoxForLyrics.Enabled = CheckBoxUseLyrics.Checked;
             buttonLyricsRequest.Enabled = CheckBoxUseLyrics.Checked;
-            labelRequestResult.Enabled = CheckBoxUseLyrics.Checked;
+            labelLyricsRequestResult.Enabled = CheckBoxUseLyrics.Checked;
             ClearAllRelatedToLyrics();
             UpdateLyricsSelector();
         }
@@ -123,9 +114,8 @@ namespace Blopnote
 
         private void OK_Click(object sender, EventArgs e)
         {
-            Author = TextBoxForAuthor.Text;
-            Song = TextBoxForSong.Text;
             Lyrics = TextBoxForLyrics.Text;
+            FileName = SongAuthor + ".txt";
 
             if (!InsertedDataIsComplete)
             {
@@ -147,25 +137,31 @@ namespace Blopnote
             }
         }
 
-        private async void buttonSearchOnGenius_Click(object sender, EventArgs e)
+        private async void buttonLyricsRequest_Click(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
             LyricsId = 0;
-            if (TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0)
+            if (SongInserted)
             {
-                string songName = TextBoxForAuthor.Text + " " + TextBoxForSong.Text;
-                references = await RequestForSimilarSongs(songName);
+                references = await RequestForSimilarSongs(SongAuthor);
                 if (references.Count == 0)
                 {
-                    labelRequestResult.Text = "Lyrics wasn't found";
+                    ClearAllRelatedToLyrics();
+                    UpdateLyricsSelector();
+                    labelLyricsRequestResult.Text = "Not found";
                 }
                 else
                 {
-                    labelRequestResult.Text = string.Format("{0} lyrics were successfully found.", references.Count);
+                    labelLyricsRequestResult.Text = string.Format("{0} lyrics found", references.Count);
                     DownloadedLyrics.Clear();
                     LyricsId = 0;
                     LoadLyricsToTextBox();
                 }
+            }
+            else
+            {
+                ClearAllRelatedToLyrics();
+                UpdateLyricsSelector();
             }
             Cursor.Current = Cursors.Default;
         }

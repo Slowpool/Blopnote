@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.CompilerServices;
-using static IronPython.Modules._ast;
+
+using OpenQA.Selenium;
+using SeleniumKeys = OpenQA.Selenium.Keys;
+using static Blopnote.Browser;
 
 namespace Blopnote
 {
@@ -15,15 +18,17 @@ namespace Blopnote
         internal readonly Panel panel;
         private readonly Font font;
         private readonly VScrollBar scrollBar;
-        internal bool Enabled => panel.Visible;
-        
+        private readonly ToolTip toolTipLyrics;
         private List<string> Lines { get; set; }
+        private string Lyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] LabelsWithLyrics { get; set; }
 
         private Label PreviousHighlightedLabel { get; set; }
 
         internal event EventHandler SongIsWritten;
+
+        internal bool Enabled => panel.Visible;
 
         // I think it's bad idea to use so many levels of incapsulation for properties...
         internal int LyricsBoxWidth
@@ -75,16 +80,25 @@ namespace Blopnote
 
         private readonly int lineHeight;
 
-        internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar)
+        internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar, ToolTip toolTipLyrics)
         {
             this.panel = panel;
             this.font = font;
             this.scrollBar = scrollBar;
+            this.toolTipLyrics = toolTipLyrics;
+
+            FillLanguages();
 
             panel.MouseWheel += PanelForLyricsBox_MouseWheel;
             scrollBar.ValueChanged += ScrollBar_ValueChanged;
             // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
             lineHeight = font.Height - 1;
+        }
+
+        private void FillLanguages()
+        {
+#warning implement it
+            //var list = Language
         }
 
         private void PanelForLyricsBox_MouseWheel(object sender, MouseEventArgs e)
@@ -113,7 +127,6 @@ namespace Blopnote
         /// <param name="lyrics"></param>
         internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
         {
-#warning I think somewhere here must be checking for max length and handling too long lines
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
             SelectKeywords();
@@ -122,7 +135,7 @@ namespace Blopnote
             ConfigureLabels();
             CalculateWidth();
             AdjustScrollBar();
-            return Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
+            return Lyrics;
         }
 
         private void TrimLines()
@@ -268,12 +281,28 @@ namespace Blopnote
                 ChangeBackColorIfContainsKeyword(LabelsWithLyrics[i]);
                 panel.Controls.Add(LabelsWithLyrics[i]);
             }
+            AddToolTips();
             PlaceLabels();
+        }
+
+        private async void AddToolTips()
+        {
+            driver.Navigate().GoToUrl("https://translate.google.com/");
+            var inputBox = driver.FindElement(By.ClassName("er8xn"));
+            await Task.Delay(500);
+            inputBox.SendKeys(Lyrics);
+            await Task.Delay(2000);
+            //string translatedLyrics = driver.FindElement(By.ClassName("ryNqvb")).Text;
+
+            for (int i = 0; i < LabelsWithLyrics.Length; i++)
+            {
+                //toolTipLyrics.SetToolTip(LabelsWithLyrics[labelIndex], translatedLine);
+            }
         }
 
         internal void PlaceLabels()
         {
-#warning i have three ideas here and both are awkward: 
+#warning i have three ideas here and each is awkward: 
             // 1. at first disable all labels, next enable needed
             // 2. a) disable before needed
             // b) enable needed
@@ -365,7 +394,7 @@ namespace Blopnote
         internal void NoLyrics()
         {
             Hide();
-            ClearPreviousLyricsIfNeed();
+            EnsureEmptyLyrics();
 
             Lines = null;
         }
@@ -385,7 +414,7 @@ namespace Blopnote
             LyricsBoxHeight = height;
         }
 
-        internal void ClearPreviousLyricsIfNeed()
+        internal void EnsureEmptyLyrics()
         {
             if (panel.Controls.Count != 1)
             {

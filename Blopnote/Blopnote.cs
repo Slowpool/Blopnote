@@ -6,11 +6,14 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
+using System.Net;
+using static Blopnote.Browser;
 
 namespace Blopnote
 {
     public partial class Blopnote : Form
     {
+        private readonly WebClient webClient;
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
         private readonly FileCondition fileCondition;
@@ -31,7 +34,7 @@ namespace Blopnote
 
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
-            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
+            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
             lyricsBox.SongIsWritten += SongIsWritten_Handler;
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
             fileProcessor.DirectoryChanged += (sender, e) =>
@@ -87,6 +90,8 @@ namespace Blopnote
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
+            driver.Close();
+            driver.Dispose();
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -106,7 +111,7 @@ namespace Blopnote
             if (createNewTranslation.ShowForDataInput() == DialogResult.OK)
             {
 #warning awful + dirty code
-                lyricsBox.ClearPreviousLyricsIfNeed();
+                lyricsBox.EnsureEmptyLyrics();
                 HandleInsertedData();
                 PrepareComponentsToDisplayNewTranslation(clearText: true);
             }
@@ -116,6 +121,7 @@ namespace Blopnote
         {
             string fileName = createNewTranslation.FileName;
             string lyrics = createNewTranslation.Lyrics;
+
 
             try
             {
@@ -160,7 +166,7 @@ namespace Blopnote
             {
 #warning maybe handle opened and empty file with different ways?
                 StopTimerAndTrySaveFile(false);
-                lyricsBox.ClearPreviousLyricsIfNeed();
+                lyricsBox.EnsureEmptyLyrics();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
                 PrepareComponentsToDisplayNewTranslation(clearText: false);

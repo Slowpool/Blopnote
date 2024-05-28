@@ -5,7 +5,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.IO;
-using IronPython.Runtime;
 
 namespace Blopnote
 {

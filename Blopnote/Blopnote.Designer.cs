@@ -46,6 +46,7 @@
             this.VScrollBarForLyrics = new System.Windows.Forms.VScrollBar();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -56,12 +57,12 @@
             this.TextBoxWithText.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.TextBoxWithText.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxWithText.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.TextBoxWithText.Location = new System.Drawing.Point(12, 27);
+            this.TextBoxWithText.Location = new System.Drawing.Point(0, 27);
             this.TextBoxWithText.MaxLength = 1500000;
             this.TextBoxWithText.Multiline = true;
             this.TextBoxWithText.Name = "TextBoxWithText";
             this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextBoxWithText.Size = new System.Drawing.Size(488, 303);
+            this.TextBoxWithText.Size = new System.Drawing.Size(530, 454);
             this.TextBoxWithText.TabIndex = 0;
             this.TextBoxWithText.WordWrap = false;
             this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
@@ -141,7 +142,7 @@
             // changeFolderToolStripMenuItem
             // 
             this.changeFolderToolStripMenuItem.Name = "changeFolderToolStripMenuItem";
-            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.changeFolderToolStripMenuItem.Text = "Change folder";
             this.changeFolderToolStripMenuItem.ToolTipText = "Close file to unlock";
             this.changeFolderToolStripMenuItem.Click += new System.EventHandler(this.changeFolderPathToolStripMenuItem_Click);
@@ -168,20 +169,28 @@
             this.PanelForLyricsBox.Controls.Add(this.VScrollBarForLyrics);
             this.PanelForLyricsBox.Location = new System.Drawing.Point(536, 27);
             this.PanelForLyricsBox.Name = "PanelForLyricsBox";
-            this.PanelForLyricsBox.Size = new System.Drawing.Size(342, 225);
+            this.PanelForLyricsBox.Size = new System.Drawing.Size(398, 454);
             this.PanelForLyricsBox.TabIndex = 4;
             // 
             // VScrollBarForLyrics
             // 
             this.VScrollBarForLyrics.Dock = System.Windows.Forms.DockStyle.Right;
-            this.VScrollBarForLyrics.Location = new System.Drawing.Point(320, 0);
+            this.VScrollBarForLyrics.Location = new System.Drawing.Point(376, 0);
             this.VScrollBarForLyrics.Name = "VScrollBarForLyrics";
-            this.VScrollBarForLyrics.Size = new System.Drawing.Size(22, 225);
+            this.VScrollBarForLyrics.Size = new System.Drawing.Size(22, 454);
             this.VScrollBarForLyrics.TabIndex = 5;
             // 
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // toolTipLyrics
+            // 
+            this.toolTipLyrics.AutomaticDelay = 200;
+            this.toolTipLyrics.AutoPopDelay = 32000;
+            this.toolTipLyrics.InitialDelay = 200;
+            this.toolTipLyrics.ReshowDelay = 40;
+            this.toolTipLyrics.UseFading = false;
             // 
             // Blopnote
             // 
@@ -194,6 +203,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Blopnote";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Blopnote";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Blopnote_FormClosing);
             this.Load += new System.EventHandler(this.Blopnote_Load);
@@ -228,6 +238,7 @@
         private System.Windows.Forms.VScrollBar VScrollBarForLyrics;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.ToolTip toolTipLyrics;
     }
 }
 
