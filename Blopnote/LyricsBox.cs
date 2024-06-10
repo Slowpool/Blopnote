@@ -502,7 +502,6 @@ namespace Blopnote
 
             if (lineIndex >= Lines.Count)
             {
-                SongIsWritten(this, null);
                 return;
             }
 

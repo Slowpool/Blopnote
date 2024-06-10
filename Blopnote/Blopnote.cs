@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Collections.Specialized;
 using System.Net;
 using static Blopnote.Browser;
+using System.Diagnostics;
 
 namespace Blopnote
 {
@@ -25,6 +26,7 @@ namespace Blopnote
 
         private const int AUTOSAVE_FREQUENCY_IN_SECONDS = 5;
         private const string CONFIG_FOLDER_ATTRIBUTE = "folderWithTranslationsPath";
+        private int PreviousSelectionStart { get; set; }
         public Blopnote()
         {
             InitializeComponent();
@@ -114,6 +116,7 @@ namespace Blopnote
                 lyricsBox.EnsureEmptyLyrics();
                 HandleInsertedData();
                 PrepareComponentsToDisplayNewTranslation(clearText: true);
+
             }
         }
 
@@ -157,6 +160,8 @@ namespace Blopnote
             }
 
             RegulateTextAndLyricsBoxes();
+
+            timerSelectionStart.Start();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -172,14 +177,6 @@ namespace Blopnote
                 PrepareComponentsToDisplayNewTranslation(clearText: false);
 
                 textField.Focus();
-            }
-        }
-
-        private void TextBoxWithText_TextChanged(object sender, EventArgs e)
-        {
-            if (ShowLyrics.Checked)
-            {
-                HighlightCurrentLine();
             }
         }
 
@@ -214,6 +211,7 @@ namespace Blopnote
             ShowLyrics.Enabled = false;
             fileCondition.DoesNotExist();
             RegulateTextAndLyricsBoxes();
+            timerSelectionStart.Stop();
         }
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -273,8 +271,11 @@ namespace Blopnote
                     }
                     break;
                 case Keys.Control | Keys.C:
-                    e.SuppressKeyPress = true;
-                    textField.CopyCurrentLineToClipBoard();
+                    if (TextBoxWithText.SelectedText.Length == 0)
+                    {
+                        e.SuppressKeyPress = true;
+                        textField.CopyCurrentLineToClipBoard();
+                    }
                     break;
                 case Keys.Control | Keys.W:
                     e.SuppressKeyPress = true;
@@ -309,10 +310,9 @@ namespace Blopnote
             }
         }
 
-        private void HighlightCurrentLine()
+        private void HighlightActualLine()
         {
-            int currentLineIndex = textField.realTextBoxLinesLength - 1;
-            lyricsBox.HighlightAt(currentLineIndex);
+            lyricsBox.HighlightAt(textField.LineIndex);
         }
 
         private void TryAutoCompleteText()
@@ -337,6 +337,15 @@ namespace Blopnote
 
                 lineIndex++;
                 lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
+            }
+        }
+
+        private void timerSelectionStart_Tick(object sender, EventArgs e)
+        {
+            if (PreviousSelectionStart != TextBoxWithText.SelectionStart)
+            {
+                PreviousSelectionStart = TextBoxWithText.SelectionStart;
+                HighlightActualLine();
             }
         }
     }

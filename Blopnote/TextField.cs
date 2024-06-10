@@ -20,6 +20,7 @@ namespace Blopnote
             }
         }
 
+        internal int LineIndex => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
         internal int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
         internal TextField(TextBox TextBoxWithText)
@@ -56,8 +57,7 @@ namespace Blopnote
 
         internal void CopyCurrentLineToClipBoard()
         {
-            int lineIndex = TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
-            string line = TextBoxWithText.Lines[lineIndex];
+            string line = TextBoxWithText.Lines[LineIndex];
             try
             {
                 Clipboard.SetText(line);

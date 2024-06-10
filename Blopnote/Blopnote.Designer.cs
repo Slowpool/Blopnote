@@ -47,6 +47,7 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
+            this.timerSelectionStart = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -65,7 +66,6 @@
             this.TextBoxWithText.Size = new System.Drawing.Size(530, 454);
             this.TextBoxWithText.TabIndex = 0;
             this.TextBoxWithText.WordWrap = false;
-            this.TextBoxWithText.TextChanged += new System.EventHandler(this.TextBoxWithText_TextChanged);
             this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
             this.TextBoxWithText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxWithText_KeyPress);
             // 
@@ -142,7 +142,7 @@
             // changeFolderToolStripMenuItem
             // 
             this.changeFolderToolStripMenuItem.Name = "changeFolderToolStripMenuItem";
-            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.changeFolderToolStripMenuItem.Text = "Change folder";
             this.changeFolderToolStripMenuItem.ToolTipText = "Close file to unlock";
             this.changeFolderToolStripMenuItem.Click += new System.EventHandler(this.changeFolderPathToolStripMenuItem_Click);
@@ -192,6 +192,11 @@
             this.toolTipLyrics.ReshowDelay = 40;
             this.toolTipLyrics.UseFading = false;
             // 
+            // timerSelectionStart
+            // 
+            this.timerSelectionStart.Interval = 200;
+            this.timerSelectionStart.Tick += new System.EventHandler(this.timerSelectionStart_Tick);
+            // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -239,6 +244,7 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTipLyrics;
+        private System.Windows.Forms.Timer timerSelectionStart;
     }
 }
 
