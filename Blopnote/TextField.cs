@@ -10,6 +10,8 @@ namespace Blopnote
 {
     internal class TextField
     {
+        internal event EventHandler SongIsWritten;
+
         private readonly TextBox TextBoxWithText;
         internal string Text
         {
@@ -22,6 +24,8 @@ namespace Blopnote
 
         internal int LineIndex => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
         internal int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
+
+        internal int NumberOfLinesToComplete { get; set; }
 
         internal TextField(TextBox TextBoxWithText)
         {
@@ -72,6 +76,14 @@ namespace Blopnote
         {
             TextBoxWithText.Focus();
             TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
+        }
+
+        internal void TextChanged(object sender, EventArgs e)
+        {
+            if (TextBoxWithText.Lines.Length >= NumberOfLinesToComplete)
+            {
+                SongIsWritten(this, null);
+            }
         }
     }
 }

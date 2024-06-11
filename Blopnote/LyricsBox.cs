@@ -20,13 +20,13 @@ namespace Blopnote
         private readonly VScrollBar scrollBar;
         private readonly ToolTip toolTipLyrics;
         private List<string> Lines { get; set; }
+        internal int LinesQuantity => Lines.Count;
         private string Lyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] LabelsWithLyrics { get; set; }
 
         private Label PreviousHighlightedLabel { get; set; }
 
-        internal event EventHandler SongIsWritten;
 
         internal bool Enabled => panel.Visible;
 
@@ -74,7 +74,7 @@ namespace Blopnote
         private const int HORIZONTAL_PADDING = 10;
         private const int VERTICAL_PADDING = 10;
         private const int MAX_WIDTH = 800;
-        // manually copied text from genius could contain such an redundant infromation
+        // manually copied lyrics from genius could contain such redundant infromation
         private const string EXCESS_PHRASE = "You might also like";
         private const int LINES_AFTER_EXCESS_PHRASE = 7;
 
@@ -281,7 +281,8 @@ namespace Blopnote
                 ChangeBackColorIfContainsKeyword(LabelsWithLyrics[i]);
                 panel.Controls.Add(LabelsWithLyrics[i]);
             }
-            AddToolTips();
+#warning tool tips
+            //AddToolTips();
             PlaceLabels();
         }
 
@@ -467,19 +468,12 @@ namespace Blopnote
 
             for(int i = 0; i < lineIndex; i++)
             {
-#warning why did i use string interning here???
-                string s1 = string.Intern(Lines[i]);
-                string s2 = string.Intern(Lines[lineIndex]);
-#warning dude remove it
-                //char[] s1Characters = s1.ToCharArray();
-                //char[] s2Characters = s2.ToCharArray();
+                string s1 = Lines[i];
+                string s2 = Lines[lineIndex];
                 if (s1 == s2)
                 {
                     return TypesOfLine.Repeated;
                 }
-                //int number = s1Characters.Length;
-                //int number2 = s2Characters.Length;
-                //int age = number + number2;
             }
 
             return TypesOfLine.New;
@@ -495,8 +489,6 @@ namespace Blopnote
         {
             if (Lines == null)
             {
-#warning maybe wrong
-                //ReleaseHighlightedLabel();
                 return;
             }
 

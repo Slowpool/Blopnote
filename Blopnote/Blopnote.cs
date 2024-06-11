@@ -37,7 +37,8 @@ namespace Blopnote
             textField = new TextField(TextBoxWithText);
             fileCondition = new FileCondition(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
-            lyricsBox.SongIsWritten += SongIsWritten_Handler;
+            textField.SongIsWritten += SongIsWritten_Handler;
+            TextBoxWithText.TextChanged += textField.TextChanged;
             fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
@@ -92,8 +93,13 @@ namespace Blopnote
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
-            driver.Close();
-            driver.Dispose();
+            try
+            {
+                driver.Close();
+                driver.Dispose();
+            }
+            catch
+            { }
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -140,6 +146,7 @@ namespace Blopnote
         private void PrepareComponentsToDisplayNewTranslation(bool clearText)
         {
             textField.Enable();
+            textField.NumberOfLinesToComplete = lyricsBox.LinesQuantity;
             closeToolStripMenuItem.Enabled = true;
             changeFolderToolStripMenuItem.Enabled = false;
             if (clearText)
