@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Blopnote
 {
@@ -78,12 +79,25 @@ namespace Blopnote
             TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
         }
 
-        internal void TextChanged(object sender, EventArgs e)
+        internal void SongCompletionChecker(object sender, EventArgs e)
         {
-            if (TextBoxWithText.Lines.Length >= NumberOfLinesToComplete)
+            Debug.WriteLine("checking for completion...");
+            if (TextBoxWithText.Lines.Length > NumberOfLinesToComplete)
             {
                 SongIsWritten(this, null);
             }
+        }
+
+        internal void ObserveCompletion()
+        {
+            Debug.WriteLine("Observing: True");
+            TextBoxWithText.TextChanged += SongCompletionChecker;
+        }
+
+        internal void StopObserving()
+        {
+            Debug.WriteLine("Observing: false");
+            TextBoxWithText.TextChanged -= SongCompletionChecker;
         }
     }
 }

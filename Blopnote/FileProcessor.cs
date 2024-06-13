@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
@@ -12,7 +13,7 @@ namespace Blopnote
     internal class FileProcessor
     {
         private readonly TextField textField;
-        private readonly FileCondition fileCondition;
+        private readonly FileState fileState;
         private readonly LyricsBox lyricsBox;
         private readonly OpenFileDialog openFileDialog;
 
@@ -21,22 +22,23 @@ namespace Blopnote
 
         internal int DirectoryLength => directory.FullName.Length;
 
-        private string FilePath => Path.Combine(directory.FullName, fileCondition.FileName);
-        private string LyricsPath => EditFilePathToLyricsPath();
+        private string FilePath => Path.Combine(directory.FullName, fileState.FileName);
+        private string LyricsPath => MakeLyricsPath(FilePath);
 
-        private string EditFilePathToLyricsPath()
+        private string MakeLyricsPath(string filePath)
         {
 #warning dirty and obfuscated
-            string lyricsPath = FilePath.Insert(FilePath.Length - 4, " " + Names.LyricsFolder);
-            int indexOfLastSlash = FilePath.LastIndexOf('\\');
-            lyricsPath = lyricsPath.Insert(indexOfLastSlash, "\\" + Names.LyricsFolder);
+            //string lyricsPath = filePath.Insert(filePath.Length - 4, " " + Names.SongInfoFolder);
+            int indexOfLastSlash = filePath.LastIndexOf('\\');
+            string lyricsPath = filePath.Insert(indexOfLastSlash, "\\" + Names.SongInfoFolder)
+                                   .Replace(".txt", ".json");
             return lyricsPath;
         }
 
-        internal FileProcessor(TextField textField, FileCondition fileCondition, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
+        internal FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
         {
             this.textField = textField;
-            this.fileCondition = fileCondition;
+            this.fileState = fileState;
             this.lyricsBox = lyricsBox;
             this.openFileDialog = openFileDialog;
         }
@@ -44,15 +46,15 @@ namespace Blopnote
         internal void ChangeDirectory(string directoryName)
         {
             directory = new DirectoryInfo(directoryName);
-            EnsureLyricsFolder();
+            EnsureSongsInfoFolder();
             openFileDialog.InitialDirectory = directoryName;
             DirectoryChanged(this, null);
         }
 
-        private void EnsureLyricsFolder() 
+        private void EnsureSongsInfoFolder() 
         {
             var subDirectories = (from dir in directory.GetDirectories()
-                                  where dir.Name.ToLower() == Names.LyricsFolder
+                                  where dir.Name.ToLower() == Names.SongInfoFolder
                                   select dir);
             try
             {
@@ -60,37 +62,38 @@ namespace Blopnote
             }
             catch (InvalidOperationException)
             {
-                directory.CreateSubdirectory(Names.LyricsFolder);
+                directory.CreateSubdirectory(Names.SongInfoFolder);
             }
         }
 
-        private void EnsureNameInLowerCase(DirectoryInfo lyricsDirectory)
+        private void EnsureNameInLowerCase(DirectoryInfo SongsInfoDirectory)
         {
-            if (lyricsDirectory == null)
+            if (SongsInfoDirectory == null)
             {
                 throw new ArgumentException("directory can't be null");
             }
 
-            if (lyricsDirectory.Name != Names.LyricsFolder)
+            if (SongsInfoDirectory.Name != Names.SongInfoFolder)
             {
-                lyricsDirectory.NameToLower();
+                SongsInfoDirectory.NameToLower();
             }
         }
 
         internal void CreateNewTranslation(string fileName, string lyrics)
         {
-            fileCondition.PrepareTranslation(fileName, lyrics, directory);
+            fileState.UpdateState(fileName, lyrics, directory);
 
             File.Create(FilePath).Dispose();
 
-            if (fileCondition.LyricsExists)
+            if (fileState.LyricsIsUsed)
             {
-                WriteLyrics(lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics));
+                var filteredLyrics = lyricsBox.FilterAndKeep(lyrics);
+                fileState.CreateSongInfo(filteredLyrics);
+                WriteLyrics();
             }
             else
             {
-                //  Q do I really need this?
-                lyricsBox.NoLyrics();
+                lyricsBox.EnsureCleared();
             }
         }
 
@@ -99,9 +102,10 @@ namespace Blopnote
             WriteInFile(FilePath, textField.Text);
         }
 
-        private void WriteLyrics(string lyrics)
+        private void WriteLyrics()
         {
-            WriteInFile(LyricsPath, lyrics);
+            string serializedSongInfo = JsonConvert.SerializeObject(fileState.songInfo);
+            File.WriteAllText(LyricsPath, serializedSongInfo);
         }
 
         private void WriteInFile(string filePath, string text)
@@ -116,38 +120,61 @@ namespace Blopnote
 
         internal void OpenTranslation(string FullFileName)
         {
-            string lyrics = FindLyricsOf(FullFileName);
+#warning i'm fucking tired with this shitcode
+            string lyrics = FindLyrics(FullFileName);
             string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
             string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
             ChangeDirectory(directory);
-            fileCondition.PrepareTranslation(fileName, lyrics, this.directory);
-            ReadText(FullFileName);
-            lyricsBox.BuildNewLyricsAndGetEditedVersion(lyrics);
-        }
-
-        private void ReadText(string FullFileName)
-        {
-            using(var reader = new StreamReader(FullFileName, Encoding.UTF8))
+            fileState.UpdateState(fileName, lyrics, this.directory);
+            textField.Text = File.ReadAllText(FullFileName);
+            if (fileState.LyricsIsUsed)
             {
-                textField.Text = reader.ReadToEnd();
+                lyricsBox.FilterAndKeep(lyrics);
+                if (fileState.songInfo.Completed)
+                {
+                    textField.StopObserving();
+                }
+                else
+                {
+                    textField.ObserveCompletion();
+                }
             }
         }
 
-        private string FindLyricsOf(string FullFileName)
+        //private void ReadText(string FullFileName)
+        //{
+        //    using(var reader = new StreamReader(FullFileName, Encoding.UTF8))
+        //    {
+        //        textField.Text = reader.ReadToEnd();
+        //    }
+        //}
+
+        private string FindLyrics(string FullFileName)
         {
             // C:\Users\azgel\Desktop\translations\ic3peak - no death.txt
-            string lyricsPath = FullFileName.Insert(FullFileName.Length - 4, " lyrics").Insert(FullFileName.LastIndexOf('\\'), "\\lyrics");
-            if (File.Exists(lyricsPath))
+            string conjectiveLyricsPath = MakeLyricsPath(FullFileName);
+            if (File.Exists(conjectiveLyricsPath))
             {
-                using(var reader = new StreamReader(path: lyricsPath, encoding: Encoding.UTF8))
-                {
-                    return reader.ReadToEnd();
-                }
+                fileState.LyricsIsUsed = true;
+                fileState.LoadSongInfo(conjectiveLyricsPath);
+                return fileState.songInfo.Lyrics;
             }
             else
             {
                 return string.Empty;
             }
+        }
+
+        internal void SongIsWritten_Handler(object sender, EventArgs e)
+        {
+            fileState.songInfo.Completed = true;
+            File.WriteAllText(LyricsPath, JsonConvert.SerializeObject(fileState.songInfo));
+            textField.StopObserving();
+            MessageBox.Show(caption: "Completed",
+                            text: "Congratulations! Song was successfully written!",
+                            buttons: MessageBoxButtons.OK,
+                            icon: MessageBoxIcon.Information
+                            );
         }
     }
 }

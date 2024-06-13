@@ -125,11 +125,11 @@ namespace Blopnote
         /// better navigate the text
         /// </summary>
         /// <param name="lyrics"></param>
-        internal string BuildNewLyricsAndGetEditedVersion(string lyrics)
+        internal string FilterAndKeep(string lyrics)
         {
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
-            SelectKeywords();
+            HighlightKeywords();
             TrimLines();
             LabelsWithLyrics = new Label[Lines.Count];
             ConfigureLabels();
@@ -147,9 +147,13 @@ namespace Blopnote
                     Lines[i] = Lines[i].Trim();
                 }
             }
+            while (string.IsNullOrWhiteSpace(Lines[Lines.Count - 1]))
+            {
+                Lines.RemoveAt(Lines.Count - 1);
+            }
         }
 
-        private void SelectKeywords()
+        private void HighlightKeywords()
         {
             SelectKeywordsAsIndividualLines(0);
             int realIndex;
@@ -210,7 +214,6 @@ namespace Blopnote
             if (Lines[lineIndex].StartsWith("["))
             {
                 string[] twoParts = Lines[lineIndex].Split(new[] { ']' }, 2);
-                //string keyword = lines[lineIndex].Substring(0, lines[lineIndex].IndexOf(']') + 1);
                 string keyword = twoParts[0] + ']';
                 string restOfLine = twoParts[1];
                 Lines.Insert(lineIndex, keyword);
@@ -298,6 +301,7 @@ namespace Blopnote
             for (int i = 0; i < LabelsWithLyrics.Length; i++)
             {
                 //toolTipLyrics.SetToolTip(LabelsWithLyrics[labelIndex], translatedLine);
+                toolTipLyrics.SetToolTip(LabelsWithLyrics[i], $"toolTip {i}");
             }
         }
 
@@ -395,7 +399,7 @@ namespace Blopnote
         internal void NoLyrics()
         {
             Hide();
-            EnsureEmptyLyrics();
+            EnsureCleared();
 
             Lines = null;
         }
@@ -415,9 +419,9 @@ namespace Blopnote
             LyricsBoxHeight = height;
         }
 
-        internal void EnsureEmptyLyrics()
+        internal void EnsureCleared()
         {
-            if (panel.Controls.Count != 1)
+            if (panel.Controls.Count != 1) // 1 is scrollbar
             {
                 foreach (var label in LabelsWithLyrics)
                 {

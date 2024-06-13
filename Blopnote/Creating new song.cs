@@ -4,21 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Blopnote.Properties;
-
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using SeleniumKeys = OpenQA.Selenium.Keys;
 using static Blopnote.Browser;
 
 namespace Blopnote
 {
-    public partial class CreateNewTranslationWindow : Form
+    public partial class CreateNewTranslationForm : Form
     {
         private string Author => TextBoxForAuthor.Text;
         private string Song => TextBoxForSong.Text;
         internal string Lyrics { get; set; }
 
-        private string SongAuthor => Author + " - " + Song;
+        private string SongName => Author + " - " + Song;
         internal string FileName { get; set; }
 
         private bool SongInserted => TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0;
@@ -52,7 +50,7 @@ namespace Blopnote
             }
         }
 
-        internal CreateNewTranslationWindow()
+        internal CreateNewTranslationForm()
         {
             InitializeComponent();
             Icon = Resources.icon;
@@ -108,14 +106,13 @@ namespace Blopnote
 
         private void FileNameAndLyricsInputWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            driver.Close();
-            driver.Dispose();
+
         }
 
         private void OK_Click(object sender, EventArgs e)
         {
             Lyrics = TextBoxForLyrics.Text;
-            FileName = SongAuthor + ".txt";
+            FileName = SongName + ".txt";
 
             if (!InsertedDataIsComplete)
             {
@@ -143,7 +140,7 @@ namespace Blopnote
             LyricsId = 0;
             if (SongInserted)
             {
-                references = await RequestForSimilarSongs(SongAuthor);
+                references = await RequestForSimilarSongs(SongName);
                 if (references.Count == 0)
                 {
                     ClearAllRelatedToLyrics();
@@ -166,38 +163,14 @@ namespace Blopnote
             Cursor.Current = Cursors.Default;
         }
 
-        private async Task<List<string>> RequestForSimilarSongs(string songName)
-        {
-            Cursor.Current = Cursors.WaitCursor;
-            driver.Navigate().GoToUrl("http://Genius.com");
-            var query = driver.FindElement(By.Name("q"));
-            query.Clear();
-            query.SendKeys(songName);
-            query.SendKeys(SeleniumKeys.Return);
-            await Task.Delay(1000);
-
-            IEnumerable<IWebElement> cards = driver.FindElements(By.ClassName("mini_card"))
-                              .Skip(1)
-                              .Take(5);
-
-            List<string> references = new List<string>();
-            string reference;
-            foreach (var card in cards)
-            {
-                reference = card.GetAttribute("href");
-                if (!references.Contains(reference))
-                    references.Add(reference);
-            }
-            Cursor.Current = Cursors.Default;
-            return references;
-        }
-
         internal async Task<string> GetLyrics(string GeniusSongURL)
         {
             driver.Navigate().GoToUrl(GeniusSongURL);
             await Task.Delay(1000);
             IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
             return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
+            //// latch
+            //return "haha";
         }
 
         private void buttonNextLyrics_Click(object sender, EventArgs e)

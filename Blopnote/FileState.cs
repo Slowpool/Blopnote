@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,15 +10,16 @@ using System.Windows.Forms.VisualStyles;
 
 namespace Blopnote
 {
-    internal class FileCondition
+    internal class FileState
     {
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
+        internal SongInfo songInfo { get; set; }
 
         internal string FileName { get; set; }
-        internal bool LyricsExists { get; set; }
+        internal bool LyricsIsUsed { get; set; }
 
-        internal FileCondition(ToolStripStatusLabel programStatus, TextField textField)
+        internal FileState(ToolStripStatusLabel programStatus, TextField textField)
         {
             this.programStatus = programStatus;
             this.textField = textField;
@@ -31,12 +33,25 @@ namespace Blopnote
             programStatus.Text = "Create or open any file";
         }
 
-        internal void PrepareTranslation(string newFileName, string newLyrics, DirectoryInfo directory)
+        internal void UpdateState(string fileName, string lyrics, DirectoryInfo directory)
         {
-            LyricsExists = !string.IsNullOrEmpty(newLyrics);
-            FileName = newFileName;
+            LyricsIsUsed = !string.IsNullOrEmpty(lyrics);
+            FileName = fileName;
             string fullSongName = FileName.Substring(0, FileName.LastIndexOf('.'));
             programStatus.Text = "Song: " + Path.Combine(directory.FullName, fullSongName);
+        }
+
+        internal void CreateSongInfo(string lyrics)
+        {
+            songInfo = LyricsIsUsed ? new SongInfo(lyrics) : null;
+        }
+
+        internal void LoadSongInfo(string conjectiveLyricsPath)
+        {
+            
+            string text = File.ReadAllText(conjectiveLyricsPath);
+//#error How to convert from (object)song.json to (SongInfo)songIngo?
+            songInfo = (SongInfo)JsonConvert.DeserializeObject(text, typeof(SongInfo));
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace Blopnote
 {
-    partial class CreateNewTranslationWindow
+    partial class CreateNewTranslationForm
     {
         private TextBox TextBoxForAuthor;
         private TextBox TextBoxForLyrics;

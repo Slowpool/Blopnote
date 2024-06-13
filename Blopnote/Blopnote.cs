@@ -6,19 +6,18 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
-using System.Net;
 using static Blopnote.Browser;
 using System.Diagnostics;
+using System.IO;
 
 namespace Blopnote
 {
     public partial class Blopnote : Form
     {
-        private readonly WebClient webClient;
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
-        private readonly FileCondition fileCondition;
-        private readonly CreateNewTranslationWindow createNewTranslation;
+        private readonly FileState fileState;
+        private readonly CreateNewTranslationForm createNewTranslationForm;
         private readonly LyricsBox lyricsBox;
         private readonly SizeRegulator sizeRegulator;
 
@@ -35,34 +34,24 @@ namespace Blopnote
             timer1.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
-            fileCondition = new FileCondition(status, textField);
+            fileState = new FileState(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
-            textField.SongIsWritten += SongIsWritten_Handler;
-            TextBoxWithText.TextChanged += textField.TextChanged;
-            fileProcessor = new FileProcessor(textField, fileCondition, lyricsBox, openFileDialog1);
+            fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
+            textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
-                createNewTranslation.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
+                createNewTranslationForm.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
             };
-            createNewTranslation = new CreateNewTranslationWindow();
+            createNewTranslationForm = new CreateNewTranslationForm();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
         }
 
-        private void SongIsWritten_Handler(object sender, EventArgs e)
-        {
-            MessageBox.Show(caption: "Completed",
-                            text: "Congratulations! Song was successfully written!",
-                            buttons: MessageBoxButtons.OK,
-                            icon: MessageBoxIcon.Information
-                            );
-        }
-
         #region FormEvents
         private void Blopnote_Load(object sender, EventArgs e)
         {
-            fileCondition.DoesNotExist();
+            fileState.DoesNotExist();
             lyricsBox.Hide();
 
             sizeRegulator.RegulateTo(WorkSpace);
@@ -93,13 +82,13 @@ namespace Blopnote
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
-            try
-            {
-                driver.Close();
-                driver.Dispose();
-            }
-            catch
-            { }
+            //try
+            //{
+            //    driver.Close();
+            //    driver.Dispose();
+            //}
+            //catch
+            //{ }
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -116,25 +105,24 @@ namespace Blopnote
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (createNewTranslation.ShowForDataInput() == DialogResult.OK)
+            if (createNewTranslationForm.ShowForDataInput() == DialogResult.OK)
             {
 #warning awful + dirty code
-                lyricsBox.EnsureEmptyLyrics();
+                lyricsBox.EnsureCleared();
                 HandleInsertedData();
                 PrepareComponentsToDisplayNewTranslation(clearText: true);
-
             }
         }
 
         private void HandleInsertedData()
         {
-            string fileName = createNewTranslation.FileName;
-            string lyrics = createNewTranslation.Lyrics;
-
+            string fileName = createNewTranslationForm.FileName;
+            string lyrics = createNewTranslationForm.Lyrics;
 
             try
             {
                 fileProcessor.CreateNewTranslation(fileName, lyrics);
+                textField.ObserveCompletion();
             }
             catch (Exception e)
             {
@@ -146,17 +134,17 @@ namespace Blopnote
         private void PrepareComponentsToDisplayNewTranslation(bool clearText)
         {
             textField.Enable();
-            textField.NumberOfLinesToComplete = lyricsBox.LinesQuantity;
             closeToolStripMenuItem.Enabled = true;
             changeFolderToolStripMenuItem.Enabled = false;
             if (clearText)
             {
                 textField.Clear();
             }
-            ShowLyrics.Enabled = fileCondition.LyricsExists;
+            ShowLyrics.Enabled = fileState.LyricsIsUsed;
 
-            if (fileCondition.LyricsExists)
+            if (fileState.LyricsIsUsed)
             {
+                textField.NumberOfLinesToComplete = lyricsBox.LinesQuantity;
                 TryAutoCompleteText();
 
                 // Auto enabling of lyrics when user entered it
@@ -174,11 +162,11 @@ namespace Blopnote
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult answer = openFileDialog1.ShowDialog();
+#warning maybe handle opened and empty file in different ways?
             if (answer == DialogResult.OK)
             {
-#warning maybe handle opened and empty file with different ways?
                 StopTimerAndTrySaveFile(false);
-                lyricsBox.EnsureEmptyLyrics();
+                lyricsBox.EnsureCleared();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
                 PrepareComponentsToDisplayNewTranslation(clearText: false);
@@ -189,7 +177,7 @@ namespace Blopnote
 
         private void UpdateConfig(string key, string value)
         {
-            var config = ConfigurationManager.OpenExeConfiguration(Environment.CurrentDirectory + @"\Blopnote.exe");
+            var config = ConfigurationManager.OpenExeConfiguration(Path.Combine(Environment.CurrentDirectory, "Blopnote.exe"));
             config.AppSettings.Settings[key].Value = value;
             config.Save();
         }
@@ -216,7 +204,7 @@ namespace Blopnote
             closeToolStripMenuItem.Enabled = false;
             changeFolderToolStripMenuItem.Enabled = true;
             ShowLyrics.Enabled = false;
-            fileCondition.DoesNotExist();
+            fileState.DoesNotExist();
             RegulateTextAndLyricsBoxes();
             timerSelectionStart.Stop();
         }
