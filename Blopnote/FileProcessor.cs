@@ -120,7 +120,7 @@ namespace Blopnote
 
         internal void OpenTranslation(string FullFileName)
         {
-#warning i'm fucking tired with this shitcode
+#warning i'm so tired with this shitcode
             string lyrics = FindLyrics(FullFileName);
             string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
             string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
@@ -130,11 +130,7 @@ namespace Blopnote
             if (fileState.LyricsIsUsed)
             {
                 lyricsBox.FilterAndKeep(lyrics);
-                if (fileState.songInfo.Completed)
-                {
-                    textField.StopObserving();
-                }
-                else
+                if (!fileState.songInfo.Completed)
                 {
                     textField.ObserveCompletion();
                 }
@@ -156,7 +152,7 @@ namespace Blopnote
             if (File.Exists(conjectiveLyricsPath))
             {
                 fileState.LyricsIsUsed = true;
-                fileState.LoadSongInfo(conjectiveLyricsPath);
+                fileState.ReadSongInfo(conjectiveLyricsPath);
                 return fileState.songInfo.Lyrics;
             }
             else

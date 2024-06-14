@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using static Blopnote.Browser;
 using System.Diagnostics;
 using System.IO;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Blopnote
 {
@@ -36,6 +37,8 @@ namespace Blopnote
             textField = new TextField(TextBoxWithText);
             fileState = new FileState(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
+            createToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
+            openToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
             fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
             textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
             fileProcessor.DirectoryChanged += (sender, e) =>
@@ -136,6 +139,8 @@ namespace Blopnote
             textField.Enable();
             closeToolStripMenuItem.Enabled = true;
             changeFolderToolStripMenuItem.Enabled = false;
+// Q: maybe there's no need to use this?
+// A: there is.
             if (clearText)
             {
                 textField.Clear();
@@ -155,6 +160,7 @@ namespace Blopnote
             }
 
             RegulateTextAndLyricsBoxes();
+            
 
             timerSelectionStart.Start();
         }
@@ -165,6 +171,7 @@ namespace Blopnote
 #warning maybe handle opened and empty file in different ways?
             if (answer == DialogResult.OK)
             {
+                textField.StopObserving();
                 StopTimerAndTrySaveFile(false);
                 lyricsBox.EnsureCleared();
 
@@ -224,7 +231,7 @@ namespace Blopnote
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
         {
-            if (ShowLyrics.Enabled == false)
+            if (!ShowLyrics.Enabled)
             {
                 ShowLyrics.Checked = false;
                 lyricsBox.NoLyrics();

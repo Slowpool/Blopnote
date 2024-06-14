@@ -57,7 +57,7 @@ namespace Blopnote
         }
 
         private int LinesCapacity => (panel.Height - VERTICAL_PADDING) / lineHeight;
-        private int AmountOfInvisibleLabels => Lines.Count - LinesCapacity;
+        private int AmountOfInvisibleLabels => Lines.Count <= LinesCapacity ? 0 : Lines.Count - LinesCapacity;
 
         private int scrollBarValue
         {
@@ -286,7 +286,7 @@ namespace Blopnote
             }
 #warning tool tips
             //AddToolTips();
-            PlaceLabels();
+            //PlaceLabels();
         }
 
         private async void AddToolTips()
@@ -432,6 +432,9 @@ namespace Blopnote
 
         internal void AdjustScrollBar()
         {
+            // Q: emmm what is 9 here?
+            // A: length of scrollBar
+            // Conclusions: use const value
             scrollBar.Maximum = AmountOfInvisibleLabels + 9;
         }
 
@@ -525,6 +528,11 @@ namespace Blopnote
             }
             catch { }
             PreviousHighlightedLabel = null;
+        }
+
+        internal void ResetScrollBar(object sender, EventArgs e)
+        {
+            scrollBar.Value = 0;
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Blopnote
             songInfo = LyricsIsUsed ? new SongInfo(lyrics) : null;
         }
 
-        internal void LoadSongInfo(string conjectiveLyricsPath)
+        internal void ReadSongInfo(string conjectiveLyricsPath)
         {
             
             string text = File.ReadAllText(conjectiveLyricsPath);
