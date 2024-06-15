@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using OpenQA.Selenium;
 using SeleniumKeys = OpenQA.Selenium.Keys;
 using static Blopnote.Browser;
+using System.Diagnostics;
 
 namespace Blopnote
 {
@@ -25,8 +26,12 @@ namespace Blopnote
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] LabelsWithLyrics { get; set; }
 
-        private Label PreviousHighlightedLabel { get; set; }
+        private Label HighlightedLabel { get; set; }
+        private int IndexHighlightedLabel { get; set; }
 
+        internal event EventHandler TranslationByGoogleLoaded;
+        private string[] TranslationByGoogle { get; set; }
+        private bool TranslateOnly1Line { get; set; }
 
         internal bool Enabled => panel.Visible;
 
@@ -71,6 +76,7 @@ namespace Blopnote
             }
         }
 
+        private readonly Color HIGHLIGHTED_LABEL = Color.LightSteelBlue;
         private const int HORIZONTAL_PADDING = 10;
         private const int VERTICAL_PADDING = 10;
         private const int MAX_WIDTH = 800;
@@ -125,7 +131,7 @@ namespace Blopnote
         /// better navigate the text
         /// </summary>
         /// <param name="lyrics"></param>
-        internal string FilterAndKeep(string lyrics)
+        internal async Task<string> FilterAndKeep(string lyrics)
         {
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
@@ -133,6 +139,8 @@ namespace Blopnote
             TrimLines();
             LabelsWithLyrics = new Label[Lines.Count];
             ConfigureLabels();
+            TranslationByGoogle = await UpdateTranslationByGoogle(Lyrics);
+            TranslationByGoogleLoaded(this, null);
             CalculateWidth();
             AdjustScrollBar();
             return Lyrics;
@@ -245,7 +253,7 @@ namespace Blopnote
         private int CheckBothSidesOfLine(int lineIndex)
         {
             int added = 0;
-            
+
             if (Lines[lineIndex + added + 1] != string.Empty)
             {
                 Lines.Insert(lineIndex, string.Empty);
@@ -264,7 +272,7 @@ namespace Blopnote
             if (Lines.Contains(EXCESS_PHRASE))
             {
                 int ExcessPhraseIndex = Lines.IndexOf(EXCESS_PHRASE);
-                for(int i = 0; i < LINES_AFTER_EXCESS_PHRASE; i++)
+                for (int i = 0; i < LINES_AFTER_EXCESS_PHRASE; i++)
                 {
                     Lines.RemoveAt(ExcessPhraseIndex);
                 }
@@ -283,25 +291,6 @@ namespace Blopnote
                 LabelsWithLyrics[i].AutoSize = true;
                 ChangeBackColorIfContainsKeyword(LabelsWithLyrics[i]);
                 panel.Controls.Add(LabelsWithLyrics[i]);
-            }
-#warning tool tips
-            //AddToolTips();
-            //PlaceLabels();
-        }
-
-        private async void AddToolTips()
-        {
-            driver.Navigate().GoToUrl("https://translate.google.com/");
-            var inputBox = driver.FindElement(By.ClassName("er8xn"));
-            await Task.Delay(500);
-            inputBox.SendKeys(Lyrics);
-            await Task.Delay(2000);
-            //string translatedLyrics = driver.FindElement(By.ClassName("ryNqvb")).Text;
-
-            for (int i = 0; i < LabelsWithLyrics.Length; i++)
-            {
-                //toolTipLyrics.SetToolTip(LabelsWithLyrics[labelIndex], translatedLine);
-                toolTipLyrics.SetToolTip(LabelsWithLyrics[i], $"toolTip {i}");
             }
         }
 
@@ -388,7 +377,26 @@ namespace Blopnote
 
         private void CalculateWidth()
         {
-            int maxWidthOfLines = LabelsWithLyrics.Max(label => label.Width);
+            // attempt to calculate max width including width of labels with translation
+            // but there's string[] TranslatedLyrics and it's impossible to calculate width of strings
+            // because characters have different width so it'll spaghetti-code
+            // UPD: got it. i don't need in several labels, I need in only one (I decided to take first one
+            // because it's already configurated in appropriate way.
+
+            string temp = LabelsWithLyrics[0].Text;
+
+            var fakeLabel = LabelsWithLyrics[0];
+            var TranslatedLinesWidth = TranslationByGoogle.Select(line =>
+            {
+                fakeLabel.Text = line;
+                return fakeLabel.Width;
+            });
+
+            int maxWidthOfLines = LabelsWithLyrics.Select(label => label.Width)
+                                                  .Concat(TranslatedLinesWidth)
+                                                  .Max();
+            fakeLabel.Text = temp;
+
             LyricsBoxWidth = HORIZONTAL_PADDING + maxWidthOfLines + HORIZONTAL_PADDING + scrollBar.Width;
             if (LyricsBoxWidth > MAX_WIDTH)
             {
@@ -462,7 +470,7 @@ namespace Blopnote
             {
                 return TypesOfLine.New;
             }
-            
+
             if (Lines[lineIndex] == string.Empty)
             {
                 return TypesOfLine.Empty;
@@ -473,7 +481,7 @@ namespace Blopnote
                 return TypesOfLine.Keyword;
             }
 
-            for(int i = 0; i < lineIndex; i++)
+            for (int i = 0; i < lineIndex; i++)
             {
                 string s1 = Lines[i];
                 string s2 = Lines[lineIndex];
@@ -496,17 +504,19 @@ namespace Blopnote
         {
             if (Lines == null)
             {
+#warning is it possible?
                 return;
             }
 
             if (lineIndex >= Lines.Count)
             {
+                ReleaseHighlightedLabel();
                 return;
             }
 
             Label currentLabel = LabelsWithLyrics[lineIndex];
 
-            if (currentLabel == PreviousHighlightedLabel)
+            if (currentLabel == HighlightedLabel)
             {
                 return;
             }
@@ -514,8 +524,9 @@ namespace Blopnote
             ReleaseHighlightedLabel();
             if (!IsKeyword(currentLabel.Text))
             {
-                currentLabel.BackColor = Color.LightSteelBlue;
-                PreviousHighlightedLabel = currentLabel;
+                currentLabel.BackColor = HIGHLIGHTED_LABEL;
+                HighlightedLabel = currentLabel;
+                IndexHighlightedLabel = lineIndex;
             }
         }
 
@@ -524,15 +535,69 @@ namespace Blopnote
             // In case when previous label is keyword, than it'll be null
             try
             {
-                PreviousHighlightedLabel.BackColor = Color.Transparent;
+                HighlightedLabel.BackColor = Color.Transparent;
+                HighlightedLabel = null;
             }
-            catch { }
-            PreviousHighlightedLabel = null;
+            catch
+            { }
         }
 
         internal void ResetScrollBar(object sender, EventArgs e)
         {
             scrollBar.Value = 0;
+        }
+
+        internal void PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyData == System.Windows.Forms.Keys.Tab)
+            {
+                ((TextBox)sender).KeyUp += KeyUp;
+                if (TranslateOnly1Line)
+                {
+                    try
+                    {
+                        HighlightedLabel.Text = TranslationByGoogle[IndexHighlightedLabel];
+                    }
+                    catch
+                    { }
+                }
+                else
+                {
+                    for (int i = 0; i < LabelsWithLyrics.Length; i++)
+                    {
+                        if (!IsKeyword(LabelsWithLyrics[i].Text))
+                        {
+                            LabelsWithLyrics[i].Text = TranslationByGoogle[i];
+                        }
+                    }
+                }
+            }
+        }
+
+        private void KeyUp(object sender, KeyEventArgs e)
+        {
+            if (TranslateOnly1Line)
+            {
+                try
+                {
+                    HighlightedLabel.Text = Lines[IndexHighlightedLabel];
+                }
+                catch
+                { }
+            }
+            else
+            {
+                for (int i = 0; i < LabelsWithLyrics.Length; i++)
+                {
+                    LabelsWithLyrics[i].Text = Lines[i];
+                }
+            }
+            ((TextBox)sender).KeyUp -= KeyUp;
+        }
+
+        internal void SwitchTabMode(object sender, EventArgs e)
+        {
+            TranslateOnly1Line = !TranslateOnly1Line;
         }
     }
 }

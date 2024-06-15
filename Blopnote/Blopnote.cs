@@ -37,18 +37,25 @@ namespace Blopnote
             textField = new TextField(TextBoxWithText);
             fileState = new FileState(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
+
+            tabTranslatesOnly1LineToolStripMenuItem.Click += lyricsBox.SwitchTabMode;
             createToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
             openToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
+
+            lyricsBox.TranslationByGoogleLoaded += textField.TranslationByGoogleLoaded;
+
             fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
             textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
                 createNewTranslationForm.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
             };
+
             createNewTranslationForm = new CreateNewTranslationForm();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
+            Browser.Initialize();
         }
 
         #region FormEvents
@@ -85,13 +92,11 @@ namespace Blopnote
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
-            //try
-            //{
-            //    driver.Close();
-            //    driver.Dispose();
-            //}
-            //catch
-            //{ }
+            if (Browser.IsOpened)
+            {
+                driver.Close();
+                driver.Dispose();
+            }
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -113,7 +118,7 @@ namespace Blopnote
 #warning awful + dirty code
                 lyricsBox.EnsureCleared();
                 HandleInsertedData();
-                PrepareComponentsToDisplayNewTranslation(clearText: true);
+                PrepareComponentsToDisplayTranslation(clearText: true);
             }
         }
 
@@ -134,7 +139,7 @@ namespace Blopnote
             }
         }
 
-        private void PrepareComponentsToDisplayNewTranslation(bool clearText)
+        private void PrepareComponentsToDisplayTranslation(bool clearText)
         {
             textField.Enable();
             closeToolStripMenuItem.Enabled = true;
@@ -176,7 +181,7 @@ namespace Blopnote
                 lyricsBox.EnsureCleared();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
-                PrepareComponentsToDisplayNewTranslation(clearText: false);
+                PrepareComponentsToDisplayTranslation(clearText: false);
 
                 textField.Focus();
             }
@@ -314,7 +319,7 @@ namespace Blopnote
 
         private void HighlightActualLine()
         {
-            lyricsBox.HighlightAt(textField.LineIndex);
+            lyricsBox.HighlightAt(textField.LineIndexWithCarriage);
         }
 
         private void TryAutoCompleteText()
@@ -349,6 +354,11 @@ namespace Blopnote
                 PreviousSelectionStart = TextBoxWithText.SelectionStart;
                 HighlightActualLine();
             }
+        }
+
+        private void tabTranslatesOnly1LineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabTranslatesOnly1LineToolStripMenuItem.Checked = !tabTranslatesOnly1LineToolStripMenuItem.Checked;
         }
     }
 }

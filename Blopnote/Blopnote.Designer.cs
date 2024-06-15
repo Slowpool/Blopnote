@@ -48,6 +48,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
             this.timerSelectionStart = new System.Windows.Forms.Timer(this.components);
+            this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -94,14 +95,14 @@
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.createToolStripMenuItem.Text = "Create";
             this.createToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -109,7 +110,7 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -126,7 +127,7 @@
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
             this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
@@ -134,7 +135,8 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.changeFolderToolStripMenuItem});
+            this.changeFolderToolStripMenuItem,
+            this.tabTranslatesOnly1LineToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -142,7 +144,7 @@
             // changeFolderToolStripMenuItem
             // 
             this.changeFolderToolStripMenuItem.Name = "changeFolderToolStripMenuItem";
-            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.changeFolderToolStripMenuItem.Text = "Change folder";
             this.changeFolderToolStripMenuItem.ToolTipText = "Close file to unlock";
             this.changeFolderToolStripMenuItem.Click += new System.EventHandler(this.changeFolderPathToolStripMenuItem_Click);
@@ -194,8 +196,14 @@
             // 
             // timerSelectionStart
             // 
-            this.timerSelectionStart.Interval = 200;
             this.timerSelectionStart.Tick += new System.EventHandler(this.timerSelectionStart_Tick);
+            // 
+            // tabTranslatesOnly1LineToolStripMenuItem
+            // 
+            this.tabTranslatesOnly1LineToolStripMenuItem.Name = "tabTranslatesOnly1LineToolStripMenuItem";
+            this.tabTranslatesOnly1LineToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Tab translates only 1 line";
+            this.tabTranslatesOnly1LineToolStripMenuItem.Click += new System.EventHandler(this.tabTranslatesOnly1LineToolStripMenuItem_Click);
             // 
             // Blopnote
             // 
@@ -245,6 +253,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTipLyrics;
         private System.Windows.Forms.Timer timerSelectionStart;
+        private System.Windows.Forms.ToolStripMenuItem tabTranslatesOnly1LineToolStripMenuItem;
     }
 }
 

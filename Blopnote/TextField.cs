@@ -23,7 +23,7 @@ namespace Blopnote
             }
         }
 
-        internal int LineIndex => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
+        internal int LineIndexWithCarriage => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
         internal int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
         internal int NumberOfLinesToComplete { get; set; }
@@ -62,7 +62,7 @@ namespace Blopnote
 
         internal void CopyCurrentLineToClipBoard()
         {
-            string line = TextBoxWithText.Lines[LineIndex];
+            string line = TextBoxWithText.Lines[LineIndexWithCarriage];
             try
             {
                 Clipboard.SetText(line);
@@ -98,6 +98,11 @@ namespace Blopnote
         {
             Debug.WriteLine("Observing: false");
             TextBoxWithText.TextChanged -= SongCompletionChecker;
+        }
+
+        internal void TranslationByGoogleLoaded(object sender, EventArgs e)
+        {
+            TextBoxWithText.PreviewKeyDown += ((LyricsBox)sender).PreviewKeyDown;
         }
     }
 }

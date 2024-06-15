@@ -182,11 +182,11 @@
     <Compile Include="Browser.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileState.cs" />
-    <Compile Include="Creating new song.cs">
+    <Compile Include="New translation.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Creating new song.Designer.cs">
-      <DependentUpon>Creating new song.cs</DependentUpon>
+    <Compile Include="New translation.Designer.cs">
+      <DependentUpon>New translation.cs</DependentUpon>
     </Compile>
     <Compile Include="FileProcessor.cs" />
     <Compile Include="LyricsBox.cs" />
@@ -201,8 +201,8 @@
     <EmbeddedResource Include="Blopnote.resx">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Creating new song.resx">
-      <DependentUpon>Creating new song.cs</DependentUpon>
+    <EmbeddedResource Include="New translation.resx">
+      <DependentUpon>New translation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

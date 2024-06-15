@@ -28,10 +28,9 @@ namespace Blopnote
         private string MakeLyricsPath(string filePath)
         {
 #warning dirty and obfuscated
-            //string lyricsPath = filePath.Insert(filePath.Length - 4, " " + Names.SongInfoFolder);
             int indexOfLastSlash = filePath.LastIndexOf('\\');
             string lyricsPath = filePath.Insert(indexOfLastSlash, "\\" + Names.SongInfoFolder)
-                                   .Replace(".txt", ".json");
+                                        .Replace(".txt", ".json");
             return lyricsPath;
         }
 
@@ -79,7 +78,7 @@ namespace Blopnote
             }
         }
 
-        internal void CreateNewTranslation(string fileName, string lyrics)
+        internal async void CreateNewTranslation(string fileName, string lyrics)
         {
             fileState.UpdateState(fileName, lyrics, directory);
 
@@ -87,7 +86,7 @@ namespace Blopnote
 
             if (fileState.LyricsIsUsed)
             {
-                var filteredLyrics = lyricsBox.FilterAndKeep(lyrics);
+                var filteredLyrics = await lyricsBox.FilterAndKeep(lyrics);
                 fileState.CreateSongInfo(filteredLyrics);
                 WriteLyrics();
             }
@@ -137,14 +136,6 @@ namespace Blopnote
             }
         }
 
-        //private void ReadText(string FullFileName)
-        //{
-        //    using(var reader = new StreamReader(FullFileName, Encoding.UTF8))
-        //    {
-        //        textField.Text = reader.ReadToEnd();
-        //    }
-        //}
-
         private string FindLyrics(string FullFileName)
         {
             // C:\Users\azgel\Desktop\translations\ic3peak - no death.txt
@@ -164,7 +155,20 @@ namespace Blopnote
         internal void SongIsWritten_Handler(object sender, EventArgs e)
         {
             fileState.songInfo.Completed = true;
-            File.WriteAllText(LyricsPath, JsonConvert.SerializeObject(fileState.songInfo));
+            try
+            {
+                File.WriteAllText(LyricsPath, JsonConvert.SerializeObject(fileState.songInfo));
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(caption: "Error",
+                            text: "Information about song completion wasn't written. Cause: " + exception.Message,
+                            buttons: MessageBoxButtons.OK,
+                            icon: MessageBoxIcon.Error
+                            );
+            }
+            // release info since it's useless in the future
+            fileState.songInfo = null;
             textField.StopObserving();
             MessageBox.Show(caption: "Completed",
                             text: "Congratulations! Song was successfully written!",
