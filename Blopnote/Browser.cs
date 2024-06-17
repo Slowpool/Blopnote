@@ -91,12 +91,60 @@ namespace Blopnote
 #warning needs reworking
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
             var soundButtons =
-                wait.Until(driver => driver.FindElements(By.ClassName("aJIq1d"))
+                wait.Until(webDriver => webDriver.FindElements(By.ClassName("aJIq1d"))
                                            .Where(element => element.GetAttribute("data-language-code") == "en"));
             Cursor.Current = Cursors.Default;
             return soundButtons.Single()
                                .GetAttribute("data-text")
                                .Split(new[] { "\r\n" }, StringSplitOptions.None);
+        }
+
+        internal async static Task<string[,]> GetYoutubeURLs(string songName)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+
+            driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + songName);
+            #region Delete
+            //var search = wait.Until(webDriver => webDriver.FindElement(By.Id("search-input")));
+            //await Task.Delay(5000);
+            //search.Click();
+            //search.SendKeys(songName);
+            //search.SendKeys(SeleniumKeys.Enter); 
+            #endregion
+            await Task.Delay(1000);
+            var videoTitles = wait.Until(driver => driver.FindElements(By.Id("video-title")))
+                             .Take(5);
+            string[,] result = new string[videoTitles.Count(), 2];
+            int i = 0;
+            foreach(var videoTitle in videoTitles)
+            {
+                result[i, 0] = videoTitle.GetAttribute("title");
+                result[i, 1] = videoTitle.GetAttribute("href");
+
+                i++;
+            }
+
+            Cursor.Current = Cursors.Default;
+            return result;
+            #region latch
+            //switch (new Random().Next(6))
+            //{
+            //    case 0:
+            //        return new string[0];
+            //    case 1:
+            //        return new[] { "ref1" };
+            //    case 2:
+            //        return new[] { "ref1", "ref2" };
+            //    case 3:
+            //        return new[] { "ref1", "ref2", "ref3" };
+            //    case 4:
+            //        return new[] { "ref1", "ref2", "ref3", "ref4" };
+            //    case 5:
+            //        return new[] { "ref1", "ref2", "ref3", "ref4", "ref5" };
+            //    default:
+            //        return new string[] { "https://www.youtube.com/watch?v=e26zZ83Oh6Y", "https://www.youtube.com/watch?v=KNqRoKLZZ6M" };
+            //} 
+            #endregion
         }
     }
 }

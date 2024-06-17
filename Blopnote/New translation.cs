@@ -15,11 +15,14 @@ namespace Blopnote
         private string Author => TextBoxForAuthor.Text;
         private string Song => TextBoxForSong.Text;
         internal string Lyrics { get; set; }
+        internal string URL { get; set; }
 
         private string SongName => Author + " - " + Song;
         internal string FileName { get; set; }
 
         private bool SongInserted => TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0;
+        private const string EMPTY_FIELDS_MESSAGE = "Author or song name isn't inserted";
+        private const string NOT_FOUND_MESSAGE = "Not found";
 
         private bool AuthorIsCorrect => !string.IsNullOrEmpty(Author);
         private bool SongIsCorrect => !string.IsNullOrEmpty(Song);
@@ -30,7 +33,10 @@ namespace Blopnote
                                              && SongIsCorrect;
 
         private const string FIELD_X_IS_EMPTY = "Field \"{0}\" is empty.\n";
+
 #warning what if i use mac? it has to be gotten dinamically
+        // P.S. I meant not a mac but I've seen that max length of path can be changed manually in settings
+        // in "pro-like" version of win10 to e.g. 500 characters. But I'm not sure 
         private const int PATH_MAX = 255;
 
         private List<string> references = new List<string>();
@@ -50,10 +56,20 @@ namespace Blopnote
             }
         }
 
+        private readonly URL_item[] URL_items;
+        private readonly string[,] ZERO_URLs = new string[,] { };
         internal CreateNewTranslationForm()
         {
             InitializeComponent();
             Icon = Resources.icon;
+            URL_items = new URL_item[]
+            {
+                new URL_item(buttonCopy1, radioButtonURL1, linkLabelURL1),
+                new URL_item(buttonCopy2, radioButtonURL2, linkLabelURL2),
+                new URL_item(buttonCopy3, radioButtonURL3, linkLabelURL3),
+                new URL_item(buttonCopy4, radioButtonURL4, linkLabelURL4),
+                new URL_item(buttonCopy5, radioButtonURL5, linkLabelURL5),
+            };
         }
 
         [STAThread]
@@ -71,6 +87,8 @@ namespace Blopnote
 
             ClearAllRelatedToLyrics();
             UpdateLyricsSelector();
+
+            ClearAllRelatedToURLs();
         }
 
         private void UpdateLyricsSelector()
@@ -90,6 +108,12 @@ namespace Blopnote
             DownloadedLyrics.Clear();
         }
 
+        private void ClearAllRelatedToURLs()
+        {
+            DisplayURLs(ZERO_URLs);
+            labelURL_Request.Text = string.Empty;
+        }
+
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
         {
             TextBoxForLyrics.Enabled = CheckBoxUseLyrics.Checked;
@@ -99,34 +123,44 @@ namespace Blopnote
             UpdateLyricsSelector();
         }
 
-        private void FileNameAndLyricsInputWindow_FormClosing(object sender, FormClosingEventArgs e)
+        private void checkBoxStoreURL_CheckedChanged(object sender, EventArgs e)
         {
-
+            buttonRequestForURL.Enabled = checkBoxUseURL.Checked;
+            ClearAllRelatedToURLs();
         }
 
         private void OK_Click(object sender, EventArgs e)
         {
-            if (ValidateChildren(ValidationConstraints.None))
-            {
+            //if (ValidateChildren(ValidationConstraints.None))
+            //{
 
-                Lyrics = TextBoxForLyrics.Text;
-                FileName = SongName + ".txt";
-            }
-            else
+            //    Lyrics = TextBoxForLyrics.Text;
+            //    FileName = SongName + ".txt";
+            //}
+            //else
+            //{
+            //    this.DialogResult = DialogResult.None;
+            //}
+
+            Lyrics = TextBoxForLyrics.Text;
+            FileName = SongName + ".txt";
+            URL = URL_items.Where(item => item.Checked)
+                           .Single()
+                           .URL;
+            if (!InsertedDataIsComplete)
             {
+                // it's painfully
+                string messageText = AuthorIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Author");
+                messageText += SongIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Song");
+                messageText += LyricsIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Lyrics");
+#warning here I stopped
+                //messageText += URL_IsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "URL");
+                MessageBox.Show(caption: "Incomplite data",
+                                   text: messageText);
+// Q: wait, how does it work? why DialogResult after this line is still DialogResult.OK?
+// A: get it. this is dialog result of form, not one of button. It's funny that I had forgotten how does my own code work
                 this.DialogResult = DialogResult.None;
             }
-
-//            if (!InsertedDataIsComplete)
-//            {
-//#warning is it dry violation?
-//                string messageText = AuthorIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Author");
-//                messageText += SongIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Song");
-//                messageText += LyricsIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Lyrics");
-//                //MessageBox.Show(caption: "Incomplite data",
-//                //    text: messageText);
-//                this.DialogResult = DialogResult.None;
-//            }
         }
 
         private void TextBoxForAuthor_KeyPress(object sender, KeyPressEventArgs e)
@@ -148,7 +182,7 @@ namespace Blopnote
                 {
                     ClearAllRelatedToLyrics();
                     UpdateLyricsSelector();
-                    labelLyricsRequestResult.Text = "Not found";
+                    labelLyricsRequestResult.Text = NOT_FOUND_MESSAGE;
                 }
                 else
                 {
@@ -162,6 +196,7 @@ namespace Blopnote
             {
                 ClearAllRelatedToLyrics();
                 UpdateLyricsSelector();
+                labelLyricsRequestResult.Text = EMPTY_FIELDS_MESSAGE;
             }
             Cursor.Current = Cursors.Default;
         }
@@ -230,6 +265,7 @@ namespace Blopnote
             TextBoxForSong.MaxLength = fieldMaxLength;
         }
 
+        #region Validating
         private void TextBoxAuthorAndSong_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             var textBox = (TextBox)sender;
@@ -239,7 +275,7 @@ namespace Blopnote
                 e.Cancel = true;
             }
         }
-        
+
         private void TextBoxAuthorAndSong_Validated(object sender, EventArgs e)
         {
             var textBox = (TextBox)sender;
@@ -276,11 +312,76 @@ namespace Blopnote
         private void groupBoxSong_Validated(object sender, EventArgs e)
         {
 
+        } 
+        #endregion
+
+        private void buttonCopy_Click(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            string URL = URL_items.Where(URLitem => URLitem.HasButton(button))
+                                  .Single()
+                                  .Name;
+            Clipboard.SetText(URL);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void buttonRequestForURL_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
+            if (SongInserted)
+            {
+                string[,] URLs = await Browser.GetYoutubeURLs(SongName);
+                DisplayURLs(URLs);
+                labelURL_Request.Text = URLs.GetLength(0) == 0
+                                        ? NOT_FOUND_MESSAGE
+                                        : URLs.GetLength(0) + " URLs were successfully found";
+            }
+            else
+            {
+                DisplayURLs(ZERO_URLs);
+                labelURL_Request.Text = EMPTY_FIELDS_MESSAGE;
+            }
+            Cursor.Current = Cursors.Default;
+        }
 
+        private void DisplayURLs(string[,] URLs)
+        {
+            URL_items[0].Checked = true;
+            for(int i = 0; i < URLs.GetLength(0); i++)
+            {
+                URL_items[i].Name = URLs[i, 0];
+                URL_items[i].URL = URLs[i, 1];
+                URL_items[i].Visible = true;
+            }
+            // hide url items without url
+            for (int i = URLs.Length; i < URL_items.Length; i++)
+            {
+                URL_items[i].Name = string.Empty;
+                URL_items[i].URL = string.Empty;
+                URL_items[i].Visible = false;
+            }
+        }
+
+        private void linkLabelURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            string URL = GetURL((LinkLabel)sender);
+            var info = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = URL,
+                CreateNoWindow = false
+            };
+            System.Diagnostics.Process.Start(info);
+        }
+
+        private string GetURL(LinkLabel linkLabel)
+        {
+            foreach(URL_item item in URL_items)
+            {
+                if (item.HasLabel(linkLabel))
+                {
+                    return item.URL;
+                }
+            }
+            throw new ArgumentException("");
         }
     }
 }

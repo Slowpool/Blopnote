@@ -201,6 +201,7 @@
     <Compile Include="TextField.cs" />
     <Compile Include="TypesOfLine.cs" />
     <Compile Include="UnitTests.cs" />
+    <Compile Include="URL_item.cs" />
     <EmbeddedResource Include="Blopnote.resx">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </EmbeddedResource>
