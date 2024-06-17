@@ -56,11 +56,6 @@ namespace Blopnote
             Icon = Resources.icon;
         }
 
-        private void FileNameAndLyricsInputWindow_Load(object sender, EventArgs e)
-        {
-            
-        }
-
         [STAThread]
         internal DialogResult ShowForDataInput()
         {
@@ -111,19 +106,27 @@ namespace Blopnote
 
         private void OK_Click(object sender, EventArgs e)
         {
-            Lyrics = TextBoxForLyrics.Text;
-            FileName = SongName + ".txt";
-
-            if (!InsertedDataIsComplete)
+            if (ValidateChildren(ValidationConstraints.None))
             {
-#warning is it dry violation?
-                string messageText = AuthorIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Author");
-                messageText += SongIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Song");
-                messageText += LyricsIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Lyrics");
-                MessageBox.Show(caption: "Incomplite data",
-                    text: messageText);
+
+                Lyrics = TextBoxForLyrics.Text;
+                FileName = SongName + ".txt";
+            }
+            else
+            {
                 this.DialogResult = DialogResult.None;
             }
+
+//            if (!InsertedDataIsComplete)
+//            {
+//#warning is it dry violation?
+//                string messageText = AuthorIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Author");
+//                messageText += SongIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Song");
+//                messageText += LyricsIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Lyrics");
+//                //MessageBox.Show(caption: "Incomplite data",
+//                //    text: messageText);
+//                this.DialogResult = DialogResult.None;
+//            }
         }
 
         private void TextBoxForAuthor_KeyPress(object sender, KeyPressEventArgs e)
@@ -225,6 +228,59 @@ namespace Blopnote
             fieldMaxLength /= 2;
             TextBoxForAuthor.MaxLength = fieldMaxLength;
             TextBoxForSong.MaxLength = fieldMaxLength;
+        }
+
+        private void TextBoxAuthorAndSong_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            if (textBox.Text.Length == 0)
+            {
+                errorProvider1.SetError(textBox, "This field can't be empty");
+                e.Cancel = true;
+            }
+        }
+        
+        private void TextBoxAuthorAndSong_Validated(object sender, EventArgs e)
+        {
+            var textBox = (TextBox)sender;
+            errorProvider1.SetError(textBox, "");
+        }
+
+        private void TextBoxForLyrics_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (CheckBoxUseLyrics.Checked)
+            {
+                if (TextBoxForLyrics.Text.Length == 0)
+                {
+                    e.Cancel = true;
+                    errorProvider1.SetError(TextBoxForLyrics, "You signed \"Use lyrics\" but didn't insert it");
+                }
+            }
+        }
+
+        private void TextBoxForLyrics_Validated(object sender, EventArgs e)
+        {
+            errorProvider1.SetError(TextBoxForLyrics, "");
+        }
+
+        private void CreateNewTranslationForm_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void groupBoxSong_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void groupBoxSong_Validated(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

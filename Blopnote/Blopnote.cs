@@ -55,7 +55,7 @@ namespace Blopnote
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
-            Browser.Initialize();
+            Browser.Latch();
         }
 
         #region FormEvents

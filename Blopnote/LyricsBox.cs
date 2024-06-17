@@ -131,7 +131,7 @@ namespace Blopnote
         /// better navigate the text
         /// </summary>
         /// <param name="lyrics"></param>
-        internal async Task<string> FilterAndKeep(string lyrics)
+        internal string FilterAndKeep(string lyrics)
         {
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
@@ -139,7 +139,7 @@ namespace Blopnote
             TrimLines();
             LabelsWithLyrics = new Label[Lines.Count];
             ConfigureLabels();
-            TranslationByGoogle = await UpdateTranslationByGoogle(Lyrics);
+            TranslationByGoogle = GetTranslationByGoogle(Lyrics);
             TranslationByGoogleLoaded(this, null);
             CalculateWidth();
             AdjustScrollBar();

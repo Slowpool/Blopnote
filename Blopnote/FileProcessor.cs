@@ -78,7 +78,7 @@ namespace Blopnote
             }
         }
 
-        internal async void CreateNewTranslation(string fileName, string lyrics)
+        internal void CreateNewTranslation(string fileName, string lyrics)
         {
             fileState.UpdateState(fileName, lyrics, directory);
 
@@ -86,7 +86,7 @@ namespace Blopnote
 
             if (fileState.LyricsIsUsed)
             {
-                var filteredLyrics = await lyricsBox.FilterAndKeep(lyrics);
+                var filteredLyrics = lyricsBox.FilterAndKeep(lyrics);
                 fileState.CreateSongInfo(filteredLyrics);
                 WriteLyrics();
             }

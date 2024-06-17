@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,16 @@ namespace Blopnote
     internal static class Browser
     {
         internal static readonly ChromeDriver driver;
+        private static readonly WebDriverWait wait;
+
         internal static bool IsOpened { get; set; } = false;
 
-        internal static void Initialize()
+        /// <summary>
+        /// Use it for browser driver initialiation
+        /// </summary>
+        internal static void Latch()
         {
-
+            
         }
 
         static Browser()
@@ -34,6 +40,9 @@ namespace Blopnote
 
             driver = new ChromeDriver(service, options);
             driver.Manage().Window.Maximize();
+            //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         internal static async Task<List<string>> RequestForSimilarSongs(string songName)
@@ -65,7 +74,7 @@ namespace Blopnote
             return null;
         }
 
-        internal static async Task<string[]> UpdateTranslationByGoogle(string lyrics)
+        internal static string[] GetTranslationByGoogle(string lyrics)
         {
             #region trash
             // yandex and reverso attempts
@@ -80,14 +89,14 @@ namespace Blopnote
             Cursor.Current = Cursors.WaitCursor;
             driver.Navigate().GoToUrl("https://translate.google.com/?sl=ru&tl=en&text=" + lyrics.Replace("\r\n", "%0A"));
 #warning needs reworking
-            await Task.Delay(6000);//(Lyrics.Length > 3000 ? Lyrics.Length : 3000);
-            string translatedLyrics = driver.FindElements(By.ClassName("aJIq1d"))
-                                            .Where(element => element.GetAttribute("data-language-code") == "en")
-                                            .Single()
-                                            .GetAttribute("data-text");
+            wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
+            var soundButtons =
+                wait.Until(driver => driver.FindElements(By.ClassName("aJIq1d"))
+                                           .Where(element => element.GetAttribute("data-language-code") == "en"));
             Cursor.Current = Cursors.Default;
-            return translatedLyrics.Split(new[] { "\r\n" }, StringSplitOptions.None);
-
+            return soundButtons.Single()
+                               .GetAttribute("data-text")
+                               .Split(new[] { "\r\n" }, StringSplitOptions.None);
         }
     }
 }
