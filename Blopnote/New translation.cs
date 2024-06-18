@@ -7,39 +7,26 @@ using Blopnote.Properties;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using static Blopnote.Browser;
+using System.IO;
 
 namespace Blopnote
 {
     public partial class CreateNewTranslationForm : Form
     {
-        private string Author => TextBoxForAuthor.Text;
-        private string Song => TextBoxForSong.Text;
-        internal string Lyrics { get; set; }
-        internal string URL { get; set; }
+        private string SongName => TextBoxForAuthor.Text + " - " + TextBoxForSong.Text;
+        internal FileInfo fileInfo { get; set; }
+        internal SongInfo songInfo { get; set; }
 
-        private string SongName => Author + " - " + Song;
-        internal string FileName { get; set; }
-
-        private bool SongInserted => TextBoxForAuthor.Text.Length != 0 && TextBoxForSong.Text.Length != 0;
+        private bool SongInserted => ValidateTextBox(TextBoxForAuthor) && ValidateTextBox(TextBoxForSong);
         private const string EMPTY_FIELDS_MESSAGE = "Author or song name isn't inserted";
         private const string NOT_FOUND_MESSAGE = "Not found";
-
-        private bool AuthorIsCorrect => !string.IsNullOrEmpty(Author);
-        private bool SongIsCorrect => !string.IsNullOrEmpty(Song);
-        private bool LyricsIsCorrect => !(CheckBoxUseLyrics.Checked ^ !string.IsNullOrEmpty(Lyrics));
-
-        internal bool InsertedDataIsComplete => AuthorIsCorrect
-                                             && LyricsIsCorrect
-                                             && SongIsCorrect;
-
-        private const string FIELD_X_IS_EMPTY = "Field \"{0}\" is empty.\n";
 
 #warning what if i use mac? it has to be gotten dinamically
         // P.S. I meant not a mac but I've seen that max length of path can be changed manually in settings
         // in "pro-like" version of win10 to e.g. 500 characters. But I'm not sure 
         private const int PATH_MAX = 255;
 
-        private List<string> references = new List<string>();
+        private List<string> lyricsReferences = new List<string>();
         private readonly List<string> DownloadedLyrics = new List<string>();
 
         private int lyricsId;
@@ -58,6 +45,8 @@ namespace Blopnote
 
         private readonly URL_item[] URL_items;
         private readonly string[,] ZERO_URLs = new string[,] { };
+        private URL_item SelectedURL_item => URL_items.Where(item => item.Checked)
+                                                      .Single();
         internal CreateNewTranslationForm()
         {
             InitializeComponent();
@@ -83,27 +72,29 @@ namespace Blopnote
         {
             TextBoxForAuthor.Clear();
             TextBoxForSong.Clear();
-            CheckBoxUseLyrics.Checked = true;
+            checkBoxUseLyrics.Checked = true;
 
             ClearAllRelatedToLyrics();
             UpdateLyricsSelector();
 
             ClearAllRelatedToURLs();
+
+            fileInfo = null;
+            songInfo = null;
         }
 
         private void UpdateLyricsSelector()
         {
-            buttonPreviousLyrics.Enabled = CheckBoxUseLyrics.Checked && LyricsId > 0;
-            buttonNextLyrics.Enabled = CheckBoxUseLyrics.Checked && LyricsId < references.Count - 1;
+            buttonPreviousLyrics.Enabled = checkBoxUseLyrics.Checked && LyricsId > 0;
+            buttonNextLyrics.Enabled = checkBoxUseLyrics.Checked && LyricsId < lyricsReferences.Count - 1;
         }
 
         private void ClearAllRelatedToLyrics()
         {
             labelLyricsRequestResult.Text = string.Empty;
-            Lyrics = null;
 #warning magic const
             LyricsId = -1;
-            references.Clear();
+            lyricsReferences.Clear();
             TextBoxForLyrics.Clear();
             DownloadedLyrics.Clear();
         }
@@ -116,9 +107,9 @@ namespace Blopnote
 
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
         {
-            TextBoxForLyrics.Enabled = CheckBoxUseLyrics.Checked;
-            buttonLyricsRequest.Enabled = CheckBoxUseLyrics.Checked;
-            labelLyricsRequestResult.Enabled = CheckBoxUseLyrics.Checked;
+            TextBoxForLyrics.Enabled = checkBoxUseLyrics.Checked;
+            buttonLyricsRequest.Enabled = checkBoxUseLyrics.Checked;
+            labelLyricsRequestResult.Enabled = checkBoxUseLyrics.Checked;
             ClearAllRelatedToLyrics();
             UpdateLyricsSelector();
         }
@@ -131,34 +122,13 @@ namespace Blopnote
 
         private void OK_Click(object sender, EventArgs e)
         {
-            //if (ValidateChildren(ValidationConstraints.None))
-            //{
-
-            //    Lyrics = TextBoxForLyrics.Text;
-            //    FileName = SongName + ".txt";
-            //}
-            //else
-            //{
-            //    this.DialogResult = DialogResult.None;
-            //}
-
-            Lyrics = TextBoxForLyrics.Text;
-            FileName = SongName + ".txt";
-            URL = URL_items.Where(item => item.Checked)
-                           .Single()
-                           .URL;
-            if (!InsertedDataIsComplete)
+            if (ValidateChildren(ValidationConstraints.None))
             {
-                // it's painfully
-                string messageText = AuthorIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Author");
-                messageText += SongIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Song");
-                messageText += LyricsIsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "Lyrics");
-#warning here I stopped
-                //messageText += URL_IsCorrect ? string.Empty : string.Format(FIELD_X_IS_EMPTY, "URL");
-                MessageBox.Show(caption: "Incomplite data",
-                                   text: messageText);
-// Q: wait, how does it work? why DialogResult after this line is still DialogResult.OK?
-// A: get it. this is dialog result of form, not one of button. It's funny that I had forgotten how does my own code work
+                songInfo = new SongInfo(lyrics: TextBoxForLyrics.Text, URL: SelectedURL_item.URL);
+                fileInfo = new FileInfo(SongName + ".txt");
+            }
+            else
+            {
                 this.DialogResult = DialogResult.None;
             }
         }
@@ -177,8 +147,8 @@ namespace Blopnote
             LyricsId = 0;
             if (SongInserted)
             {
-                references = await RequestForSimilarSongs(SongName);
-                if (references.Count == 0)
+                lyricsReferences = await RequestForSimilarSongs(SongName);
+                if (lyricsReferences.Count == 0)
                 {
                     ClearAllRelatedToLyrics();
                     UpdateLyricsSelector();
@@ -186,7 +156,7 @@ namespace Blopnote
                 }
                 else
                 {
-                    labelLyricsRequestResult.Text = string.Format("{0} lyrics found", references.Count);
+                    labelLyricsRequestResult.Text = string.Format("{0} lyrics found", lyricsReferences.Count);
                     DownloadedLyrics.Clear();
                     LyricsId = 0;
                     LoadLyricsToTextBox();
@@ -232,7 +202,7 @@ namespace Blopnote
             }
             catch
             {
-                DownloadedLyrics.Add(await GetLyrics(references[LyricsId]));
+                DownloadedLyrics.Add(await GetLyrics(lyricsReferences[LyricsId]));
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
             }
             UpdateLyricsSelector();
@@ -266,53 +236,41 @@ namespace Blopnote
         }
 
         #region Validating
-        private void TextBoxAuthorAndSong_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private bool ValidateTextBox(TextBox textBox)
         {
-            var textBox = (TextBox)sender;
-            if (textBox.Text.Length == 0)
-            {
-                errorProvider1.SetError(textBox, "This field can't be empty");
-                e.Cancel = true;
-            }
-        }
-
-        private void TextBoxAuthorAndSong_Validated(object sender, EventArgs e)
-        {
-            var textBox = (TextBox)sender;
-            errorProvider1.SetError(textBox, "");
-        }
-
-        private void TextBoxForLyrics_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (CheckBoxUseLyrics.Checked)
-            {
-                if (TextBoxForLyrics.Text.Length == 0)
-                {
-                    e.Cancel = true;
-                    errorProvider1.SetError(TextBoxForLyrics, "You signed \"Use lyrics\" but didn't insert it");
-                }
-            }
-        }
-
-        private void TextBoxForLyrics_Validated(object sender, EventArgs e)
-        {
-            errorProvider1.SetError(TextBoxForLyrics, "");
-        }
-
-        private void CreateNewTranslationForm_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
+            errorProvider1.SetError(textBox, textBox.Text.Length != 0 ? "" : "This field can't be empty");
+            return textBox.Text.Length != 0;
         }
 
         private void groupBoxSong_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
+            if (!ValidateTextBox(TextBoxForAuthor) || !ValidateTextBox(TextBoxForSong))
+            {
+                e.Cancel = true;
+            }
         }
 
-        private void groupBoxSong_Validated(object sender, EventArgs e)
+        private void groupBoxLyrics_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            if (checkBoxUseLyrics.Checked && TextBoxForLyrics.Text.Length == 0)
+            {
+                e.Cancel = true;
+                errorProvider1.SetError(TextBoxForLyrics, "You specified \"Use lyrics\" but didn't insert it");
+            }
+            else
+            {
+                errorProvider1.SetError(TextBoxForLyrics, "");
+            }
+        }
 
-        } 
+        private void groupBoxURL_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (checkBoxUseURL.Checked && !SelectedURL_item.Visible)
+            {
+                e.Cancel = true;
+                errorProvider1.SetError(linkLabelURL1, "You specified \"Use URL\" but didn't request it");
+            }
+        }
         #endregion
 
         private void buttonCopy_Click(object sender, EventArgs e)
@@ -364,12 +322,7 @@ namespace Blopnote
         private void linkLabelURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string URL = GetURL((LinkLabel)sender);
-            var info = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = URL,
-                CreateNoWindow = false
-            };
-            System.Diagnostics.Process.Start(info);
+            Browser.OpenURL(URL);
         }
 
         private string GetURL(LinkLabel linkLabel)

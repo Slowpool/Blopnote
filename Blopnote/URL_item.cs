@@ -19,7 +19,8 @@ namespace Blopnote
             get => visible;
             set
             {
-                CopyButton.Visible
+                visible
+                    = CopyButton.Visible
                     = RadioButton.Visible
                     = Label.Visible
                     = value;

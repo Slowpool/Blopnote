@@ -131,7 +131,7 @@ namespace Blopnote
         /// better navigate the text
         /// </summary>
         /// <param name="lyrics"></param>
-        internal string FilterAndKeep(string lyrics)
+        internal string FilterAndStore(string lyrics)
         {
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();

@@ -32,7 +32,7 @@ namespace Blopnote
             InitializeComponent();
             this.Icon = Resources.icon;
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
-            timer1.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
+            timerAutoSave.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
             fileState = new FileState(status, textField);
@@ -70,22 +70,21 @@ namespace Blopnote
         private void Blopnote_Shown(object sender, EventArgs e)
         {
             Enabled = false;
-            string folderPath = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
-            if (string.IsNullOrEmpty(folderPath))
+            string directoryFullName = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
+            if (string.IsNullOrEmpty(directoryFullName))
             {
-                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'lyrics' inside.";
-#warning DRY
-                folderPath = AskUserForPath();
-                if (string.IsNullOrEmpty(folderPath))
+                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'songsInfo' inside.";
+                directoryFullName = AskUserForPath();
+                if (string.IsNullOrEmpty(directoryFullName))
                 {
                     this.Close();
                 }
                 else
                 {
-                    UpdateConfig(CONFIG_FOLDER_ATTRIBUTE, folderPath);
+                    UpdateConfig(CONFIG_FOLDER_ATTRIBUTE, directoryFullName);
                 }
             }
-            fileProcessor.ChangeDirectory(folderPath);
+            fileProcessor.SetInitialDirectory(directoryFullName);
             Enabled = true;
         }
 
@@ -124,13 +123,9 @@ namespace Blopnote
 
         private void HandleInsertedData()
         {
-            string fileName = createNewTranslationForm.FileName;
-            string lyrics = createNewTranslationForm.Lyrics;
-
             try
             {
-                fileProcessor.CreateNewTranslation(fileName, lyrics);
-                textField.ObserveCompletion();
+                fileProcessor.CreateNewTranslation(createNewTranslationForm.fileInfo, createNewTranslationForm.songInfo);
             }
             catch (Exception e)
             {
@@ -162,12 +157,13 @@ namespace Blopnote
                 {
                     ShowLyrics.PerformClick();
                 }
+
+                HighlightActualLine();
             }
 
             RegulateTextAndLyricsBoxes();
-            
 
-            timerSelectionStart.Start();
+            timerLineObserver.Start();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -177,7 +173,7 @@ namespace Blopnote
             if (answer == DialogResult.OK)
             {
                 textField.StopObserving();
-                StopTimerAndTrySaveFile(false);
+                StopTimerAndTrySaveFile(mandatorySave: false);
                 lyricsBox.EnsureCleared();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
@@ -202,11 +198,10 @@ namespace Blopnote
 
         private void changeFolderPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-#warning DRY
             string folderPath = AskUserForPath();
             if (!string.IsNullOrEmpty(folderPath))
             {
-                fileProcessor.ChangeDirectory(folderPath);
+                fileProcessor.SetInitialDirectory(folderPath);
             }
         }
 
@@ -218,7 +213,7 @@ namespace Blopnote
             ShowLyrics.Enabled = false;
             fileState.DoesNotExist();
             RegulateTextAndLyricsBoxes();
-            timerSelectionStart.Stop();
+            timerLineObserver.Stop();
         }
 
         private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -243,15 +238,14 @@ namespace Blopnote
             }
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void timerAutoSave_Tick(object sender, EventArgs e)
         {
             StopTimerAndTrySaveFile(true);
         }
 
         private void StopTimerAndTrySaveFile(bool mandatorySave)
         {
-#warning dirty
-            timer1.Stop();
+            timerAutoSave.Stop();
             try
             {
                 fileProcessor.Save();
@@ -347,7 +341,7 @@ namespace Blopnote
             }
         }
 
-        private void timerSelectionStart_Tick(object sender, EventArgs e)
+        private void timerLineObserver_Tick(object sender, EventArgs e)
         {
             if (PreviousSelectionStart != TextBoxWithText.SelectionStart)
             {
@@ -359,6 +353,11 @@ namespace Blopnote
         private void tabTranslatesOnly1LineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tabTranslatesOnly1LineToolStripMenuItem.Checked = !tabTranslatesOnly1LineToolStripMenuItem.Checked;
+        }
+
+        private void followToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenURL(fileState.songInfo.URL);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Blopnote
     {
         private TextBox TextBoxForAuthor;
         private TextBox TextBoxForLyrics;
-        private CheckBox CheckBoxUseLyrics;
+        private CheckBox checkBoxUseLyrics;
         private Button buttonOK;
         private TextBox TextBoxForSong;
         private Button buttonLyricsRequest;
@@ -38,7 +38,7 @@ namespace Blopnote
             this.components = new System.ComponentModel.Container();
             this.TextBoxForAuthor = new System.Windows.Forms.TextBox();
             this.TextBoxForLyrics = new System.Windows.Forms.TextBox();
-            this.CheckBoxUseLyrics = new System.Windows.Forms.CheckBox();
+            this.checkBoxUseLyrics = new System.Windows.Forms.CheckBox();
             this.buttonOK = new System.Windows.Forms.Button();
             this.TextBoxForSong = new System.Windows.Forms.TextBox();
             this.buttonLyricsRequest = new System.Windows.Forms.Button();
@@ -58,7 +58,7 @@ namespace Blopnote
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.buttonRequestForURL = new System.Windows.Forms.Button();
             this.checkBoxUseURL = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxURL = new System.Windows.Forms.GroupBox();
             this.buttonCopy5 = new System.Windows.Forms.Button();
             this.buttonCopy4 = new System.Windows.Forms.Button();
             this.buttonCopy3 = new System.Windows.Forms.Button();
@@ -79,7 +79,7 @@ namespace Blopnote
             this.groupBoxLyrics.SuspendLayout();
             this.groupBoxLanguage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxURL.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBoxForAuthor
@@ -93,8 +93,6 @@ namespace Blopnote
             this.TextBoxForAuthor.Size = new System.Drawing.Size(584, 30);
             this.TextBoxForAuthor.TabIndex = 1;
             this.TextBoxForAuthor.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxForAuthor_KeyPress);
-            this.TextBoxForAuthor.Validating += new System.ComponentModel.CancelEventHandler(this.TextBoxAuthorAndSong_Validating);
-            this.TextBoxForAuthor.Validated += new System.EventHandler(this.TextBoxAuthorAndSong_Validated);
             // 
             // TextBoxForLyrics
             // 
@@ -106,22 +104,20 @@ namespace Blopnote
             this.TextBoxForLyrics.Size = new System.Drawing.Size(656, 140);
             this.TextBoxForLyrics.TabIndex = 5;
             this.TextBoxForLyrics.WordWrap = false;
-            this.TextBoxForLyrics.Validating += new System.ComponentModel.CancelEventHandler(this.TextBoxForLyrics_Validating);
-            this.TextBoxForLyrics.Validated += new System.EventHandler(this.TextBoxForLyrics_Validated);
             // 
-            // CheckBoxUseLyrics
+            // checkBoxUseLyrics
             // 
-            this.CheckBoxUseLyrics.AutoSize = true;
-            this.CheckBoxUseLyrics.CausesValidation = false;
-            this.CheckBoxUseLyrics.Checked = true;
-            this.CheckBoxUseLyrics.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckBoxUseLyrics.Location = new System.Drawing.Point(21, 36);
-            this.CheckBoxUseLyrics.Name = "CheckBoxUseLyrics";
-            this.CheckBoxUseLyrics.Size = new System.Drawing.Size(129, 26);
-            this.CheckBoxUseLyrics.TabIndex = 3;
-            this.CheckBoxUseLyrics.Text = "Use lyrics";
-            this.CheckBoxUseLyrics.UseVisualStyleBackColor = true;
-            this.CheckBoxUseLyrics.CheckedChanged += new System.EventHandler(this.CheckBoxUseLyrics_CheckedChanged);
+            this.checkBoxUseLyrics.AutoSize = true;
+            this.checkBoxUseLyrics.CausesValidation = false;
+            this.checkBoxUseLyrics.Checked = true;
+            this.checkBoxUseLyrics.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxUseLyrics.Location = new System.Drawing.Point(21, 36);
+            this.checkBoxUseLyrics.Name = "checkBoxUseLyrics";
+            this.checkBoxUseLyrics.Size = new System.Drawing.Size(129, 26);
+            this.checkBoxUseLyrics.TabIndex = 3;
+            this.checkBoxUseLyrics.Text = "Use lyrics";
+            this.checkBoxUseLyrics.UseVisualStyleBackColor = true;
+            this.checkBoxUseLyrics.CheckedChanged += new System.EventHandler(this.CheckBoxUseLyrics_CheckedChanged);
             // 
             // buttonOK
             // 
@@ -146,8 +142,6 @@ namespace Blopnote
             this.TextBoxForSong.Size = new System.Drawing.Size(584, 30);
             this.TextBoxForSong.TabIndex = 2;
             this.TextBoxForSong.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxForAuthor_KeyPress);
-            this.TextBoxForSong.Validating += new System.ComponentModel.CancelEventHandler(this.TextBoxAuthorAndSong_Validating);
-            this.TextBoxForSong.Validated += new System.EventHandler(this.TextBoxAuthorAndSong_Validated);
             // 
             // buttonLyricsRequest
             // 
@@ -196,6 +190,7 @@ namespace Blopnote
             // labelLyricsRequestResult
             // 
             this.labelLyricsRequestResult.AutoSize = true;
+            this.labelLyricsRequestResult.CausesValidation = false;
             this.labelLyricsRequestResult.Location = new System.Drawing.Point(362, 37);
             this.labelLyricsRequestResult.Name = "labelLyricsRequestResult";
             this.labelLyricsRequestResult.Size = new System.Drawing.Size(80, 22);
@@ -213,6 +208,7 @@ namespace Blopnote
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.CausesValidation = false;
             this.label3.Location = new System.Drawing.Point(26, 62);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(60, 22);
@@ -222,6 +218,7 @@ namespace Blopnote
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.CausesValidation = false;
             this.label1.Location = new System.Drawing.Point(6, 26);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 22);
@@ -230,6 +227,7 @@ namespace Blopnote
             // 
             // groupBoxSong
             // 
+            this.groupBoxSong.CausesValidation = false;
             this.groupBoxSong.Controls.Add(this.label1);
             this.groupBoxSong.Controls.Add(this.TextBoxForAuthor);
             this.groupBoxSong.Controls.Add(this.TextBoxForSong);
@@ -241,12 +239,12 @@ namespace Blopnote
             this.groupBoxSong.TabStop = false;
             this.groupBoxSong.Text = "Song";
             this.groupBoxSong.Validating += new System.ComponentModel.CancelEventHandler(this.groupBoxSong_Validating);
-            this.groupBoxSong.Validated += new System.EventHandler(this.groupBoxSong_Validated);
             // 
             // groupBoxLyrics
             // 
+            this.groupBoxLyrics.CausesValidation = false;
             this.groupBoxLyrics.Controls.Add(this.TextBoxForLyrics);
-            this.groupBoxLyrics.Controls.Add(this.CheckBoxUseLyrics);
+            this.groupBoxLyrics.Controls.Add(this.checkBoxUseLyrics);
             this.groupBoxLyrics.Controls.Add(this.buttonLyricsRequest);
             this.groupBoxLyrics.Controls.Add(this.labelLyricsRequestResult);
             this.groupBoxLyrics.Controls.Add(this.buttonPreviousLyrics);
@@ -257,6 +255,7 @@ namespace Blopnote
             this.groupBoxLyrics.TabIndex = 16;
             this.groupBoxLyrics.TabStop = false;
             this.groupBoxLyrics.Text = "Lyrics";
+            this.groupBoxLyrics.Validating += new System.ComponentModel.CancelEventHandler(this.groupBoxLyrics_Validating);
             // 
             // groupBoxLanguage
             // 
@@ -306,6 +305,7 @@ namespace Blopnote
             // 
             this.buttonRequestForURL.AutoSize = true;
             this.buttonRequestForURL.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.buttonRequestForURL.CausesValidation = false;
             this.buttonRequestForURL.Location = new System.Drawing.Point(126, 32);
             this.buttonRequestForURL.Name = "buttonRequestForURL";
             this.buttonRequestForURL.Size = new System.Drawing.Size(170, 32);
@@ -317,6 +317,7 @@ namespace Blopnote
             // checkBoxUseURL
             // 
             this.checkBoxUseURL.AutoSize = true;
+            this.checkBoxUseURL.CausesValidation = false;
             this.checkBoxUseURL.Checked = true;
             this.checkBoxUseURL.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxUseURL.Location = new System.Drawing.Point(21, 36);
@@ -327,36 +328,39 @@ namespace Blopnote
             this.checkBoxUseURL.UseVisualStyleBackColor = true;
             this.checkBoxUseURL.CheckedChanged += new System.EventHandler(this.checkBoxStoreURL_CheckedChanged);
             // 
-            // groupBox1
+            // groupBoxURL
             // 
-            this.groupBox1.Controls.Add(this.buttonCopy5);
-            this.groupBox1.Controls.Add(this.buttonCopy4);
-            this.groupBox1.Controls.Add(this.buttonCopy3);
-            this.groupBox1.Controls.Add(this.buttonCopy2);
-            this.groupBox1.Controls.Add(this.buttonCopy1);
-            this.groupBox1.Controls.Add(this.labelURL_Request);
-            this.groupBox1.Controls.Add(this.radioButtonURL5);
-            this.groupBox1.Controls.Add(this.radioButtonURL4);
-            this.groupBox1.Controls.Add(this.radioButtonURL3);
-            this.groupBox1.Controls.Add(this.linkLabelURL5);
-            this.groupBox1.Controls.Add(this.linkLabelURL4);
-            this.groupBox1.Controls.Add(this.linkLabelURL3);
-            this.groupBox1.Controls.Add(this.linkLabelURL2);
-            this.groupBox1.Controls.Add(this.linkLabelURL1);
-            this.groupBox1.Controls.Add(this.radioButtonURL2);
-            this.groupBox1.Controls.Add(this.radioButtonURL1);
-            this.groupBox1.Controls.Add(this.checkBoxUseURL);
-            this.groupBox1.Controls.Add(this.buttonRequestForURL);
-            this.groupBox1.Location = new System.Drawing.Point(12, 390);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(720, 270);
-            this.groupBox1.TabIndex = 18;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "URL to song (youtube.com)";
+            this.groupBoxURL.CausesValidation = false;
+            this.groupBoxURL.Controls.Add(this.buttonCopy5);
+            this.groupBoxURL.Controls.Add(this.buttonCopy4);
+            this.groupBoxURL.Controls.Add(this.buttonCopy3);
+            this.groupBoxURL.Controls.Add(this.buttonCopy2);
+            this.groupBoxURL.Controls.Add(this.buttonCopy1);
+            this.groupBoxURL.Controls.Add(this.labelURL_Request);
+            this.groupBoxURL.Controls.Add(this.radioButtonURL5);
+            this.groupBoxURL.Controls.Add(this.radioButtonURL4);
+            this.groupBoxURL.Controls.Add(this.radioButtonURL3);
+            this.groupBoxURL.Controls.Add(this.linkLabelURL5);
+            this.groupBoxURL.Controls.Add(this.linkLabelURL4);
+            this.groupBoxURL.Controls.Add(this.linkLabelURL3);
+            this.groupBoxURL.Controls.Add(this.linkLabelURL2);
+            this.groupBoxURL.Controls.Add(this.linkLabelURL1);
+            this.groupBoxURL.Controls.Add(this.radioButtonURL2);
+            this.groupBoxURL.Controls.Add(this.radioButtonURL1);
+            this.groupBoxURL.Controls.Add(this.checkBoxUseURL);
+            this.groupBoxURL.Controls.Add(this.buttonRequestForURL);
+            this.groupBoxURL.Location = new System.Drawing.Point(12, 390);
+            this.groupBoxURL.Name = "groupBoxURL";
+            this.groupBoxURL.Size = new System.Drawing.Size(720, 270);
+            this.groupBoxURL.TabIndex = 18;
+            this.groupBoxURL.TabStop = false;
+            this.groupBoxURL.Text = "URL to song (youtube.com)";
+            this.groupBoxURL.Validating += new System.ComponentModel.CancelEventHandler(this.groupBoxURL_Validating);
             // 
             // buttonCopy5
             // 
             this.buttonCopy5.AutoSize = true;
+            this.buttonCopy5.CausesValidation = false;
             this.buttonCopy5.Location = new System.Drawing.Point(21, 220);
             this.buttonCopy5.Name = "buttonCopy5";
             this.buttonCopy5.Size = new System.Drawing.Size(40, 32);
@@ -368,6 +372,7 @@ namespace Blopnote
             // buttonCopy4
             // 
             this.buttonCopy4.AutoSize = true;
+            this.buttonCopy4.CausesValidation = false;
             this.buttonCopy4.Location = new System.Drawing.Point(21, 182);
             this.buttonCopy4.Name = "buttonCopy4";
             this.buttonCopy4.Size = new System.Drawing.Size(40, 32);
@@ -379,6 +384,7 @@ namespace Blopnote
             // buttonCopy3
             // 
             this.buttonCopy3.AutoSize = true;
+            this.buttonCopy3.CausesValidation = false;
             this.buttonCopy3.Location = new System.Drawing.Point(21, 144);
             this.buttonCopy3.Name = "buttonCopy3";
             this.buttonCopy3.Size = new System.Drawing.Size(40, 32);
@@ -390,6 +396,7 @@ namespace Blopnote
             // buttonCopy2
             // 
             this.buttonCopy2.AutoSize = true;
+            this.buttonCopy2.CausesValidation = false;
             this.buttonCopy2.Location = new System.Drawing.Point(21, 106);
             this.buttonCopy2.Name = "buttonCopy2";
             this.buttonCopy2.Size = new System.Drawing.Size(40, 32);
@@ -401,6 +408,7 @@ namespace Blopnote
             // buttonCopy1
             // 
             this.buttonCopy1.AutoSize = true;
+            this.buttonCopy1.CausesValidation = false;
             this.buttonCopy1.Location = new System.Drawing.Point(21, 68);
             this.buttonCopy1.Name = "buttonCopy1";
             this.buttonCopy1.Size = new System.Drawing.Size(40, 32);
@@ -412,6 +420,7 @@ namespace Blopnote
             // labelURL_Request
             // 
             this.labelURL_Request.AutoSize = true;
+            this.labelURL_Request.CausesValidation = false;
             this.labelURL_Request.Location = new System.Drawing.Point(302, 37);
             this.labelURL_Request.Name = "labelURL_Request";
             this.labelURL_Request.Size = new System.Drawing.Size(80, 22);
@@ -421,6 +430,7 @@ namespace Blopnote
             // radioButtonURL5
             // 
             this.radioButtonURL5.AutoSize = true;
+            this.radioButtonURL5.CausesValidation = false;
             this.radioButtonURL5.Location = new System.Drawing.Point(67, 228);
             this.radioButtonURL5.Name = "radioButtonURL5";
             this.radioButtonURL5.Size = new System.Drawing.Size(14, 13);
@@ -430,6 +440,7 @@ namespace Blopnote
             // radioButtonURL4
             // 
             this.radioButtonURL4.AutoSize = true;
+            this.radioButtonURL4.CausesValidation = false;
             this.radioButtonURL4.Location = new System.Drawing.Point(67, 192);
             this.radioButtonURL4.Name = "radioButtonURL4";
             this.radioButtonURL4.Size = new System.Drawing.Size(14, 13);
@@ -439,6 +450,7 @@ namespace Blopnote
             // radioButtonURL3
             // 
             this.radioButtonURL3.AutoSize = true;
+            this.radioButtonURL3.CausesValidation = false;
             this.radioButtonURL3.Location = new System.Drawing.Point(67, 154);
             this.radioButtonURL3.Name = "radioButtonURL3";
             this.radioButtonURL3.Size = new System.Drawing.Size(14, 13);
@@ -448,6 +460,7 @@ namespace Blopnote
             // linkLabelURL5
             // 
             this.linkLabelURL5.AutoSize = true;
+            this.linkLabelURL5.CausesValidation = false;
             this.linkLabelURL5.Location = new System.Drawing.Point(87, 223);
             this.linkLabelURL5.MaximumSize = new System.Drawing.Size(627, 22);
             this.linkLabelURL5.Name = "linkLabelURL5";
@@ -460,6 +473,7 @@ namespace Blopnote
             // linkLabelURL4
             // 
             this.linkLabelURL4.AutoSize = true;
+            this.linkLabelURL4.CausesValidation = false;
             this.linkLabelURL4.Location = new System.Drawing.Point(87, 187);
             this.linkLabelURL4.MaximumSize = new System.Drawing.Size(627, 22);
             this.linkLabelURL4.Name = "linkLabelURL4";
@@ -472,6 +486,7 @@ namespace Blopnote
             // linkLabelURL3
             // 
             this.linkLabelURL3.AutoSize = true;
+            this.linkLabelURL3.CausesValidation = false;
             this.linkLabelURL3.Location = new System.Drawing.Point(87, 149);
             this.linkLabelURL3.MaximumSize = new System.Drawing.Size(627, 22);
             this.linkLabelURL3.Name = "linkLabelURL3";
@@ -484,6 +499,7 @@ namespace Blopnote
             // linkLabelURL2
             // 
             this.linkLabelURL2.AutoSize = true;
+            this.linkLabelURL2.CausesValidation = false;
             this.linkLabelURL2.Location = new System.Drawing.Point(87, 111);
             this.linkLabelURL2.MaximumSize = new System.Drawing.Size(627, 22);
             this.linkLabelURL2.Name = "linkLabelURL2";
@@ -496,6 +512,7 @@ namespace Blopnote
             // linkLabelURL1
             // 
             this.linkLabelURL1.AutoSize = true;
+            this.linkLabelURL1.CausesValidation = false;
             this.linkLabelURL1.Location = new System.Drawing.Point(87, 73);
             this.linkLabelURL1.MaximumSize = new System.Drawing.Size(627, 22);
             this.linkLabelURL1.Name = "linkLabelURL1";
@@ -508,6 +525,7 @@ namespace Blopnote
             // radioButtonURL2
             // 
             this.radioButtonURL2.AutoSize = true;
+            this.radioButtonURL2.CausesValidation = false;
             this.radioButtonURL2.Location = new System.Drawing.Point(67, 116);
             this.radioButtonURL2.Name = "radioButtonURL2";
             this.radioButtonURL2.Size = new System.Drawing.Size(14, 13);
@@ -517,6 +535,7 @@ namespace Blopnote
             // radioButtonURL1
             // 
             this.radioButtonURL1.AutoSize = true;
+            this.radioButtonURL1.CausesValidation = false;
             this.radioButtonURL1.Checked = true;
             this.radioButtonURL1.Location = new System.Drawing.Point(67, 78);
             this.radioButtonURL1.Name = "radioButtonURL1";
@@ -529,7 +548,7 @@ namespace Blopnote
             // 
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(744, 709);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupBoxURL);
             this.Controls.Add(this.groupBoxLanguage);
             this.Controls.Add(this.groupBoxLyrics);
             this.Controls.Add(this.groupBoxSong);
@@ -541,7 +560,6 @@ namespace Blopnote
             this.Name = "CreateNewTranslationForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "New translation";
-            this.Validating += new System.ComponentModel.CancelEventHandler(this.CreateNewTranslationForm_Validating);
             this.groupBoxSong.ResumeLayout(false);
             this.groupBoxSong.PerformLayout();
             this.groupBoxLyrics.ResumeLayout(false);
@@ -549,8 +567,8 @@ namespace Blopnote
             this.groupBoxLanguage.ResumeLayout(false);
             this.groupBoxLanguage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxURL.ResumeLayout(false);
+            this.groupBoxURL.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -571,7 +589,7 @@ namespace Blopnote
         private ComboBox comboBox2;
         private ErrorProvider errorProvider1;
         private Button buttonRequestForURL;
-        private GroupBox groupBox1;
+        private GroupBox groupBoxURL;
         private CheckBox checkBoxUseURL;
         private Label labelURL_Request;
         private RadioButton radioButtonURL5;

@@ -17,13 +17,11 @@ namespace Blopnote
         private readonly LyricsBox lyricsBox;
         private readonly OpenFileDialog openFileDialog;
 
-        private DirectoryInfo directory;
         internal event EventHandler DirectoryChanged;
 
-        internal int DirectoryLength => directory.FullName.Length;
+        internal int DirectoryLength => fileState.directoryInfo.FullName.Length;
 
-        private string FilePath => Path.Combine(directory.FullName, fileState.FileName);
-        private string LyricsPath => MakeLyricsPath(FilePath);
+        private string LyricsPath => MakeLyricsPath(fileState.FilePath);
 
         private string MakeLyricsPath(string filePath)
         {
@@ -42,17 +40,17 @@ namespace Blopnote
             this.openFileDialog = openFileDialog;
         }
 
-        internal void ChangeDirectory(string directoryName)
+        internal void SetInitialDirectory(string directoryName)
         {
-            directory = new DirectoryInfo(directoryName);
-            EnsureSongsInfoFolder();
+            fileState.directoryInfo = new DirectoryInfo(directoryName);
             openFileDialog.InitialDirectory = directoryName;
+            EnsureSongsInfoFolder();
             DirectoryChanged(this, null);
         }
 
-        private void EnsureSongsInfoFolder() 
+        private void EnsureSongsInfoFolder()
         {
-            var subDirectories = (from dir in directory.GetDirectories()
+            var subDirectories = (from dir in fileState.NestedFolders
                                   where dir.Name.ToLower() == Names.SongInfoFolder
                                   select dir);
             try
@@ -61,7 +59,7 @@ namespace Blopnote
             }
             catch (InvalidOperationException)
             {
-                directory.CreateSubdirectory(Names.SongInfoFolder);
+                fileState.directoryInfo.CreateSubdirectory(Names.SongInfoFolder);
             }
         }
 
@@ -78,17 +76,19 @@ namespace Blopnote
             }
         }
 
-        internal void CreateNewTranslation(string fileName, string lyrics)
+        internal void CreateNewTranslation(FileInfo fileInfo, SongInfo songInfo)
         {
-            fileState.UpdateState(fileName, lyrics, directory);
+            fileState.NewFileInCurrentDir(fileInfo, songInfo);
 
-            File.Create(FilePath).Dispose();
+            File.Create(fileState.FullFileName).Dispose();
 
             if (fileState.LyricsIsUsed)
             {
-                var filteredLyrics = lyricsBox.FilterAndKeep(lyrics);
-                fileState.CreateSongInfo(filteredLyrics);
-                WriteLyrics();
+                var filteredLyrics = lyricsBox.FilterAndStore(songInfo.Lyrics);
+                fileState.UpdateLyrics(filteredLyrics);
+                WriteLyricsToJSON();
+
+                textField.ObserveCompletion();
             }
             else
             {
@@ -98,10 +98,10 @@ namespace Blopnote
 
         internal void Save()
         {
-            WriteInFile(FilePath, textField.Text);
+            WriteInFile(fileState.FullFileName, textField.Text);
         }
 
-        private void WriteLyrics()
+        private void WriteLyricsToJSON()
         {
             string serializedSongInfo = JsonConvert.SerializeObject(fileState.songInfo);
             File.WriteAllText(LyricsPath, serializedSongInfo);
@@ -117,18 +117,16 @@ namespace Blopnote
             }
         }
 
-        internal void OpenTranslation(string FullFileName)
+        internal void OpenTranslation(string fileName)
         {
-#warning i'm so tired with this shitcode
-            string lyrics = FindLyrics(FullFileName);
-            string fileName = FullFileName.Substring(FullFileName.LastIndexOf('\\') + 1);
-            string directory = FullFileName.Substring(0, FullFileName.LastIndexOf('\\') + 1);
-            ChangeDirectory(directory);
-            fileState.UpdateState(fileName, lyrics, this.directory);
-            textField.Text = File.ReadAllText(FullFileName);
+            fileState.OpenFileWithDir(fileName);
+            ParseSongInfo();
+            SetInitialDirectory(fileState.directoryInfo.FullName);
+
+            textField.Text = File.ReadAllText(fileName);
             if (fileState.LyricsIsUsed)
             {
-                lyricsBox.FilterAndKeep(lyrics);
+                lyricsBox.FilterAndStore(fileState.songInfo.Lyrics);
                 if (!fileState.songInfo.Completed)
                 {
                     textField.ObserveCompletion();
@@ -136,19 +134,20 @@ namespace Blopnote
             }
         }
 
-        private string FindLyrics(string FullFileName)
+        private void ParseSongInfo()
         {
-            // C:\Users\azgel\Desktop\translations\ic3peak - no death.txt
-            string conjectiveLyricsPath = MakeLyricsPath(FullFileName);
-            if (File.Exists(conjectiveLyricsPath))
+            string conjectiveSongInfoPath = MakeLyricsPath(fileState.FullFileName);
+            if (File.Exists(conjectiveSongInfoPath))
             {
-                fileState.LyricsIsUsed = true;
-                fileState.ReadSongInfo(conjectiveLyricsPath);
-                return fileState.songInfo.Lyrics;
+                fileState.songInfo = (SongInfo)JsonConvert.DeserializeObject
+                (
+                    value: File.ReadAllText(conjectiveSongInfoPath),
+                    type: typeof(SongInfo)
+                );
             }
             else
             {
-                return string.Empty;
+                fileState.songInfo = null;
             }
         }
 

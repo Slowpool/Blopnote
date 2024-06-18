@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 namespace Blopnote
 {
@@ -14,10 +15,36 @@ namespace Blopnote
     {
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
+
         internal SongInfo songInfo { get; set; }
 
-        internal string FileName { get; set; }
-        internal bool LyricsIsUsed { get; set; }
+        private FileInfo _fileInfo; internal FileInfo fileInfo
+        {
+            get => _fileInfo;
+            set
+            {
+                _fileInfo = value;
+                if (fileInfo == null)
+                {
+                    programStatus.Text = "Create or open any file";
+                }
+                else
+                {
+                    programStatus.Text = "Song: " + FullFileName;
+                }
+            }
+        }
+
+        internal DirectoryInfo directoryInfo { get; set; }
+
+        internal string FileName => fileInfo.Name;
+        internal string FullFileName => fileInfo.FullName;
+        internal string FilePath => Path.Combine(directoryInfo.FullName, fileInfo.Name);
+
+        internal bool LyricsIsUsed => songInfo != null && !string.IsNullOrEmpty(songInfo.Lyrics);
+        internal bool URL_IsUsed => !string.IsNullOrEmpty(songInfo.URL);
+
+        public DirectoryInfo[] NestedFolders => directoryInfo.GetDirectories();
 
         internal FileState(ToolStripStatusLabel programStatus, TextField textField)
         {
@@ -27,31 +54,28 @@ namespace Blopnote
 
         internal void DoesNotExist()
         {
-            FileName = null;
+            songInfo = null;
+            fileInfo = null;
+
             textField.Clear();
             textField.Disable();
-            programStatus.Text = "Create or open any file";
         }
 
-        internal void UpdateState(string fileName, string lyrics, DirectoryInfo directory)
+        internal void NewFileInCurrentDir(FileInfo fileInfo, SongInfo songInfo)
         {
-            LyricsIsUsed = !string.IsNullOrEmpty(lyrics);
-            FileName = fileName;
-            string fullSongName = FileName.Substring(0, FileName.LastIndexOf('.'));
-            programStatus.Text = "Song: " + Path.Combine(directory.FullName, fullSongName);
+            this.fileInfo = new FileInfo(Path.Combine(directoryInfo.FullName, fileInfo.Name));
+            this.songInfo = songInfo;
         }
 
-        internal void CreateSongInfo(string lyrics)
+        internal void OpenFileWithDir(string fullFileName)
         {
-            songInfo = LyricsIsUsed ? new SongInfo(lyrics) : null;
+            fileInfo = new FileInfo(fullFileName);
+            directoryInfo = fileInfo.Directory;
         }
 
-        internal void ReadSongInfo(string conjectiveLyricsPath)
+        internal void UpdateLyrics(string newLyrics)
         {
-            
-            string text = File.ReadAllText(conjectiveLyricsPath);
-//#error How to convert from (object)song.json to (SongInfo)songIngo?
-            songInfo = (SongInfo)JsonConvert.DeserializeObject(text, typeof(SongInfo));
+            songInfo.Lyrics = newLyrics;
         }
     }
 }

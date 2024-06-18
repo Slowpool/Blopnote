@@ -4,6 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -57,8 +58,8 @@ namespace Blopnote
             await Task.Delay(1000);
 
             IEnumerable<IWebElement> cards = driver.FindElements(By.ClassName("mini_card"))
-                              .Skip(1)
-                              .Take(5);
+                                                   .Skip(1)
+                                                   .Take(5);
 
             List<string> references = new List<string>();
             string reference;
@@ -91,8 +92,14 @@ namespace Blopnote
 #warning needs reworking
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
             var soundButtons =
-                wait.Until(webDriver => webDriver.FindElements(By.ClassName("aJIq1d"))
-                                           .Where(element => element.GetAttribute("data-language-code") == "en"));
+                wait.Until(webDriver =>
+                {
+                    var buttons = webDriver.FindElements(By.ClassName("aJIq1d"))
+                                           .Where(element => element.GetAttribute("data-language-code") == "en");
+                    return buttons.Count() == 1
+                         ? buttons
+                         : null;
+                });
             Cursor.Current = Cursors.Default;
             return soundButtons.Single()
                                .GetAttribute("data-text")
@@ -111,9 +118,13 @@ namespace Blopnote
             //search.SendKeys(songName);
             //search.SendKeys(SeleniumKeys.Enter); 
             #endregion
-            await Task.Delay(1000);
-            var videoTitles = wait.Until(driver => driver.FindElements(By.Id("video-title")))
-                             .Take(5);
+            var videoTitles = wait.Until(driver =>
+            {
+                var videos = driver.FindElements(By.Id("video-title"));
+                return videos.Count() >= 5
+                     ? videos.Take(5)
+                     : null;
+            });
             string[,] result = new string[videoTitles.Count(), 2];
             int i = 0;
             foreach(var videoTitle in videoTitles)
@@ -145,6 +156,16 @@ namespace Blopnote
             //        return new string[] { "https://www.youtube.com/watch?v=e26zZ83Oh6Y", "https://www.youtube.com/watch?v=KNqRoKLZZ6M" };
             //} 
             #endregion
+        }
+
+        internal static void OpenURL(string URL)
+        {
+            var info = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = URL,
+                CreateNoWindow = false
+            };
+            System.Diagnostics.Process.Start(info);
         }
     }
 }

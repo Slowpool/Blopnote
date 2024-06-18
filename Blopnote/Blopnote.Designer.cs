@@ -39,16 +39,19 @@
             this.ShowLyrics = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uRLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.PanelForLyricsBox = new System.Windows.Forms.Panel();
             this.VScrollBarForLyrics = new System.Windows.Forms.VScrollBar();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.timerAutoSave = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
-            this.timerSelectionStart = new System.Windows.Forms.Timer(this.components);
-            this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timerLineObserver = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -75,7 +78,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.lyricsToolStripMenuItem,
-            this.settingsToolStripMenuItem});
+            this.settingsToolStripMenuItem,
+            this.uRLToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(946, 24);
@@ -95,14 +99,14 @@
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.createToolStripMenuItem.Text = "Create";
             this.createToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -110,7 +114,7 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -127,7 +131,7 @@
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
             this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
@@ -148,6 +152,35 @@
             this.changeFolderToolStripMenuItem.Text = "Change folder";
             this.changeFolderToolStripMenuItem.ToolTipText = "Close file to unlock";
             this.changeFolderToolStripMenuItem.Click += new System.EventHandler(this.changeFolderPathToolStripMenuItem_Click);
+            // 
+            // tabTranslatesOnly1LineToolStripMenuItem
+            // 
+            this.tabTranslatesOnly1LineToolStripMenuItem.Name = "tabTranslatesOnly1LineToolStripMenuItem";
+            this.tabTranslatesOnly1LineToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Tab translates only 1 line";
+            this.tabTranslatesOnly1LineToolStripMenuItem.Click += new System.EventHandler(this.tabTranslatesOnly1LineToolStripMenuItem_Click);
+            // 
+            // uRLToolStripMenuItem
+            // 
+            this.uRLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.followToolStripMenuItem,
+            this.changeToolStripMenuItem});
+            this.uRLToolStripMenuItem.Name = "uRLToolStripMenuItem";
+            this.uRLToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.uRLToolStripMenuItem.Text = "URL";
+            // 
+            // followToolStripMenuItem
+            // 
+            this.followToolStripMenuItem.Name = "followToolStripMenuItem";
+            this.followToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.followToolStripMenuItem.Text = "Follow";
+            this.followToolStripMenuItem.Click += new System.EventHandler(this.followToolStripMenuItem_Click);
+            // 
+            // changeToolStripMenuItem
+            // 
+            this.changeToolStripMenuItem.Name = "changeToolStripMenuItem";
+            this.changeToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.changeToolStripMenuItem.Text = "Change";
             // 
             // statusStrip1
             // 
@@ -182,9 +215,9 @@
             this.VScrollBarForLyrics.Size = new System.Drawing.Size(22, 454);
             this.VScrollBarForLyrics.TabIndex = 5;
             // 
-            // timer1
+            // timerAutoSave
             // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timerAutoSave.Tick += new System.EventHandler(this.timerAutoSave_Tick);
             // 
             // toolTipLyrics
             // 
@@ -194,16 +227,9 @@
             this.toolTipLyrics.ReshowDelay = 40;
             this.toolTipLyrics.UseFading = false;
             // 
-            // timerSelectionStart
+            // timerLineObserver
             // 
-            this.timerSelectionStart.Tick += new System.EventHandler(this.timerSelectionStart_Tick);
-            // 
-            // tabTranslatesOnly1LineToolStripMenuItem
-            // 
-            this.tabTranslatesOnly1LineToolStripMenuItem.Name = "tabTranslatesOnly1LineToolStripMenuItem";
-            this.tabTranslatesOnly1LineToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Tab translates only 1 line";
-            this.tabTranslatesOnly1LineToolStripMenuItem.Click += new System.EventHandler(this.tabTranslatesOnly1LineToolStripMenuItem_Click);
+            this.timerLineObserver.Tick += new System.EventHandler(this.timerLineObserver_Tick);
             // 
             // Blopnote
             // 
@@ -249,11 +275,14 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Panel PanelForLyricsBox;
         private System.Windows.Forms.VScrollBar VScrollBarForLyrics;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer timerAutoSave;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTipLyrics;
-        private System.Windows.Forms.Timer timerSelectionStart;
+        private System.Windows.Forms.Timer timerLineObserver;
         private System.Windows.Forms.ToolStripMenuItem tabTranslatesOnly1LineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uRLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeToolStripMenuItem;
     }
 }
 
