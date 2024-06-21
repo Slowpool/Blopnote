@@ -62,7 +62,7 @@ namespace Blopnote
         }
 
         private int LinesCapacity => (panel.Height - VERTICAL_PADDING) / lineHeight;
-        private int AmountOfInvisibleLabels => Lines.Count <= LinesCapacity ? 0 : Lines.Count - LinesCapacity;
+        private int InvisibleLabelsQuantity => Lines.Count <= LinesCapacity ? 0 : Lines.Count - LinesCapacity;
 
         private int scrollBarValue
         {
@@ -135,9 +135,10 @@ namespace Blopnote
         {
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
-            HighlightKeywords();
             TrimLines();
             LabelsWithLyrics = new Label[Lines.Count];
+
+            HighlightKeywords();
             ConfigureLabels();
             TranslationByGoogle = GetTranslationByGoogle(Lyrics);
             TranslationByGoogleLoaded(this, null);
@@ -442,8 +443,8 @@ namespace Blopnote
         {
             // Q: emmm what is 9 here?
             // A: length of scrollBar
-            // Conclusions: use const value
-            scrollBar.Maximum = AmountOfInvisibleLabels + 9;
+            // Conclusion: use const value
+            scrollBar.Maximum = InvisibleLabelsQuantity + 9;
         }
 
         internal bool ContainsKeyword(string line)

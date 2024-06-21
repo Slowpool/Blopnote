@@ -55,11 +55,14 @@ namespace Blopnote
             query.Clear();
             query.SendKeys(songName);
             query.SendKeys(SeleniumKeys.Return);
-            await Task.Delay(1000);
 
-            IEnumerable<IWebElement> cards = driver.FindElements(By.ClassName("mini_card"))
-                                                   .Skip(1)
-                                                   .Take(5);
+            var cards = wait.Until(webDriver =>
+            {
+                var result = webDriver.FindElements(By.ClassName("mini_card"));
+                return result.Count >= 6
+                     ? result
+                     : null;
+            });
 
             List<string> references = new List<string>();
             string reference;
@@ -106,7 +109,7 @@ namespace Blopnote
                                .Split(new[] { "\r\n" }, StringSplitOptions.None);
         }
 
-        internal async static Task<string[,]> GetYoutubeURLs(string songName)
+        internal static string[,] GetYoutubeUrls(string songName)
         {
             Cursor.Current = Cursors.WaitCursor;
 
@@ -158,14 +161,26 @@ namespace Blopnote
             #endregion
         }
 
-        internal static void OpenURL(string URL)
+        internal static void OpenUrl(string Url)
         {
-            var info = new System.Diagnostics.ProcessStartInfo
+            try
             {
-                FileName = URL,
-                CreateNoWindow = false
-            };
-            System.Diagnostics.Process.Start(info);
+                var info = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = Url,
+                    CreateNoWindow = false,
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized
+                };
+                System.Diagnostics.Process.Start(info);
+            }
+            //catch (InvalidOperationException e)
+            catch (Exception e)
+            {
+                MessageBox.Show(caption: "Url opening error",
+                                text: "Url wasn't opened correctly. Cause: " + e.Message,
+                                buttons: MessageBoxButtons.OK,
+                                icon: MessageBoxIcon.Error);
+            }
         }
     }
 }

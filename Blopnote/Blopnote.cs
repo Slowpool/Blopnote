@@ -37,6 +37,7 @@ namespace Blopnote
             textField = new TextField(TextBoxWithText);
             fileState = new FileState(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
+            fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
 
             tabTranslatesOnly1LineToolStripMenuItem.Click += lyricsBox.SwitchTabMode;
             createToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
@@ -44,11 +45,41 @@ namespace Blopnote
 
             lyricsBox.TranslationByGoogleLoaded += textField.TranslationByGoogleLoaded;
 
-            fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
             textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
                 createNewTranslationForm.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
+            };
+
+            fileState.UrlChanged += (sender, e) =>
+            {
+                followToolStripMenuItem.Enabled = ((FileState)sender).IsUrlUsed;
+            };
+
+            fileState.FileOpenedOrClosed += (object sender, FileStateEventArgs e) =>
+            {
+                closeToolStripMenuItem.Enabled = e.Opened;
+                changeFolderToolStripMenuItem.Enabled = !e.Opened;
+                changeUrl.Enabled = e.Opened;
+            };
+
+            fileState.LyricsChanged += (sender, e) =>
+            {
+                if (((FileState)sender).IsLyricsUsed)
+                {
+                    lyricsBox.FilterAndStore(fileState.Lyrics);
+                    if (!fileState.songInfo.Completed)
+                    {
+                        textField.ObserveCompletion();
+                    }
+                }
+
+                ShowLyrics.Enabled = fileState.IsLyricsUsed;
+                // Auto enabling of lyrics when user entered it
+                if (!ShowLyrics.Checked)
+                {
+                    ShowLyrics.PerformClick();
+                }
             };
 
             createNewTranslationForm = new CreateNewTranslationForm();
@@ -137,26 +168,24 @@ namespace Blopnote
         private void PrepareComponentsToDisplayTranslation(bool clearText)
         {
             textField.Enable();
-            closeToolStripMenuItem.Enabled = true;
-            changeFolderToolStripMenuItem.Enabled = false;
+            
 // Q: maybe there's no need to use this?
 // A: there is.
             if (clearText)
             {
                 textField.Clear();
             }
-            ShowLyrics.Enabled = fileState.LyricsIsUsed;
 
-            if (fileState.LyricsIsUsed)
+            if (fileState.IsLyricsUsed)
             {
-                textField.NumberOfLinesToComplete = lyricsBox.LinesQuantity;
+                textField.LinesToComplete = lyricsBox.LinesQuantity;
                 TryAutoCompleteText();
 
-                // Auto enabling of lyrics when user entered it
-                if (!ShowLyrics.Checked)
-                {
-                    ShowLyrics.PerformClick();
-                }
+                //// Auto enabling of lyrics when user entered it
+                //if (!ShowLyrics.Checked)
+                //{
+                //    ShowLyrics.PerformClick();
+                //}
 
                 HighlightActualLine();
             }
@@ -208,15 +237,12 @@ namespace Blopnote
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             StopTimerAndTrySaveFile(true);
-            closeToolStripMenuItem.Enabled = false;
-            changeFolderToolStripMenuItem.Enabled = true;
-            ShowLyrics.Enabled = false;
             fileState.DoesNotExist();
             RegulateTextAndLyricsBoxes();
             timerLineObserver.Stop();
         }
 
-        private void ShowLyricsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowLyrics_Click(object sender, EventArgs e)
         {
             if (ShowLyrics.Checked)
             {
@@ -231,6 +257,7 @@ namespace Blopnote
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
         {
+#warning why is it here?
             if (!ShowLyrics.Enabled)
             {
                 ShowLyrics.Checked = false;
@@ -355,9 +382,14 @@ namespace Blopnote
             tabTranslatesOnly1LineToolStripMenuItem.Checked = !tabTranslatesOnly1LineToolStripMenuItem.Checked;
         }
 
-        private void followToolStripMenuItem_Click(object sender, EventArgs e)
+        private void followUrl_Click(object sender, EventArgs e)
         {
-            OpenURL(fileState.songInfo.URL);
+            OpenUrl(fileState.Url);
+        }
+
+        private void changeUrl_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

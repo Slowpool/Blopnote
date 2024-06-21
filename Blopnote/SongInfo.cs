@@ -14,12 +14,12 @@ namespace Blopnote
 
         public string Lyrics { get; set; }
         public bool Completed { get; set; }
-        public string URL { get; set; }
+        public string Url { get; set; }
 
-        public SongInfo(string lyrics, string URL)
+        public SongInfo(string lyrics, string Url)
         {
             Lyrics = lyrics;
-            this.URL = URL;
+            this.Url = Url;
 
             Completed = false;
         }

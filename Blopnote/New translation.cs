@@ -43,21 +43,21 @@ namespace Blopnote
             }
         }
 
-        private readonly URL_item[] URL_items;
-        private readonly string[,] ZERO_URLs = new string[,] { };
-        private URL_item SelectedURL_item => URL_items.Where(item => item.Checked)
+        private readonly Urlitem[] Urlitems;
+        private readonly string[,] ZERO_Urls = new string[,] { };
+        private Urlitem SelectedUrlitem => Urlitems.Where(item => item.Checked)
                                                       .Single();
         internal CreateNewTranslationForm()
         {
             InitializeComponent();
             Icon = Resources.icon;
-            URL_items = new URL_item[]
+            Urlitems = new Urlitem[]
             {
-                new URL_item(buttonCopy1, radioButtonURL1, linkLabelURL1),
-                new URL_item(buttonCopy2, radioButtonURL2, linkLabelURL2),
-                new URL_item(buttonCopy3, radioButtonURL3, linkLabelURL3),
-                new URL_item(buttonCopy4, radioButtonURL4, linkLabelURL4),
-                new URL_item(buttonCopy5, radioButtonURL5, linkLabelURL5),
+                new Urlitem(buttonCopy1, radioButtonUrl1, linkLabelUrl1),
+                new Urlitem(buttonCopy2, radioButtonUrl2, linkLabelUrl2),
+                new Urlitem(buttonCopy3, radioButtonUrl3, linkLabelUrl3),
+                new Urlitem(buttonCopy4, radioButtonUrl4, linkLabelUrl4),
+                new Urlitem(buttonCopy5, radioButtonUrl5, linkLabelUrl5),
             };
         }
 
@@ -77,7 +77,7 @@ namespace Blopnote
             ClearAllRelatedToLyrics();
             UpdateLyricsSelector();
 
-            ClearAllRelatedToURLs();
+            ClearAllRelatedToUrls();
 
             fileInfo = null;
             songInfo = null;
@@ -99,10 +99,10 @@ namespace Blopnote
             DownloadedLyrics.Clear();
         }
 
-        private void ClearAllRelatedToURLs()
+        private void ClearAllRelatedToUrls()
         {
-            DisplayURLs(ZERO_URLs);
-            labelURL_Request.Text = string.Empty;
+            DisplayUrls(ZERO_Urls);
+            labelUrlRequest.Text = string.Empty;
         }
 
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
@@ -114,17 +114,17 @@ namespace Blopnote
             UpdateLyricsSelector();
         }
 
-        private void checkBoxStoreURL_CheckedChanged(object sender, EventArgs e)
+        private void checkBoxStoreUrlCheckedChanged(object sender, EventArgs e)
         {
-            buttonRequestForURL.Enabled = checkBoxUseURL.Checked;
-            ClearAllRelatedToURLs();
+            buttonRequestForUrl.Enabled = checkBoxUseUrl.Checked;
+            ClearAllRelatedToUrls();
         }
 
         private void OK_Click(object sender, EventArgs e)
         {
             if (ValidateChildren(ValidationConstraints.None))
             {
-                songInfo = new SongInfo(lyrics: TextBoxForLyrics.Text, URL: SelectedURL_item.URL);
+                songInfo = new SongInfo(lyrics: TextBoxForLyrics.Text, Url: SelectedUrlitem.Url);
                 fileInfo = new FileInfo(SongName + ".txt");
             }
             else
@@ -171,9 +171,9 @@ namespace Blopnote
             Cursor.Current = Cursors.Default;
         }
 
-        internal async Task<string> GetLyrics(string GeniusSongURL)
+        internal async Task<string> GetLyrics(string GeniusSongUrl)
         {
-            driver.Navigate().GoToUrl(GeniusSongURL);
+            driver.Navigate().GoToUrl(GeniusSongUrl);
             await Task.Delay(1000);
             IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
             return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
@@ -263,12 +263,12 @@ namespace Blopnote
             }
         }
 
-        private void groupBoxURL_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void groupBoxUrlValidating(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (checkBoxUseURL.Checked && !SelectedURL_item.Visible)
+            if (checkBoxUseUrl.Checked && !SelectedUrlitem.Visible)
             {
                 e.Cancel = true;
-                errorProvider1.SetError(linkLabelURL1, "You specified \"Use URL\" but didn't request it");
+                errorProvider1.SetError(linkLabelUrl1, "You specified \"Use Url\" but didn't request it");
             }
         }
         #endregion
@@ -276,62 +276,62 @@ namespace Blopnote
         private void buttonCopy_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
-            string URL = URL_items.Where(URLitem => URLitem.HasButton(button))
+            string Url = Urlitems.Where(Urlitem => Urlitem.HasButton(button))
                                   .Single()
                                   .Name;
-            Clipboard.SetText(URL);
+            Clipboard.SetText(Url);
         }
 
-        private async void buttonRequestForURL_Click(object sender, EventArgs e)
+        private void buttonRequestForUrlClick(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
             if (SongInserted)
             {
-                string[,] URLs = await Browser.GetYoutubeURLs(SongName);
-                DisplayURLs(URLs);
-                labelURL_Request.Text = URLs.GetLength(0) == 0
+                string[,] Urls = Browser.GetYoutubeUrls(SongName);
+                DisplayUrls(Urls);
+                labelUrlRequest.Text = Urls.GetLength(0) == 0
                                         ? NOT_FOUND_MESSAGE
-                                        : URLs.GetLength(0) + " URLs were successfully found";
+                                        : Urls.GetLength(0) + " Urls found";
             }
             else
             {
-                DisplayURLs(ZERO_URLs);
-                labelURL_Request.Text = EMPTY_FIELDS_MESSAGE;
+                DisplayUrls(ZERO_Urls);
+                labelUrlRequest.Text = EMPTY_FIELDS_MESSAGE;
             }
             Cursor.Current = Cursors.Default;
         }
 
-        private void DisplayURLs(string[,] URLs)
+        private void DisplayUrls(string[,] Urls)
         {
-            URL_items[0].Checked = true;
-            for(int i = 0; i < URLs.GetLength(0); i++)
+            Urlitems[0].Checked = true;
+            for(int i = 0; i < Urls.GetLength(0); i++)
             {
-                URL_items[i].Name = URLs[i, 0];
-                URL_items[i].URL = URLs[i, 1];
-                URL_items[i].Visible = true;
+                Urlitems[i].Name = Urls[i, 0];
+                Urlitems[i].Url = Urls[i, 1];
+                Urlitems[i].Visible = true;
             }
             // hide url items without url
-            for (int i = URLs.Length; i < URL_items.Length; i++)
+            for (int i = Urls.Length; i < Urlitems.Length; i++)
             {
-                URL_items[i].Name = string.Empty;
-                URL_items[i].URL = string.Empty;
-                URL_items[i].Visible = false;
+                Urlitems[i].Name = string.Empty;
+                Urlitems[i].Url = string.Empty;
+                Urlitems[i].Visible = false;
             }
         }
 
-        private void linkLabelURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void linkLabelUrlLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string URL = GetURL((LinkLabel)sender);
-            Browser.OpenURL(URL);
+            string Url = GetUrl((LinkLabel)sender);
+            Browser.OpenUrl(Url);
         }
 
-        private string GetURL(LinkLabel linkLabel)
+        private string GetUrl(LinkLabel linkLabel)
         {
-            foreach(URL_item item in URL_items)
+            foreach(Urlitem item in Urlitems)
             {
                 if (item.HasLabel(linkLabel))
                 {
-                    return item.URL;
+                    return item.Url;
                 }
             }
             throw new ArgumentException("");

@@ -26,7 +26,7 @@ namespace Blopnote
         internal int LineIndexWithCarriage => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
         internal int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
-        internal int NumberOfLinesToComplete { get; set; }
+        internal int LinesToComplete { get; set; }
 
         internal TextField(TextBox TextBoxWithText)
         {
@@ -82,7 +82,7 @@ namespace Blopnote
         internal void SongCompletionChecker(object sender, EventArgs e)
         {
             Debug.WriteLine("checking for completion...");
-            if (TextBoxWithText.Lines.Length > NumberOfLinesToComplete)
+            if (TextBoxWithText.Lines.Length > LinesToComplete)
             {
                 SongIsWritten(this, null);
             }

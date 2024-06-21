@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    internal class URL_item
+    internal class Urlitem
     {
         private readonly Button CopyButton;
         private readonly RadioButton RadioButton;
@@ -27,7 +27,7 @@ namespace Blopnote
             }
         }
 
-        internal string URL { get; set; }
+        internal string Url { get; set; }
 
         internal string Name
         {
@@ -47,7 +47,7 @@ namespace Blopnote
             }
         }
 
-        internal URL_item(Button CopyButton, RadioButton RadioButton, LinkLabel Label)
+        internal Urlitem(Button CopyButton, RadioButton RadioButton, LinkLabel Label)
         {
             this.CopyButton = CopyButton;
             this.RadioButton = RadioButton;

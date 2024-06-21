@@ -42,7 +42,7 @@
             this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uRLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeUrl = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -99,14 +99,14 @@
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.createToolStripMenuItem.Text = "Create";
             this.createToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -114,7 +114,7 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -131,9 +131,10 @@
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(103, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
             this.ShowLyrics.Text = "Show";
-            this.ShowLyrics.Click += new System.EventHandler(this.ShowLyricsToolStripMenuItem_Click);
+            this.ShowLyrics.ToolTipText = "Disabled, if there\'s no lyrics";
+            this.ShowLyrics.Click += new System.EventHandler(this.ShowLyrics_Click);
             this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
             // 
             // settingsToolStripMenuItem
@@ -164,23 +165,27 @@
             // 
             this.uRLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.followToolStripMenuItem,
-            this.changeToolStripMenuItem});
+            this.changeUrl});
             this.uRLToolStripMenuItem.Name = "uRLToolStripMenuItem";
-            this.uRLToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
-            this.uRLToolStripMenuItem.Text = "URL";
+            this.uRLToolStripMenuItem.Size = new System.Drawing.Size(34, 20);
+            this.uRLToolStripMenuItem.Text = "Url";
             // 
             // followToolStripMenuItem
             // 
+            this.followToolStripMenuItem.Enabled = false;
             this.followToolStripMenuItem.Name = "followToolStripMenuItem";
-            this.followToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.followToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.followToolStripMenuItem.Text = "Follow";
-            this.followToolStripMenuItem.Click += new System.EventHandler(this.followToolStripMenuItem_Click);
+            this.followToolStripMenuItem.ToolTipText = "Disabled, if there\'s no Url";
+            this.followToolStripMenuItem.Click += new System.EventHandler(this.followUrl_Click);
             // 
-            // changeToolStripMenuItem
+            // changeUrl
             // 
-            this.changeToolStripMenuItem.Name = "changeToolStripMenuItem";
-            this.changeToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
-            this.changeToolStripMenuItem.Text = "Change";
+            this.changeUrl.Enabled = false;
+            this.changeUrl.Name = "changeUrl";
+            this.changeUrl.Size = new System.Drawing.Size(180, 22);
+            this.changeUrl.Text = "Change";
+            this.changeUrl.Click += new System.EventHandler(this.changeUrl_Click);
             // 
             // statusStrip1
             // 
@@ -282,7 +287,7 @@
         private System.Windows.Forms.ToolStripMenuItem tabTranslatesOnly1LineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uRLToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem changeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeUrl;
     }
 }
 

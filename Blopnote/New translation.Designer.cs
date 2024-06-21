@@ -56,30 +56,30 @@ namespace Blopnote
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.buttonRequestForURL = new System.Windows.Forms.Button();
-            this.checkBoxUseURL = new System.Windows.Forms.CheckBox();
-            this.groupBoxURL = new System.Windows.Forms.GroupBox();
+            this.buttonRequestForUrl = new System.Windows.Forms.Button();
+            this.checkBoxUseUrl = new System.Windows.Forms.CheckBox();
+            this.groupBoxUrl = new System.Windows.Forms.GroupBox();
             this.buttonCopy5 = new System.Windows.Forms.Button();
             this.buttonCopy4 = new System.Windows.Forms.Button();
             this.buttonCopy3 = new System.Windows.Forms.Button();
             this.buttonCopy2 = new System.Windows.Forms.Button();
             this.buttonCopy1 = new System.Windows.Forms.Button();
-            this.labelURL_Request = new System.Windows.Forms.Label();
-            this.radioButtonURL5 = new System.Windows.Forms.RadioButton();
-            this.radioButtonURL4 = new System.Windows.Forms.RadioButton();
-            this.radioButtonURL3 = new System.Windows.Forms.RadioButton();
-            this.linkLabelURL5 = new System.Windows.Forms.LinkLabel();
-            this.linkLabelURL4 = new System.Windows.Forms.LinkLabel();
-            this.linkLabelURL3 = new System.Windows.Forms.LinkLabel();
-            this.linkLabelURL2 = new System.Windows.Forms.LinkLabel();
-            this.linkLabelURL1 = new System.Windows.Forms.LinkLabel();
-            this.radioButtonURL2 = new System.Windows.Forms.RadioButton();
-            this.radioButtonURL1 = new System.Windows.Forms.RadioButton();
+            this.labelUrlRequest = new System.Windows.Forms.Label();
+            this.radioButtonUrl5 = new System.Windows.Forms.RadioButton();
+            this.radioButtonUrl4 = new System.Windows.Forms.RadioButton();
+            this.radioButtonUrl3 = new System.Windows.Forms.RadioButton();
+            this.linkLabelUrl5 = new System.Windows.Forms.LinkLabel();
+            this.linkLabelUrl4 = new System.Windows.Forms.LinkLabel();
+            this.linkLabelUrl3 = new System.Windows.Forms.LinkLabel();
+            this.linkLabelUrl2 = new System.Windows.Forms.LinkLabel();
+            this.linkLabelUrl1 = new System.Windows.Forms.LinkLabel();
+            this.radioButtonUrl2 = new System.Windows.Forms.RadioButton();
+            this.radioButtonUrl1 = new System.Windows.Forms.RadioButton();
             this.groupBoxSong.SuspendLayout();
             this.groupBoxLyrics.SuspendLayout();
             this.groupBoxLanguage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
-            this.groupBoxURL.SuspendLayout();
+            this.groupBoxUrl.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBoxForAuthor
@@ -301,61 +301,61 @@ namespace Blopnote
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // buttonRequestForURL
+            // buttonRequestForUrl
             // 
-            this.buttonRequestForURL.AutoSize = true;
-            this.buttonRequestForURL.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.buttonRequestForURL.CausesValidation = false;
-            this.buttonRequestForURL.Location = new System.Drawing.Point(126, 32);
-            this.buttonRequestForURL.Name = "buttonRequestForURL";
-            this.buttonRequestForURL.Size = new System.Drawing.Size(170, 32);
-            this.buttonRequestForURL.TabIndex = 11;
-            this.buttonRequestForURL.Text = "Request for URL";
-            this.buttonRequestForURL.UseVisualStyleBackColor = true;
-            this.buttonRequestForURL.Click += new System.EventHandler(this.buttonRequestForURL_Click);
+            this.buttonRequestForUrl.AutoSize = true;
+            this.buttonRequestForUrl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.buttonRequestForUrl.CausesValidation = false;
+            this.buttonRequestForUrl.Location = new System.Drawing.Point(126, 32);
+            this.buttonRequestForUrl.Name = "buttonRequestForUrl";
+            this.buttonRequestForUrl.Size = new System.Drawing.Size(170, 32);
+            this.buttonRequestForUrl.TabIndex = 11;
+            this.buttonRequestForUrl.Text = "Request for Url";
+            this.buttonRequestForUrl.UseVisualStyleBackColor = true;
+            this.buttonRequestForUrl.Click += new System.EventHandler(this.buttonRequestForUrlClick);
             // 
-            // checkBoxUseURL
+            // checkBoxUseUrl
             // 
-            this.checkBoxUseURL.AutoSize = true;
-            this.checkBoxUseURL.CausesValidation = false;
-            this.checkBoxUseURL.Checked = true;
-            this.checkBoxUseURL.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxUseURL.Location = new System.Drawing.Point(21, 36);
-            this.checkBoxUseURL.Name = "checkBoxUseURL";
-            this.checkBoxUseURL.Size = new System.Drawing.Size(99, 26);
-            this.checkBoxUseURL.TabIndex = 12;
-            this.checkBoxUseURL.Text = "Use URL";
-            this.checkBoxUseURL.UseVisualStyleBackColor = true;
-            this.checkBoxUseURL.CheckedChanged += new System.EventHandler(this.checkBoxStoreURL_CheckedChanged);
+            this.checkBoxUseUrl.AutoSize = true;
+            this.checkBoxUseUrl.CausesValidation = false;
+            this.checkBoxUseUrl.Checked = true;
+            this.checkBoxUseUrl.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxUseUrl.Location = new System.Drawing.Point(21, 36);
+            this.checkBoxUseUrl.Name = "checkBoxUseUrl";
+            this.checkBoxUseUrl.Size = new System.Drawing.Size(99, 26);
+            this.checkBoxUseUrl.TabIndex = 12;
+            this.checkBoxUseUrl.Text = "Use Url";
+            this.checkBoxUseUrl.UseVisualStyleBackColor = true;
+            this.checkBoxUseUrl.CheckedChanged += new System.EventHandler(this.checkBoxStoreUrlCheckedChanged);
             // 
-            // groupBoxURL
+            // groupBoxUrl
             // 
-            this.groupBoxURL.CausesValidation = false;
-            this.groupBoxURL.Controls.Add(this.buttonCopy5);
-            this.groupBoxURL.Controls.Add(this.buttonCopy4);
-            this.groupBoxURL.Controls.Add(this.buttonCopy3);
-            this.groupBoxURL.Controls.Add(this.buttonCopy2);
-            this.groupBoxURL.Controls.Add(this.buttonCopy1);
-            this.groupBoxURL.Controls.Add(this.labelURL_Request);
-            this.groupBoxURL.Controls.Add(this.radioButtonURL5);
-            this.groupBoxURL.Controls.Add(this.radioButtonURL4);
-            this.groupBoxURL.Controls.Add(this.radioButtonURL3);
-            this.groupBoxURL.Controls.Add(this.linkLabelURL5);
-            this.groupBoxURL.Controls.Add(this.linkLabelURL4);
-            this.groupBoxURL.Controls.Add(this.linkLabelURL3);
-            this.groupBoxURL.Controls.Add(this.linkLabelURL2);
-            this.groupBoxURL.Controls.Add(this.linkLabelURL1);
-            this.groupBoxURL.Controls.Add(this.radioButtonURL2);
-            this.groupBoxURL.Controls.Add(this.radioButtonURL1);
-            this.groupBoxURL.Controls.Add(this.checkBoxUseURL);
-            this.groupBoxURL.Controls.Add(this.buttonRequestForURL);
-            this.groupBoxURL.Location = new System.Drawing.Point(12, 390);
-            this.groupBoxURL.Name = "groupBoxURL";
-            this.groupBoxURL.Size = new System.Drawing.Size(720, 270);
-            this.groupBoxURL.TabIndex = 18;
-            this.groupBoxURL.TabStop = false;
-            this.groupBoxURL.Text = "URL to song (youtube.com)";
-            this.groupBoxURL.Validating += new System.ComponentModel.CancelEventHandler(this.groupBoxURL_Validating);
+            this.groupBoxUrl.CausesValidation = false;
+            this.groupBoxUrl.Controls.Add(this.buttonCopy5);
+            this.groupBoxUrl.Controls.Add(this.buttonCopy4);
+            this.groupBoxUrl.Controls.Add(this.buttonCopy3);
+            this.groupBoxUrl.Controls.Add(this.buttonCopy2);
+            this.groupBoxUrl.Controls.Add(this.buttonCopy1);
+            this.groupBoxUrl.Controls.Add(this.labelUrlRequest);
+            this.groupBoxUrl.Controls.Add(this.radioButtonUrl5);
+            this.groupBoxUrl.Controls.Add(this.radioButtonUrl4);
+            this.groupBoxUrl.Controls.Add(this.radioButtonUrl3);
+            this.groupBoxUrl.Controls.Add(this.linkLabelUrl5);
+            this.groupBoxUrl.Controls.Add(this.linkLabelUrl4);
+            this.groupBoxUrl.Controls.Add(this.linkLabelUrl3);
+            this.groupBoxUrl.Controls.Add(this.linkLabelUrl2);
+            this.groupBoxUrl.Controls.Add(this.linkLabelUrl1);
+            this.groupBoxUrl.Controls.Add(this.radioButtonUrl2);
+            this.groupBoxUrl.Controls.Add(this.radioButtonUrl1);
+            this.groupBoxUrl.Controls.Add(this.checkBoxUseUrl);
+            this.groupBoxUrl.Controls.Add(this.buttonRequestForUrl);
+            this.groupBoxUrl.Location = new System.Drawing.Point(12, 390);
+            this.groupBoxUrl.Name = "groupBoxUrl";
+            this.groupBoxUrl.Size = new System.Drawing.Size(720, 270);
+            this.groupBoxUrl.TabIndex = 18;
+            this.groupBoxUrl.TabStop = false;
+            this.groupBoxUrl.Text = "Url to song (youtube.com)";
+            this.groupBoxUrl.Validating += new System.ComponentModel.CancelEventHandler(this.groupBoxUrlValidating);
             // 
             // buttonCopy5
             // 
@@ -417,138 +417,138 @@ namespace Blopnote
             this.buttonCopy1.UseVisualStyleBackColor = true;
             this.buttonCopy1.Click += new System.EventHandler(this.buttonCopy_Click);
             // 
-            // labelURL_Request
+            // labelUrlRequest
             // 
-            this.labelURL_Request.AutoSize = true;
-            this.labelURL_Request.CausesValidation = false;
-            this.labelURL_Request.Location = new System.Drawing.Point(302, 37);
-            this.labelURL_Request.Name = "labelURL_Request";
-            this.labelURL_Request.Size = new System.Drawing.Size(80, 22);
-            this.labelURL_Request.TabIndex = 24;
-            this.labelURL_Request.Text = "results";
+            this.labelUrlRequest.AutoSize = true;
+            this.labelUrlRequest.CausesValidation = false;
+            this.labelUrlRequest.Location = new System.Drawing.Point(302, 37);
+            this.labelUrlRequest.Name = "labelUrlRequest";
+            this.labelUrlRequest.Size = new System.Drawing.Size(80, 22);
+            this.labelUrlRequest.TabIndex = 24;
+            this.labelUrlRequest.Text = "results";
             // 
-            // radioButtonURL5
+            // radioButtonUrl5
             // 
-            this.radioButtonURL5.AutoSize = true;
-            this.radioButtonURL5.CausesValidation = false;
-            this.radioButtonURL5.Location = new System.Drawing.Point(67, 228);
-            this.radioButtonURL5.Name = "radioButtonURL5";
-            this.radioButtonURL5.Size = new System.Drawing.Size(14, 13);
-            this.radioButtonURL5.TabIndex = 23;
-            this.radioButtonURL5.UseVisualStyleBackColor = true;
+            this.radioButtonUrl5.AutoSize = true;
+            this.radioButtonUrl5.CausesValidation = false;
+            this.radioButtonUrl5.Location = new System.Drawing.Point(67, 228);
+            this.radioButtonUrl5.Name = "radioButtonUrl5";
+            this.radioButtonUrl5.Size = new System.Drawing.Size(14, 13);
+            this.radioButtonUrl5.TabIndex = 23;
+            this.radioButtonUrl5.UseVisualStyleBackColor = true;
             // 
-            // radioButtonURL4
+            // radioButtonUrl4
             // 
-            this.radioButtonURL4.AutoSize = true;
-            this.radioButtonURL4.CausesValidation = false;
-            this.radioButtonURL4.Location = new System.Drawing.Point(67, 192);
-            this.radioButtonURL4.Name = "radioButtonURL4";
-            this.radioButtonURL4.Size = new System.Drawing.Size(14, 13);
-            this.radioButtonURL4.TabIndex = 22;
-            this.radioButtonURL4.UseVisualStyleBackColor = true;
+            this.radioButtonUrl4.AutoSize = true;
+            this.radioButtonUrl4.CausesValidation = false;
+            this.radioButtonUrl4.Location = new System.Drawing.Point(67, 192);
+            this.radioButtonUrl4.Name = "radioButtonUrl4";
+            this.radioButtonUrl4.Size = new System.Drawing.Size(14, 13);
+            this.radioButtonUrl4.TabIndex = 22;
+            this.radioButtonUrl4.UseVisualStyleBackColor = true;
             // 
-            // radioButtonURL3
+            // radioButtonUrl3
             // 
-            this.radioButtonURL3.AutoSize = true;
-            this.radioButtonURL3.CausesValidation = false;
-            this.radioButtonURL3.Location = new System.Drawing.Point(67, 154);
-            this.radioButtonURL3.Name = "radioButtonURL3";
-            this.radioButtonURL3.Size = new System.Drawing.Size(14, 13);
-            this.radioButtonURL3.TabIndex = 21;
-            this.radioButtonURL3.UseVisualStyleBackColor = true;
+            this.radioButtonUrl3.AutoSize = true;
+            this.radioButtonUrl3.CausesValidation = false;
+            this.radioButtonUrl3.Location = new System.Drawing.Point(67, 154);
+            this.radioButtonUrl3.Name = "radioButtonUrl3";
+            this.radioButtonUrl3.Size = new System.Drawing.Size(14, 13);
+            this.radioButtonUrl3.TabIndex = 21;
+            this.radioButtonUrl3.UseVisualStyleBackColor = true;
             // 
-            // linkLabelURL5
+            // linkLabelUrl5
             // 
-            this.linkLabelURL5.AutoSize = true;
-            this.linkLabelURL5.CausesValidation = false;
-            this.linkLabelURL5.Location = new System.Drawing.Point(87, 223);
-            this.linkLabelURL5.MaximumSize = new System.Drawing.Size(627, 22);
-            this.linkLabelURL5.Name = "linkLabelURL5";
-            this.linkLabelURL5.Size = new System.Drawing.Size(110, 22);
-            this.linkLabelURL5.TabIndex = 20;
-            this.linkLabelURL5.TabStop = true;
-            this.linkLabelURL5.Text = "linkLabel5";
-            this.linkLabelURL5.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelURL_LinkClicked);
+            this.linkLabelUrl5.AutoSize = true;
+            this.linkLabelUrl5.CausesValidation = false;
+            this.linkLabelUrl5.Location = new System.Drawing.Point(87, 223);
+            this.linkLabelUrl5.MaximumSize = new System.Drawing.Size(627, 22);
+            this.linkLabelUrl5.Name = "linkLabelUrl5";
+            this.linkLabelUrl5.Size = new System.Drawing.Size(110, 22);
+            this.linkLabelUrl5.TabIndex = 20;
+            this.linkLabelUrl5.TabStop = true;
+            this.linkLabelUrl5.Text = "linkLabel5";
+            this.linkLabelUrl5.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelUrlLinkClicked);
             // 
-            // linkLabelURL4
+            // linkLabelUrl4
             // 
-            this.linkLabelURL4.AutoSize = true;
-            this.linkLabelURL4.CausesValidation = false;
-            this.linkLabelURL4.Location = new System.Drawing.Point(87, 187);
-            this.linkLabelURL4.MaximumSize = new System.Drawing.Size(627, 22);
-            this.linkLabelURL4.Name = "linkLabelURL4";
-            this.linkLabelURL4.Size = new System.Drawing.Size(110, 22);
-            this.linkLabelURL4.TabIndex = 19;
-            this.linkLabelURL4.TabStop = true;
-            this.linkLabelURL4.Text = "linkLabel4";
-            this.linkLabelURL4.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelURL_LinkClicked);
+            this.linkLabelUrl4.AutoSize = true;
+            this.linkLabelUrl4.CausesValidation = false;
+            this.linkLabelUrl4.Location = new System.Drawing.Point(87, 187);
+            this.linkLabelUrl4.MaximumSize = new System.Drawing.Size(627, 22);
+            this.linkLabelUrl4.Name = "linkLabelUrl4";
+            this.linkLabelUrl4.Size = new System.Drawing.Size(110, 22);
+            this.linkLabelUrl4.TabIndex = 19;
+            this.linkLabelUrl4.TabStop = true;
+            this.linkLabelUrl4.Text = "linkLabel4";
+            this.linkLabelUrl4.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelUrlLinkClicked);
             // 
-            // linkLabelURL3
+            // linkLabelUrl3
             // 
-            this.linkLabelURL3.AutoSize = true;
-            this.linkLabelURL3.CausesValidation = false;
-            this.linkLabelURL3.Location = new System.Drawing.Point(87, 149);
-            this.linkLabelURL3.MaximumSize = new System.Drawing.Size(627, 22);
-            this.linkLabelURL3.Name = "linkLabelURL3";
-            this.linkLabelURL3.Size = new System.Drawing.Size(110, 22);
-            this.linkLabelURL3.TabIndex = 18;
-            this.linkLabelURL3.TabStop = true;
-            this.linkLabelURL3.Text = "linkLabel3";
-            this.linkLabelURL3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelURL_LinkClicked);
+            this.linkLabelUrl3.AutoSize = true;
+            this.linkLabelUrl3.CausesValidation = false;
+            this.linkLabelUrl3.Location = new System.Drawing.Point(87, 149);
+            this.linkLabelUrl3.MaximumSize = new System.Drawing.Size(627, 22);
+            this.linkLabelUrl3.Name = "linkLabelUrl3";
+            this.linkLabelUrl3.Size = new System.Drawing.Size(110, 22);
+            this.linkLabelUrl3.TabIndex = 18;
+            this.linkLabelUrl3.TabStop = true;
+            this.linkLabelUrl3.Text = "linkLabel3";
+            this.linkLabelUrl3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelUrlLinkClicked);
             // 
-            // linkLabelURL2
+            // linkLabelUrl2
             // 
-            this.linkLabelURL2.AutoSize = true;
-            this.linkLabelURL2.CausesValidation = false;
-            this.linkLabelURL2.Location = new System.Drawing.Point(87, 111);
-            this.linkLabelURL2.MaximumSize = new System.Drawing.Size(627, 22);
-            this.linkLabelURL2.Name = "linkLabelURL2";
-            this.linkLabelURL2.Size = new System.Drawing.Size(110, 22);
-            this.linkLabelURL2.TabIndex = 17;
-            this.linkLabelURL2.TabStop = true;
-            this.linkLabelURL2.Text = "linkLabel2";
-            this.linkLabelURL2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelURL_LinkClicked);
+            this.linkLabelUrl2.AutoSize = true;
+            this.linkLabelUrl2.CausesValidation = false;
+            this.linkLabelUrl2.Location = new System.Drawing.Point(87, 111);
+            this.linkLabelUrl2.MaximumSize = new System.Drawing.Size(627, 22);
+            this.linkLabelUrl2.Name = "linkLabelUrl2";
+            this.linkLabelUrl2.Size = new System.Drawing.Size(110, 22);
+            this.linkLabelUrl2.TabIndex = 17;
+            this.linkLabelUrl2.TabStop = true;
+            this.linkLabelUrl2.Text = "linkLabel2";
+            this.linkLabelUrl2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelUrlLinkClicked);
             // 
-            // linkLabelURL1
+            // linkLabelUrl1
             // 
-            this.linkLabelURL1.AutoSize = true;
-            this.linkLabelURL1.CausesValidation = false;
-            this.linkLabelURL1.Location = new System.Drawing.Point(87, 73);
-            this.linkLabelURL1.MaximumSize = new System.Drawing.Size(627, 22);
-            this.linkLabelURL1.Name = "linkLabelURL1";
-            this.linkLabelURL1.Size = new System.Drawing.Size(110, 22);
-            this.linkLabelURL1.TabIndex = 16;
-            this.linkLabelURL1.TabStop = true;
-            this.linkLabelURL1.Text = "linkLabel1";
-            this.linkLabelURL1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelURL_LinkClicked);
+            this.linkLabelUrl1.AutoSize = true;
+            this.linkLabelUrl1.CausesValidation = false;
+            this.linkLabelUrl1.Location = new System.Drawing.Point(87, 73);
+            this.linkLabelUrl1.MaximumSize = new System.Drawing.Size(627, 22);
+            this.linkLabelUrl1.Name = "linkLabelUrl1";
+            this.linkLabelUrl1.Size = new System.Drawing.Size(110, 22);
+            this.linkLabelUrl1.TabIndex = 16;
+            this.linkLabelUrl1.TabStop = true;
+            this.linkLabelUrl1.Text = "linkLabel1";
+            this.linkLabelUrl1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelUrlLinkClicked);
             // 
-            // radioButtonURL2
+            // radioButtonUrl2
             // 
-            this.radioButtonURL2.AutoSize = true;
-            this.radioButtonURL2.CausesValidation = false;
-            this.radioButtonURL2.Location = new System.Drawing.Point(67, 116);
-            this.radioButtonURL2.Name = "radioButtonURL2";
-            this.radioButtonURL2.Size = new System.Drawing.Size(14, 13);
-            this.radioButtonURL2.TabIndex = 14;
-            this.radioButtonURL2.UseVisualStyleBackColor = true;
+            this.radioButtonUrl2.AutoSize = true;
+            this.radioButtonUrl2.CausesValidation = false;
+            this.radioButtonUrl2.Location = new System.Drawing.Point(67, 116);
+            this.radioButtonUrl2.Name = "radioButtonUrl2";
+            this.radioButtonUrl2.Size = new System.Drawing.Size(14, 13);
+            this.radioButtonUrl2.TabIndex = 14;
+            this.radioButtonUrl2.UseVisualStyleBackColor = true;
             // 
-            // radioButtonURL1
+            // radioButtonUrl1
             // 
-            this.radioButtonURL1.AutoSize = true;
-            this.radioButtonURL1.CausesValidation = false;
-            this.radioButtonURL1.Checked = true;
-            this.radioButtonURL1.Location = new System.Drawing.Point(67, 78);
-            this.radioButtonURL1.Name = "radioButtonURL1";
-            this.radioButtonURL1.Size = new System.Drawing.Size(14, 13);
-            this.radioButtonURL1.TabIndex = 13;
-            this.radioButtonURL1.TabStop = true;
-            this.radioButtonURL1.UseVisualStyleBackColor = true;
+            this.radioButtonUrl1.AutoSize = true;
+            this.radioButtonUrl1.CausesValidation = false;
+            this.radioButtonUrl1.Checked = true;
+            this.radioButtonUrl1.Location = new System.Drawing.Point(67, 78);
+            this.radioButtonUrl1.Name = "radioButtonUrl1";
+            this.radioButtonUrl1.Size = new System.Drawing.Size(14, 13);
+            this.radioButtonUrl1.TabIndex = 13;
+            this.radioButtonUrl1.TabStop = true;
+            this.radioButtonUrl1.UseVisualStyleBackColor = true;
             // 
             // CreateNewTranslationForm
             // 
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(744, 709);
-            this.Controls.Add(this.groupBoxURL);
+            this.Controls.Add(this.groupBoxUrl);
             this.Controls.Add(this.groupBoxLanguage);
             this.Controls.Add(this.groupBoxLyrics);
             this.Controls.Add(this.groupBoxSong);
@@ -567,8 +567,8 @@ namespace Blopnote
             this.groupBoxLanguage.ResumeLayout(false);
             this.groupBoxLanguage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
-            this.groupBoxURL.ResumeLayout(false);
-            this.groupBoxURL.PerformLayout();
+            this.groupBoxUrl.ResumeLayout(false);
+            this.groupBoxUrl.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -588,20 +588,20 @@ namespace Blopnote
         private Label label2;
         private ComboBox comboBox2;
         private ErrorProvider errorProvider1;
-        private Button buttonRequestForURL;
-        private GroupBox groupBoxURL;
-        private CheckBox checkBoxUseURL;
-        private Label labelURL_Request;
-        private RadioButton radioButtonURL5;
-        private RadioButton radioButtonURL4;
-        private RadioButton radioButtonURL3;
-        private LinkLabel linkLabelURL5;
-        private LinkLabel linkLabelURL4;
-        private LinkLabel linkLabelURL3;
-        private LinkLabel linkLabelURL2;
-        private LinkLabel linkLabelURL1;
-        private RadioButton radioButtonURL2;
-        private RadioButton radioButtonURL1;
+        private Button buttonRequestForUrl;
+        private GroupBox groupBoxUrl;
+        private CheckBox checkBoxUseUrl;
+        private Label labelUrlRequest;
+        private RadioButton radioButtonUrl5;
+        private RadioButton radioButtonUrl4;
+        private RadioButton radioButtonUrl3;
+        private LinkLabel linkLabelUrl5;
+        private LinkLabel linkLabelUrl4;
+        private LinkLabel linkLabelUrl3;
+        private LinkLabel linkLabelUrl2;
+        private LinkLabel linkLabelUrl1;
+        private RadioButton radioButtonUrl2;
+        private RadioButton radioButtonUrl1;
         private Button buttonCopy1;
         private Button buttonCopy5;
         private Button buttonCopy4;

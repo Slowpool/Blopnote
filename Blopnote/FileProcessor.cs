@@ -21,11 +21,8 @@ namespace Blopnote
 
         internal int DirectoryLength => fileState.directoryInfo.FullName.Length;
 
-        private string LyricsPath => MakeLyricsPath(fileState.FilePath);
-
-        private string MakeLyricsPath(string filePath)
+        private string MakeSongInfo(string filePath)
         {
-#warning dirty and obfuscated
             int indexOfLastSlash = filePath.LastIndexOf('\\');
             string lyricsPath = filePath.Insert(indexOfLastSlash, "\\" + Names.SongInfoFolder)
                                         .Replace(".txt", ".json");
@@ -82,10 +79,9 @@ namespace Blopnote
 
             File.Create(fileState.FullFileName).Dispose();
 
-            if (fileState.LyricsIsUsed)
+            if (fileState.IsLyricsUsed)
             {
-                var filteredLyrics = lyricsBox.FilterAndStore(songInfo.Lyrics);
-                fileState.UpdateLyrics(filteredLyrics);
+                fileState.Lyrics = lyricsBox.FilterAndStore(fileState.Lyrics);
                 WriteLyricsToJSON();
 
                 textField.ObserveCompletion();
@@ -104,7 +100,7 @@ namespace Blopnote
         private void WriteLyricsToJSON()
         {
             string serializedSongInfo = JsonConvert.SerializeObject(fileState.songInfo);
-            File.WriteAllText(LyricsPath, serializedSongInfo);
+            File.WriteAllText(fileState.FullFileName, serializedSongInfo);
         }
 
         private void WriteInFile(string filePath, string text)
@@ -120,26 +116,19 @@ namespace Blopnote
         internal void OpenTranslation(string fileName)
         {
             fileState.OpenFileWithDir(fileName);
-            ParseSongInfo();
+            fileState.songInfo = ParseSongInfo();
+
             SetInitialDirectory(fileState.directoryInfo.FullName);
 
             textField.Text = File.ReadAllText(fileName);
-            if (fileState.LyricsIsUsed)
-            {
-                lyricsBox.FilterAndStore(fileState.songInfo.Lyrics);
-                if (!fileState.songInfo.Completed)
-                {
-                    textField.ObserveCompletion();
-                }
-            }
         }
 
-        private void ParseSongInfo()
+        private SongInfo ParseSongInfo()
         {
-            string conjectiveSongInfoPath = MakeLyricsPath(fileState.FullFileName);
+            string conjectiveSongInfoPath = MakeSongInfo(fileState.FullFileName);
             if (File.Exists(conjectiveSongInfoPath))
             {
-                fileState.songInfo = (SongInfo)JsonConvert.DeserializeObject
+                return (SongInfo)JsonConvert.DeserializeObject
                 (
                     value: File.ReadAllText(conjectiveSongInfoPath),
                     type: typeof(SongInfo)
@@ -147,7 +136,7 @@ namespace Blopnote
             }
             else
             {
-                fileState.songInfo = null;
+                return null;
             }
         }
 
@@ -156,7 +145,7 @@ namespace Blopnote
             fileState.songInfo.Completed = true;
             try
             {
-                File.WriteAllText(LyricsPath, JsonConvert.SerializeObject(fileState.songInfo));
+                File.WriteAllText(fileState.FullFileName, JsonConvert.SerializeObject(fileState.songInfo));
             }
             catch (Exception exception)
             {
@@ -166,8 +155,8 @@ namespace Blopnote
                             icon: MessageBoxIcon.Error
                             );
             }
-            // release info since it's useless in the future
-            fileState.songInfo = null;
+            //// release info since it's useless in the future // UPD: me in the past, are you chump?
+            //fileState.songInfo = null;
             textField.StopObserving();
             MessageBox.Show(caption: "Completed",
                             text: "Congratulations! Song was successfully written!",
