@@ -21,14 +21,6 @@ namespace Blopnote
 
         internal int DirectoryLength => fileState.directoryInfo.FullName.Length;
 
-        private string MakeSongInfo(string filePath)
-        {
-            int indexOfLastSlash = filePath.LastIndexOf('\\');
-            string lyricsPath = filePath.Insert(indexOfLastSlash, "\\" + Names.SongInfoFolder)
-                                        .Replace(".txt", ".json");
-            return lyricsPath;
-        }
-
         internal FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
         {
             this.textField = textField;
@@ -125,7 +117,7 @@ namespace Blopnote
 
         private SongInfo ParseSongInfo()
         {
-            string conjectiveSongInfoPath = MakeSongInfo(fileState.FullFileName);
+            string conjectiveSongInfoPath = GenerateSongInfoPath(fileState.FullFileName);
             if (File.Exists(conjectiveSongInfoPath))
             {
                 return (SongInfo)JsonConvert.DeserializeObject
@@ -140,29 +132,45 @@ namespace Blopnote
             }
         }
 
+        /// <summary>
+        /// C:\path\to\file.txt => C:\path\to\SongInfo\file.json
+        /// </summary>
+        /// <param name="fullFileName"></param>
+        /// <returns></returns>
+        private string GenerateSongInfoPath(string fullFileName) =>
+            fullFileName.Insert(fullFileName.LastIndexOf('\\'), "\\" + Names.SongInfoFolder).Replace(".txt", ".json");
+
         internal void SongIsWritten_Handler(object sender, EventArgs e)
         {
             fileState.songInfo.Completed = true;
-            try
-            {
-                File.WriteAllText(fileState.FullFileName, JsonConvert.SerializeObject(fileState.songInfo));
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(caption: "Error",
-                            text: "Information about song completion wasn't written. Cause: " + exception.Message,
-                            buttons: MessageBoxButtons.OK,
-                            icon: MessageBoxIcon.Error
-                            );
-            }
+            TryRewriteSongInfo("Information about song completion wasn't written.");
+            #region trash
             //// release info since it's useless in the future // UPD: me in the past, are you chump?
-            //fileState.songInfo = null;
+            //fileState.songInfo = null; 
+            #endregion
             textField.StopObserving();
             MessageBox.Show(caption: "Completed",
                             text: "Congratulations! Song was successfully written!",
                             buttons: MessageBoxButtons.OK,
                             icon: MessageBoxIcon.Information
                             );
+        }
+
+        internal void TryRewriteSongInfo(string errorMessage)
+        {
+            try
+            {
+                File.WriteAllText(GenerateSongInfoPath(fileState.FullFileName), JsonConvert.SerializeObject(fileState.songInfo));
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(caption: "Error",
+                            text: errorMessage + " Cause of error: " + exception.Message,
+                            buttons: MessageBoxButtons.OK,
+                            icon: MessageBoxIcon.Error
+                            );
+                return;
+            }
         }
     }
 }

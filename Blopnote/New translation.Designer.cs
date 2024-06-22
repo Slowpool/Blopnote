@@ -254,7 +254,7 @@ namespace Blopnote
             this.groupBoxLyrics.Size = new System.Drawing.Size(720, 260);
             this.groupBoxLyrics.TabIndex = 16;
             this.groupBoxLyrics.TabStop = false;
-            this.groupBoxLyrics.Text = "Lyrics";
+            this.groupBoxLyrics.Text = "Lyrics (Genius.com)";
             this.groupBoxLyrics.Validating += new System.ComponentModel.CancelEventHandler(this.groupBoxLyrics_Validating);
             // 
             // groupBoxLanguage

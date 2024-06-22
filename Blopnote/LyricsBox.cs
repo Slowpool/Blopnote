@@ -19,10 +19,9 @@ namespace Blopnote
         internal readonly Panel panel;
         private readonly Font font;
         private readonly VScrollBar scrollBar;
-        private readonly ToolTip toolTipLyrics;
         private List<string> Lines { get; set; }
         internal int LinesQuantity => Lines.Count;
-        private string Lyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
+        private string BuiltLyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] LabelsWithLyrics { get; set; }
 
@@ -86,12 +85,11 @@ namespace Blopnote
 
         private readonly int lineHeight;
 
-        internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar, ToolTip toolTipLyrics)
+        internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar)
         {
             this.panel = panel;
             this.font = font;
             this.scrollBar = scrollBar;
-            this.toolTipLyrics = toolTipLyrics;
 
             FillLanguages();
 
@@ -133,6 +131,9 @@ namespace Blopnote
         /// <param name="lyrics"></param>
         internal string FilterAndStore(string lyrics)
         {
+#error some lines after previous song are remaines
+            Hide();
+
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
             CutExcessPhrase();
             TrimLines();
@@ -140,11 +141,13 @@ namespace Blopnote
 
             HighlightKeywords();
             ConfigureLabels();
-            TranslationByGoogle = GetTranslationByGoogle(Lyrics);
+            TranslationByGoogle = GetTranslationByGoogle(BuiltLyrics);
             TranslationByGoogleLoaded(this, null);
             CalculateWidth();
             AdjustScrollBar();
-            return Lyrics;
+
+            Display();
+            return BuiltLyrics;
         }
 
         private void TrimLines()

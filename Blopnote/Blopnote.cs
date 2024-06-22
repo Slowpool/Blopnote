@@ -9,7 +9,7 @@ using System.Collections.Specialized;
 using static Blopnote.Browser;
 using System.Diagnostics;
 using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Microsoft.VisualBasic;
 
 namespace Blopnote
 {
@@ -36,7 +36,7 @@ namespace Blopnote
 
             textField = new TextField(TextBoxWithText);
             fileState = new FileState(status, textField);
-            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics, toolTipLyrics);
+            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
 
             tabTranslatesOnly1LineToolStripMenuItem.Click += lyricsBox.SwitchTabMode;
@@ -60,7 +60,8 @@ namespace Blopnote
             {
                 closeToolStripMenuItem.Enabled = e.Opened;
                 changeFolderToolStripMenuItem.Enabled = !e.Opened;
-                changeUrl.Enabled = e.Opened;
+                changeUrlToolStripMenuItem.Enabled = e.Opened;
+                changeLyricsToolStripMenuItem.Enabled = e.Opened;
             };
 
             fileState.LyricsChanged += (sender, e) =>
@@ -71,7 +72,9 @@ namespace Blopnote
                     if (!fileState.songInfo.Completed)
                     {
                         textField.ObserveCompletion();
+                        textField.LinesToComplete = lyricsBox.LinesQuantity;
                     }
+                    TryAutoCompleteText();
                 }
 
                 ShowLyrics.Enabled = fileState.IsLyricsUsed;
@@ -171,23 +174,10 @@ namespace Blopnote
             
 // Q: maybe there's no need to use this?
 // A: there is.
+// Q: maybe it's still worth it to remove it and leave just textField.Clear()
             if (clearText)
             {
                 textField.Clear();
-            }
-
-            if (fileState.IsLyricsUsed)
-            {
-                textField.LinesToComplete = lyricsBox.LinesQuantity;
-                TryAutoCompleteText();
-
-                //// Auto enabling of lyrics when user entered it
-                //if (!ShowLyrics.Checked)
-                //{
-                //    ShowLyrics.PerformClick();
-                //}
-
-                HighlightActualLine();
             }
 
             RegulateTextAndLyricsBoxes();
@@ -198,7 +188,7 @@ namespace Blopnote
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult answer = openFileDialog1.ShowDialog();
-#warning maybe handle opened and empty file in different ways?
+#warning maybe i should to handle an opened and empty file in different ways?
             if (answer == DialogResult.OK)
             {
                 textField.StopObserving();
@@ -329,6 +319,8 @@ namespace Blopnote
 
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
         {
+            timerAutoSave.Start();
+
             if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
             {
                 e.Handled = true;
@@ -389,7 +381,31 @@ namespace Blopnote
 
         private void changeUrl_Click(object sender, EventArgs e)
         {
+#warning dry viol Insert
+            string newUrl = Interaction.InputBox(Prompt: "Insert URL", Title: "Changing URL");
+            
+            if (string.IsNullOrEmpty(newUrl))
+            {
+                return;
+            }
 
+            fileState.Url = newUrl;
+            fileProcessor.TryRewriteSongInfo("URL wasn't saved.");
+        }
+
+        private void changeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+#warning dry viol Insert
+            string newLyrics = Interaction.InputBox(Prompt: "Insert lyrics", Title: "Changing lyrics");
+
+            if (string.IsNullOrEmpty(newLyrics))
+            {
+                return;
+            }
+
+            lyricsBox.EnsureCleared();
+            fileState.Lyrics = lyricsBox.FilterAndStore(newLyrics);
+            fileProcessor.TryRewriteSongInfo("Lyrics weren't saved.");
         }
     }
 }

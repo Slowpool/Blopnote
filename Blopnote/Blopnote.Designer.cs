@@ -40,9 +40,9 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uRLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeUrl = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.status = new System.Windows.Forms.ToolStripStatusLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
@@ -52,6 +52,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
             this.timerLineObserver = new System.Windows.Forms.Timer(this.components);
+            this.changeLyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -79,7 +80,7 @@
             this.toolStripMenuItem1,
             this.lyricsToolStripMenuItem,
             this.settingsToolStripMenuItem,
-            this.uRLToolStripMenuItem});
+            this.UrlToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(946, 24);
@@ -99,14 +100,14 @@
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.createToolStripMenuItem.Text = "Create";
             this.createToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -114,14 +115,15 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // lyricsToolStripMenuItem
             // 
             this.lyricsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ShowLyrics});
+            this.ShowLyrics,
+            this.changeLyricsToolStripMenuItem});
             this.lyricsToolStripMenuItem.Name = "lyricsToolStripMenuItem";
             this.lyricsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.lyricsToolStripMenuItem.Text = "Lyrics";
@@ -161,14 +163,14 @@
             this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Tab translates only 1 line";
             this.tabTranslatesOnly1LineToolStripMenuItem.Click += new System.EventHandler(this.tabTranslatesOnly1LineToolStripMenuItem_Click);
             // 
-            // uRLToolStripMenuItem
+            // UrlToolStripMenuItem
             // 
-            this.uRLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.UrlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.followToolStripMenuItem,
-            this.changeUrl});
-            this.uRLToolStripMenuItem.Name = "uRLToolStripMenuItem";
-            this.uRLToolStripMenuItem.Size = new System.Drawing.Size(34, 20);
-            this.uRLToolStripMenuItem.Text = "Url";
+            this.changeUrlToolStripMenuItem});
+            this.UrlToolStripMenuItem.Name = "UrlToolStripMenuItem";
+            this.UrlToolStripMenuItem.Size = new System.Drawing.Size(34, 20);
+            this.UrlToolStripMenuItem.Text = "Url";
             // 
             // followToolStripMenuItem
             // 
@@ -181,11 +183,11 @@
             // 
             // changeUrl
             // 
-            this.changeUrl.Enabled = false;
-            this.changeUrl.Name = "changeUrl";
-            this.changeUrl.Size = new System.Drawing.Size(180, 22);
-            this.changeUrl.Text = "Change";
-            this.changeUrl.Click += new System.EventHandler(this.changeUrl_Click);
+            this.changeUrlToolStripMenuItem.Enabled = false;
+            this.changeUrlToolStripMenuItem.Name = "changeUrl";
+            this.changeUrlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeUrlToolStripMenuItem.Text = "Change";
+            this.changeUrlToolStripMenuItem.Click += new System.EventHandler(this.changeUrl_Click);
             // 
             // statusStrip1
             // 
@@ -236,6 +238,13 @@
             // 
             this.timerLineObserver.Tick += new System.EventHandler(this.timerLineObserver_Tick);
             // 
+            // changeLyricsToolStripMenuItem
+            // 
+            this.changeLyricsToolStripMenuItem.Name = "changeLyricsToolStripMenuItem";
+            this.changeLyricsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeLyricsToolStripMenuItem.Text = "Change";
+            this.changeLyricsToolStripMenuItem.Click += new System.EventHandler(this.changeToolStripMenuItem_Click);
+            // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,9 +294,10 @@
         private System.Windows.Forms.ToolTip toolTipLyrics;
         private System.Windows.Forms.Timer timerLineObserver;
         private System.Windows.Forms.ToolStripMenuItem tabTranslatesOnly1LineToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem uRLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem UrlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem changeUrl;
+        private System.Windows.Forms.ToolStripMenuItem changeUrlToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeLyricsToolStripMenuItem;
     }
 }
 
