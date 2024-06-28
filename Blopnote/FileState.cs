@@ -29,7 +29,7 @@ namespace Blopnote
         private bool songInfoExists => songInfo != null;
 
         internal event EventHandler UrlChanged;
-        internal string Url
+        public string Url
         {
             get => songInfoExists ? songInfo.Url : null;
             set
@@ -37,8 +37,14 @@ namespace Blopnote
                 if (songInfoExists)
                 {
                     songInfo.Url = value;
-                    UrlChanged(this, null);
                 }
+                else
+                {
+                    // latch
+                    //MessageBox.Show("There was no song info");
+                    songInfo = new SongInfo(null, value);
+                }
+                UrlChanged(this, null);
             }
         }
         internal bool IsUrlUsed => !string.IsNullOrEmpty(Url);
@@ -68,7 +74,7 @@ namespace Blopnote
         internal string FileName => fileInfo.Name;
         internal string FullFileName => fileInfo.FullName;
 
-        public DirectoryInfo[] NestedFolders => directoryInfo.GetDirectories();
+        internal DirectoryInfo[] NestedFolders => directoryInfo.GetDirectories();
 
         internal event EventHandler LyricsChanged;
         public string Lyrics
@@ -79,8 +85,14 @@ namespace Blopnote
                 if (songInfoExists)
                 {
                     songInfo.Lyrics = value;
-                    LyricsChanged(this, null);
                 }
+                else
+                {
+                    // latch
+                    //MessageBox.Show("There was no song info");
+                    songInfo = new SongInfo(value, null);
+                }
+                LyricsChanged(this, null);
             }
         }
         internal bool IsLyricsUsed => !string.IsNullOrEmpty(Lyrics);
@@ -96,7 +108,6 @@ namespace Blopnote
             songInfo = null;
             fileInfo = null;
 
-            textField.Clear();
             textField.Disable();
         }
 

@@ -24,16 +24,16 @@ namespace Blopnote
         /// </summary>
         internal static void Latch()
         {
-            
+
         }
 
         static Browser()
         {
             IsOpened = true;
             ChromeOptions options = new ChromeOptions();
-            //options.AddArgument("--headless"); // Hide the browser window
+            options.AddArgument("--headless"); // Hide the browser window
             options.AddArgument("--disable-extensions");
-            //options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
+            options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.PageLoadStrategy = PageLoadStrategy.Eager;
 
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
@@ -50,19 +50,26 @@ namespace Blopnote
         {
             Cursor.Current = Cursors.WaitCursor;
 
-            driver.Navigate().GoToUrl("http://Genius.com");
-            var query = driver.FindElement(By.Name("q"));
-            query.Clear();
-            query.SendKeys(songName);
-            query.SendKeys(SeleniumKeys.Return);
+            driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
+            await Task.Delay(2000);
 
-            var cards = wait.Until(webDriver =>
+            System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> cards;
+            wait.IgnoreExceptionTypes();
+            try
             {
-                var result = webDriver.FindElements(By.ClassName("mini_card"));
-                return result.Count >= 6
-                     ? result
-                     : null;
-            });
+                cards = wait.Until(webDriver =>
+                {
+                    var result = webDriver.FindElements(By.ClassName("mini_card"));
+                    return result.Count >= 1
+                         ? result
+                         : null;
+                });
+            }
+            catch
+            {
+                Cursor.Current = Cursors.Default;
+                return new List<string>();
+            }
 
             List<string> references = new List<string>();
             string reference;
@@ -70,7 +77,9 @@ namespace Blopnote
             {
                 reference = card.GetAttribute("href");
                 if (!references.Contains(reference))
+                {
                     references.Add(reference);
+                }
             }
             Cursor.Current = Cursors.Default;
             return references;
@@ -80,33 +89,34 @@ namespace Blopnote
 
         internal static string[] GetTranslationByGoogle(string lyrics)
         {
-            #region trash
-            // yandex and reverso attempts
-            ////driver.Navigate().GoToUrl("https://translate.yandex.ru/&source_lang=ru&target_lang=en&text=" + Lyrics); // yandex
-            //driver.Navigate().GoToUrl("https://www.reverso.net/#sl=rus&tl=eng&text=" + Lyrics.Replace("\r\n", "%250A"));
-            ////var inputBox = driver.FindElement(By.XPath("//textarea[contains(@class,'no-border no-outline no-outline-hover no-outline-focus textarea__textarea ng-valid ng-dirty ng-touched')]"));
-            ////await Task.Delay(500);
-            ////inputBox.SendKeys(Lyrics);
-            //await Task.Delay(10000);
-            //string translatedLyrics = driver.FindElement(By.ClassName("sentence-wrapper_without-hover")).Text;
-            #endregion
             Cursor.Current = Cursors.WaitCursor;
             driver.Navigate().GoToUrl("https://translate.google.com/?sl=ru&tl=en&text=" + lyrics.Replace("\r\n", "%0A"));
-#warning needs reworking
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
-            var soundButtons =
-                wait.Until(webDriver =>
+            try
+            {
+                var soundButton =
+                    wait.Until(webDriver =>
+                    {
+                        return webDriver.FindElements(By.ClassName("aJIq1d"))
+                                        .Where(element => element.GetAttribute("data-language-code") == "en")
+                                        .Single();
+                    });
+                return soundButton.GetAttribute("data-text")
+                                  .Split(new[] { "\r\n" }, StringSplitOptions.None);
+            }
+            catch
+            {
+                string[] latchArray = new string[lyrics.Length];
+                for(int i = 0; i < latchArray.Length; i++)
                 {
-                    var buttons = webDriver.FindElements(By.ClassName("aJIq1d"))
-                                           .Where(element => element.GetAttribute("data-language-code") == "en");
-                    return buttons.Count() == 1
-                         ? buttons
-                         : null;
-                });
-            Cursor.Current = Cursors.Default;
-            return soundButtons.Single()
-                               .GetAttribute("data-text")
-                               .Split(new[] { "\r\n" }, StringSplitOptions.None);
+                    latchArray[i] = "Error. Translation wasn't loaded";
+                }
+                return latchArray;
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
         }
 
         internal static string[,] GetYoutubeUrls(string songName)
@@ -130,7 +140,7 @@ namespace Blopnote
             });
             string[,] result = new string[videoTitles.Count(), 2];
             int i = 0;
-            foreach(var videoTitle in videoTitles)
+            foreach (var videoTitle in videoTitles)
             {
                 result[i, 0] = videoTitle.GetAttribute("title");
                 result[i, 1] = videoTitle.GetAttribute("href");

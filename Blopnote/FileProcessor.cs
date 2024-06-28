@@ -70,39 +70,32 @@ namespace Blopnote
             fileState.NewFileInCurrentDir(fileInfo, songInfo);
 
             File.Create(fileState.FullFileName).Dispose();
-
+#warning i don't like it
             if (fileState.IsLyricsUsed)
             {
                 fileState.Lyrics = lyricsBox.FilterAndStore(fileState.Lyrics);
-                WriteLyricsToJSON();
-
                 textField.ObserveCompletion();
             }
-            else
+            if (fileState.IsLyricsUsed || fileState.IsUrlUsed)
             {
-                lyricsBox.EnsureCleared();
+                TryRewriteSongInfo("File with song information wasn't created.");
             }
+            //else
+            //{
+            //    lyricsBox.EnsureCleared();
+            //}
+
         }
 
         internal void Save()
         {
-            WriteInFile(fileState.FullFileName, textField.Text);
+            File.WriteAllText(fileState.FullFileName, textField.Text, Encoding.UTF8);
         }
 
-        private void WriteLyricsToJSON()
+        private void WriteSongInfoToJSON()
         {
             string serializedSongInfo = JsonConvert.SerializeObject(fileState.songInfo);
             File.WriteAllText(fileState.FullFileName, serializedSongInfo);
-        }
-
-        private void WriteInFile(string filePath, string text)
-        {
-            using (var writer = new StreamWriter(path: filePath,
-                                                 append: false,
-                                                 encoding: Encoding.UTF8))
-            {
-                writer.Write(text);
-            }
         }
 
         internal void OpenTranslation(string fileName)

@@ -37,6 +37,7 @@
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShowLyrics = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeLyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,6 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
             this.timerLineObserver = new System.Windows.Forms.Timer(this.components);
-            this.changeLyricsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -100,14 +100,14 @@
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.createToolStripMenuItem.Text = "Create";
             this.createToolStripMenuItem.Click += new System.EventHandler(this.CreateToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -115,7 +115,7 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -133,11 +133,18 @@
             this.ShowLyrics.CheckOnClick = true;
             this.ShowLyrics.Enabled = false;
             this.ShowLyrics.Name = "ShowLyrics";
-            this.ShowLyrics.Size = new System.Drawing.Size(180, 22);
+            this.ShowLyrics.Size = new System.Drawing.Size(115, 22);
             this.ShowLyrics.Text = "Show";
             this.ShowLyrics.ToolTipText = "Disabled, if there\'s no lyrics";
             this.ShowLyrics.Click += new System.EventHandler(this.ShowLyrics_Click);
             this.ShowLyrics.EnabledChanged += new System.EventHandler(this.ShowLyrics_EnabledChanged);
+            // 
+            // changeLyricsToolStripMenuItem
+            // 
+            this.changeLyricsToolStripMenuItem.Name = "changeLyricsToolStripMenuItem";
+            this.changeLyricsToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.changeLyricsToolStripMenuItem.Text = "Change";
+            this.changeLyricsToolStripMenuItem.Click += new System.EventHandler(this.changeLyricsToolStripMenuItem_Click);
             // 
             // settingsToolStripMenuItem
             // 
@@ -161,6 +168,7 @@
             this.tabTranslatesOnly1LineToolStripMenuItem.Name = "tabTranslatesOnly1LineToolStripMenuItem";
             this.tabTranslatesOnly1LineToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Tab translates only 1 line";
+            this.tabTranslatesOnly1LineToolStripMenuItem.ToolTipText = "Works only with shown lyrics";
             this.tabTranslatesOnly1LineToolStripMenuItem.Click += new System.EventHandler(this.tabTranslatesOnly1LineToolStripMenuItem_Click);
             // 
             // UrlToolStripMenuItem
@@ -176,16 +184,16 @@
             // 
             this.followToolStripMenuItem.Enabled = false;
             this.followToolStripMenuItem.Name = "followToolStripMenuItem";
-            this.followToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.followToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.followToolStripMenuItem.Text = "Follow";
             this.followToolStripMenuItem.ToolTipText = "Disabled, if there\'s no Url";
             this.followToolStripMenuItem.Click += new System.EventHandler(this.followUrl_Click);
             // 
-            // changeUrl
+            // changeUrlToolStripMenuItem
             // 
             this.changeUrlToolStripMenuItem.Enabled = false;
-            this.changeUrlToolStripMenuItem.Name = "changeUrl";
-            this.changeUrlToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.changeUrlToolStripMenuItem.Name = "changeUrlToolStripMenuItem";
+            this.changeUrlToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.changeUrlToolStripMenuItem.Text = "Change";
             this.changeUrlToolStripMenuItem.Click += new System.EventHandler(this.changeUrl_Click);
             // 
@@ -238,20 +246,13 @@
             // 
             this.timerLineObserver.Tick += new System.EventHandler(this.timerLineObserver_Tick);
             // 
-            // changeLyricsToolStripMenuItem
-            // 
-            this.changeLyricsToolStripMenuItem.Name = "changeLyricsToolStripMenuItem";
-            this.changeLyricsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.changeLyricsToolStripMenuItem.Text = "Change";
-            this.changeLyricsToolStripMenuItem.Click += new System.EventHandler(this.changeToolStripMenuItem_Click);
-            // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(946, 511);
-            this.Controls.Add(this.PanelForLyricsBox);
             this.Controls.Add(this.TextBoxWithText);
+            this.Controls.Add(this.PanelForLyricsBox);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;

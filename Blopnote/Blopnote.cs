@@ -6,10 +6,10 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
-using static Blopnote.Browser;
-using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualBasic;
+
+using static Blopnote.Browser;
 
 namespace Blopnote
 {
@@ -48,16 +48,18 @@ namespace Blopnote
             textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
-                createNewTranslationForm.UpdateMaxLength(((FileProcessor)sender).DirectoryLength);
+                createNewTranslationForm.UpdateMaxLength(fileProcessor.DirectoryLength);
             };
 
             fileState.UrlChanged += (sender, e) =>
             {
-                followToolStripMenuItem.Enabled = ((FileState)sender).IsUrlUsed;
+                followToolStripMenuItem.Enabled = fileState.IsUrlUsed;
             };
 
-            fileState.FileOpenedOrClosed += (object sender, FileStateEventArgs e) =>
+            fileState.FileOpenedOrClosed += (sender, e) =>
             {
+                textField.Clear();
+
                 closeToolStripMenuItem.Enabled = e.Opened;
                 changeFolderToolStripMenuItem.Enabled = !e.Opened;
                 changeUrlToolStripMenuItem.Enabled = e.Opened;
@@ -66,7 +68,7 @@ namespace Blopnote
 
             fileState.LyricsChanged += (sender, e) =>
             {
-                if (((FileState)sender).IsLyricsUsed)
+                if (fileState.IsLyricsUsed)
                 {
                     lyricsBox.FilterAndStore(fileState.Lyrics);
                     if (!fileState.songInfo.Completed)
@@ -149,9 +151,8 @@ namespace Blopnote
             if (createNewTranslationForm.ShowForDataInput() == DialogResult.OK)
             {
 #warning awful + dirty code
-                lyricsBox.EnsureCleared();
                 HandleInsertedData();
-                PrepareComponentsToDisplayTranslation(clearText: true);
+                PrepareComponentsToDisplayTranslation();
             }
         }
 
@@ -168,17 +169,17 @@ namespace Blopnote
             }
         }
 
-        private void PrepareComponentsToDisplayTranslation(bool clearText)
+        private void PrepareComponentsToDisplayTranslation()
         {
             textField.Enable();
             
 // Q: maybe there's no need to use this?
 // A: there is.
 // Q: maybe it's still worth it to remove it and leave just textField.Clear()
-            if (clearText)
-            {
-                textField.Clear();
-            }
+            //if (clearText)
+            //{
+            //    textField.Clear();
+            //}
 
             RegulateTextAndLyricsBoxes();
 
@@ -193,10 +194,10 @@ namespace Blopnote
             {
                 textField.StopObserving();
                 StopTimerAndTrySaveFile(mandatorySave: false);
-                lyricsBox.EnsureCleared();
+                //lyricsBox.EnsureCleared();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
-                PrepareComponentsToDisplayTranslation(clearText: false);
+                PrepareComponentsToDisplayTranslation();
 
                 textField.Focus();
             }
@@ -381,31 +382,31 @@ namespace Blopnote
 
         private void changeUrl_Click(object sender, EventArgs e)
         {
-#warning dry viol Insert
-            string newUrl = Interaction.InputBox(Prompt: "Insert URL", Title: "Changing URL");
-            
-            if (string.IsNullOrEmpty(newUrl))
-            {
-                return;
-            }
-
-            fileState.Url = newUrl;
-            fileProcessor.TryRewriteSongInfo("URL wasn't saved.");
+            InsertNew("URL");
         }
 
-        private void changeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void changeLyricsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-#warning dry viol Insert
-            string newLyrics = Interaction.InputBox(Prompt: "Insert lyrics", Title: "Changing lyrics");
+            InsertNew("Lyrics");
+        }
 
-            if (string.IsNullOrEmpty(newLyrics))
+        private void InsertNew(string item)
+        {
+            string newItem = Interaction.InputBox(Prompt: $"Insert {item}", Title: $"Changing {item}");
+
+            if (string.IsNullOrEmpty(newItem))
             {
                 return;
             }
 
-            lyricsBox.EnsureCleared();
-            fileState.Lyrics = lyricsBox.FilterAndStore(newLyrics);
-            fileProcessor.TryRewriteSongInfo("Lyrics weren't saved.");
+            if (item == "URL")
+            {
+                item = "Url";
+            }
+
+            var property = fileState.GetType().GetProperty(item);
+            property.SetValue(fileState, newItem);
+            fileProcessor.TryRewriteSongInfo($"{item} wasn't saved.");
         }
     }
 }

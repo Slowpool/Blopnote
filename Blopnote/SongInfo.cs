@@ -8,10 +8,6 @@ namespace Blopnote
 {
     internal class SongInfo
     {
-        //internal static readonly SongInfo Empty = new SongInfo();
-        //private SongInfo()
-        //{ }
-
         public string Lyrics { get; set; }
         public bool Completed { get; set; }
         public string Url { get; set; }

@@ -5,10 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-
-using OpenQA.Selenium;
-using SeleniumKeys = OpenQA.Selenium.Keys;
 using static Blopnote.Browser;
 using System.Diagnostics;
 
@@ -21,7 +17,7 @@ namespace Blopnote
         private readonly VScrollBar scrollBar;
         private List<string> Lines { get; set; }
         internal int LinesQuantity => Lines.Count;
-        private string BuiltLyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
+        private string FilteredLyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
         internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] LabelsWithLyrics { get; set; }
 
@@ -131,7 +127,7 @@ namespace Blopnote
         /// <param name="lyrics"></param>
         internal string FilterAndStore(string lyrics)
         {
-#error some lines after previous song are remaines
+            EnsureCleared();
             Hide();
 
             Lines = lyrics.Split(new[] { "\r\n" }, StringSplitOptions.None).ToList();
@@ -141,13 +137,13 @@ namespace Blopnote
 
             HighlightKeywords();
             ConfigureLabels();
-            TranslationByGoogle = GetTranslationByGoogle(BuiltLyrics);
+            TranslationByGoogle = Browser.GetTranslationByGoogle(FilteredLyrics);
             TranslationByGoogleLoaded(this, null);
             CalculateWidth();
             AdjustScrollBar();
 
             Display();
-            return BuiltLyrics;
+            return FilteredLyrics;
         }
 
         private void TrimLines()
@@ -300,12 +296,7 @@ namespace Blopnote
 
         internal void PlaceLabels()
         {
-#warning i have three ideas here and each is awkward: 
-            // 1. at first disable all labels, next enable needed
-            // 2. a) disable before needed
-            // b) enable needed
-            // c) disable after needed
-            // 3. reproduce step 2 using one cycle
+#warning awkwardness
             int y = 0;
             for (int i = 0; i < LabelsWithLyrics.Length; i++)
             {
