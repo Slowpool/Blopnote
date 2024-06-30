@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blopnote
 {
-    internal class SongInfo
+    public class SongInfo
     {
         public string Lyrics { get; set; }
         public bool Completed { get; set; }

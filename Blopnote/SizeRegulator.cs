@@ -8,18 +8,18 @@ using System.Drawing;
 
 namespace Blopnote
 {
-    internal class SizeRegulator
+    public class SizeRegulator
     {
         private readonly LyricsBox lyricsBox;
         private readonly TextField textField;
 
-        internal SizeRegulator(LyricsBox lyricsBox, TextField textField)
+        public SizeRegulator(LyricsBox lyricsBox, TextField textField)
         {
             this.lyricsBox = lyricsBox;
             this.textField = textField;
         }
 
-        internal void RegulateTo(Size size)
+        public void RegulateTo(Size size)
         {
             if (lyricsBox.Enabled)
             {

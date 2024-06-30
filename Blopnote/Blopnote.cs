@@ -10,10 +10,11 @@ using System.IO;
 using Microsoft.VisualBasic;
 
 using static Blopnote.Browser;
+using Blopnote.MVP;
 
 namespace Blopnote
 {
-    public partial class Blopnote : Form
+    public partial class Blopnote : Form, IBlopnoteView
     {
         private readonly TextField textField;
         private readonly FileProcessor fileProcessor;
@@ -29,6 +30,7 @@ namespace Blopnote
         private int PreviousSelectionStart { get; set; }
         public Blopnote()
         {
+            #region Old
             InitializeComponent();
             this.Icon = Resources.icon;
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
@@ -85,6 +87,8 @@ namespace Blopnote
                 {
                     ShowLyrics.PerformClick();
                 }
+
+                RegulateTextAndLyricsBoxes();
             };
 
             createNewTranslationForm = new CreateNewTranslationForm();
@@ -92,6 +96,10 @@ namespace Blopnote
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
             Browser.Latch();
+            #endregion
+
+            createToolStripMenuItem.Click += (sender, e) => CreateNewTranslation(sender, e);
+
         }
 
         #region FormEvents
@@ -124,6 +132,13 @@ namespace Blopnote
             Enabled = true;
         }
 
+        private void UpdateConfig(string key, string value)
+        {
+            var config = ConfigurationManager.OpenExeConfiguration(Path.Combine(Environment.CurrentDirectory, "Blopnote.exe"));
+            config.AppSettings.Settings[key].Value = value;
+            config.Save();
+        }
+
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
@@ -146,11 +161,11 @@ namespace Blopnote
             lyricsBox.Left = TextBoxWithText.Right;
         }
 
+        event EventHandler CreateNewTranslation;
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (createNewTranslationForm.ShowForDataInput() == DialogResult.OK)
             {
-#warning awful + dirty code
                 HandleInsertedData();
                 PrepareComponentsToDisplayTranslation();
             }
@@ -186,15 +201,14 @@ namespace Blopnote
             timerLineObserver.Start();
         }
 
+        event EventHandler OpenTranslation;
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult answer = openFileDialog1.ShowDialog();
 #warning maybe i should to handle an opened and empty file in different ways?
-            if (answer == DialogResult.OK)
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 textField.StopObserving();
                 StopTimerAndTrySaveFile(mandatorySave: false);
-                //lyricsBox.EnsureCleared();
 
                 fileProcessor.OpenTranslation(openFileDialog1.FileName);
                 PrepareComponentsToDisplayTranslation();
@@ -203,19 +217,13 @@ namespace Blopnote
             }
         }
 
-        private void UpdateConfig(string key, string value)
-        {
-            var config = ConfigurationManager.OpenExeConfiguration(Path.Combine(Environment.CurrentDirectory, "Blopnote.exe"));
-            config.AppSettings.Settings[key].Value = value;
-            config.Save();
-        }
-
         private string AskUserForPath()
         {
             folderBrowserDialog1.ShowDialog();
             return folderBrowserDialog1.SelectedPath;
         }
 
+        event EventHandler ChangeFolder;
         private void changeFolderPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string folderPath = AskUserForPath();
@@ -225,11 +233,11 @@ namespace Blopnote
             }
         }
 
+        event EventHandler CloseTranslation;
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StopTimerAndTrySaveFile(true);
+            StopTimerAndTrySaveFile(mandatorySave: true);
             fileState.DoesNotExist();
-            RegulateTextAndLyricsBoxes();
             timerLineObserver.Stop();
         }
 
@@ -248,7 +256,6 @@ namespace Blopnote
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
         {
-#warning why is it here?
             if (!ShowLyrics.Enabled)
             {
                 ShowLyrics.Checked = false;
@@ -277,58 +284,41 @@ namespace Blopnote
                 }
             }
         }
-
-        private void TextBoxWithText_KeyDown(object sender, KeyEventArgs e)
+        // It's pointless to process ctrl+w in current version of app, but it's an another way to
+        // process the hotkey everywhere in application.
+        // UPD: it's not pointless. When user doesn't open a file, main textbox is disabled and doesn't handle any presses. In such a case it'd better to handle ctrl+w hotkey in that way.
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            switch (e.KeyData)
+            if (keyData == (Keys.Control | Keys.W))
             {
-                case Keys.Control | Keys.Back:
-                    e.SuppressKeyPress = true;
-                    if (TextBoxWithText.SelectionStart > 0)
-                    {
-                        SendKeys.Send("+{LEFT}{DEL}");
-                    }
-                    break;
-                case Keys.Control | Keys.C:
-                    if (TextBoxWithText.SelectedText.Length == 0)
-                    {
-                        e.SuppressKeyPress = true;
-                        textField.CopyCurrentLineToClipBoard();
-                    }
-                    break;
-                case Keys.Control | Keys.W:
-                    e.SuppressKeyPress = true;
-                    Application.Exit();
-                    break;
-                default:
-                    e.SuppressKeyPress = false;
-                    break;
+                Application.Exit();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+
+        public void EraseUntilDelimiter()
+        {
+            if (TextBoxWithText.SelectionStart > 0)
+            {
+                SendKeys.Send("+{LEFT}{DEL}");
             }
         }
 
-       // It's pointless to process ctrl+w in current version of app, but it's an another way to
-       // process the hotkey everywhere in application.
-       //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-       //{
-       //    if (keyData == (Keys.Control | Keys.W))
-       //    {
-       //        Application.Exit();
-       //        return true;
-       //    }
-       //    return base.ProcessCmdKey(ref msg, keyData);
-       //}
+        public bool TrySaveLineToClipBoard()
+        {
+            bool noSelectedText = TextBoxWithText.SelectedText.Length == 0;
+            if (noSelectedText)
+            {
+                textField.CopyCurrentLineToClipBoard();
+            }
+            return noSelectedText;
+        }
 
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
         {
-            timerAutoSave.Start();
-
-            if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
-            {
-                e.Handled = true;
-                TextBoxWithText.AppendText("\r\n");
-                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
-                TryAutoCompleteText();
-            }
+            
         }
 
         private void HighlightActualLine()

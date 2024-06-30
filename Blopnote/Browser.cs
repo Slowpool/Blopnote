@@ -12,17 +12,17 @@ using SeleniumKeys = OpenQA.Selenium.Keys;
 
 namespace Blopnote
 {
-    internal static class Browser
+    public static class Browser
     {
-        internal static readonly ChromeDriver driver;
+        public static readonly ChromeDriver driver;
         private static readonly WebDriverWait wait;
 
-        internal static bool IsOpened { get; set; } = false;
+        public static bool IsOpened { get; set; } = false;
 
         /// <summary>
         /// Use it for browser driver initialiation
         /// </summary>
-        internal static void Latch()
+        public static void Latch()
         {
 
         }
@@ -46,7 +46,7 @@ namespace Blopnote
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
-        internal static async Task<List<string>> RequestForSimilarSongs(string songName)
+        public static async Task<List<string>> RequestForSimilarSongs(string songName)
         {
             Cursor.Current = Cursors.WaitCursor;
 
@@ -87,7 +87,7 @@ namespace Blopnote
             return null;
         }
 
-        internal static string[] GetTranslationByGoogle(string lyrics)
+        public static string[] GetTranslationByGoogle(string lyrics)
         {
             Cursor.Current = Cursors.WaitCursor;
             driver.Navigate().GoToUrl("https://translate.google.com/?sl=ru&tl=en&text=" + lyrics.Replace("\r\n", "%0A"));
@@ -119,7 +119,7 @@ namespace Blopnote
             }
         }
 
-        internal static string[,] GetYoutubeUrls(string songName)
+        public static string[,] GetYoutubeUrls(string songName)
         {
             Cursor.Current = Cursors.WaitCursor;
 
@@ -171,7 +171,7 @@ namespace Blopnote
             #endregion
         }
 
-        internal static void OpenUrl(string Url)
+        public static void OpenUrl(string Url)
         {
             try
             {

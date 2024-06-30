@@ -10,28 +10,28 @@ using System.Diagnostics;
 
 namespace Blopnote
 {
-    internal class LyricsBox
+    public class LyricsBox
     {
-        internal readonly Panel panel;
+        public readonly Panel panel;
         private readonly Font font;
         private readonly VScrollBar scrollBar;
         private List<string> Lines { get; set; }
-        internal int LinesQuantity => Lines.Count;
+        public int LinesQuantity => Lines.Count;
         private string FilteredLyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
-        internal static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
+        public static string[] KeyWords = "intro интро verse pre-chorus chorus bridge autro предприпев припев переход бридж куплет аутро".Split();
         private Label[] LabelsWithLyrics { get; set; }
 
         private Label HighlightedLabel { get; set; }
         private int IndexHighlightedLabel { get; set; }
 
-        internal event EventHandler TranslationByGoogleLoaded;
+        public event EventHandler TranslationByGoogleLoaded;
         private string[] TranslationByGoogle { get; set; }
         private bool TranslateOnly1Line { get; set; }
 
-        internal bool Enabled => panel.Visible;
+        public bool Enabled => panel.Visible;
 
         // I think it's bad idea to use so many levels of incapsulation for properties...
-        internal int LyricsBoxWidth
+        public int LyricsBoxWidth
         {
             get => panel.Width;
             set
@@ -48,7 +48,7 @@ namespace Blopnote
             }
         }
 
-        internal int Left
+        public int Left
         {
             set
             {
@@ -81,7 +81,7 @@ namespace Blopnote
 
         private readonly int lineHeight;
 
-        internal LyricsBox(Panel panel, Font font, VScrollBar scrollBar)
+        public LyricsBox(Panel panel, Font font, VScrollBar scrollBar)
         {
             this.panel = panel;
             this.font = font;
@@ -107,7 +107,7 @@ namespace Blopnote
             scrollBarValue -= deltaValue;
         }
 
-        internal string this[int lineIndex]
+        public string this[int lineIndex]
         {
             get => Lines[lineIndex];
         }
@@ -125,7 +125,7 @@ namespace Blopnote
         /// better navigate the text
         /// </summary>
         /// <param name="lyrics"></param>
-        internal string FilterAndStore(string lyrics)
+        public string FilterAndStore(string lyrics)
         {
             EnsureCleared();
             Hide();
@@ -294,7 +294,7 @@ namespace Blopnote
             }
         }
 
-        internal void PlaceLabels()
+        public void PlaceLabels()
         {
 #warning awkwardness
             int y = 0;
@@ -326,7 +326,7 @@ namespace Blopnote
             label.BackColor = GetNeedyColor(label.Text);
         }
 
-        internal static Color GetNeedyColor(string text)
+        public static Color GetNeedyColor(string text)
         {
             if (text.StartsWith("[") && text.EndsWith("]"))
             {
@@ -399,7 +399,7 @@ namespace Blopnote
             }
         }
 
-        internal void NoLyrics()
+        public void NoLyrics()
         {
             Hide();
             EnsureCleared();
@@ -407,22 +407,22 @@ namespace Blopnote
             Lines = null;
         }
 
-        internal void Display()
+        public void Display()
         {
             panel.Visible = true;
         }
 
-        internal void Hide()
+        public void Hide()
         {
             panel.Visible = false;
         }
 
-        internal void AdjustHeightTo(int height)
+        public void AdjustHeightTo(int height)
         {
             LyricsBoxHeight = height;
         }
 
-        internal void EnsureCleared()
+        public void EnsureCleared()
         {
             if (panel.Controls.Count != 1) // 1 is scrollbar
             {
@@ -433,7 +433,7 @@ namespace Blopnote
             }
         }
 
-        internal void AdjustScrollBar()
+        public void AdjustScrollBar()
         {
             // Q: emmm what is 9 here?
             // A: length of scrollBar
@@ -441,7 +441,7 @@ namespace Blopnote
             scrollBar.Maximum = InvisibleLabelsQuantity + 9;
         }
 
-        internal bool ContainsKeyword(string line)
+        public bool ContainsKeyword(string line)
         {
             int openingBracketIndex = line.IndexOf('[');
             int closingBracketIndex = line.IndexOf(']');
@@ -459,7 +459,7 @@ namespace Blopnote
                 && word.IndexOf(']') == word.Length - 1;
         }
 
-        internal TypesOfLine IsRepeatedLineOrKeyword(int lineIndex)
+        public TypesOfLine IsRepeatedLineOrKeyword(int lineIndex)
         {
             if (lineIndex >= Lines.Count)
             {
@@ -489,13 +489,13 @@ namespace Blopnote
             return TypesOfLine.New;
         }
 
-        internal int IndexOfFirstOccurenceOfSameLine(int lineIndex)
+        public int IndexOfFirstOccurenceOfSameLine(int lineIndex)
         {
             string line = Lines[lineIndex];
             return Lines.IndexOf(line);
         }
 
-        internal void HighlightAt(int lineIndex)
+        public void HighlightAt(int lineIndex)
         {
             if (Lines == null)
             {
@@ -537,12 +537,12 @@ namespace Blopnote
             { }
         }
 
-        internal void ResetScrollBar(object sender, EventArgs e)
+        public void ResetScrollBar(object sender, EventArgs e)
         {
             scrollBar.Value = 0;
         }
 
-        internal void PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        public void PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             if (e.KeyData == System.Windows.Forms.Keys.Tab)
             {
@@ -590,7 +590,7 @@ namespace Blopnote
             ((TextBox)sender).KeyUp -= KeyUp;
         }
 
-        internal void SwitchTabMode(object sender, EventArgs e)
+        public void SwitchTabMode(object sender, EventArgs e)
         {
             TranslateOnly1Line = !TranslateOnly1Line;
         }

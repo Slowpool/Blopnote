@@ -11,12 +11,12 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    internal class FileState
+    public class FileState
     {
         private readonly ToolStripStatusLabel programStatus;
         private readonly TextField textField;
 
-        private SongInfo songInfo_; internal SongInfo songInfo
+        private SongInfo songInfo_; public SongInfo songInfo
         {
             get => songInfo_;
             set
@@ -28,7 +28,7 @@ namespace Blopnote
         }
         private bool songInfoExists => songInfo != null;
 
-        internal event EventHandler UrlChanged;
+        public event EventHandler UrlChanged;
         public string Url
         {
             get => songInfoExists ? songInfo.Url : null;
@@ -47,11 +47,11 @@ namespace Blopnote
                 UrlChanged(this, null);
             }
         }
-        internal bool IsUrlUsed => !string.IsNullOrEmpty(Url);
+        public bool IsUrlUsed => !string.IsNullOrEmpty(Url);
 
-        internal event FileStateEventHandler FileOpenedOrClosed;
-        internal delegate void FileStateEventHandler (object sender, FileStateEventArgs e);
-        private FileInfo _fileInfo; internal FileInfo fileInfo
+        public event FileStateEventHandler FileOpenedOrClosed;
+        public delegate void FileStateEventHandler (object sender, FileStateEventArgs e);
+        private FileInfo _fileInfo; public FileInfo fileInfo
         {
             get => _fileInfo;
             set {
@@ -69,14 +69,14 @@ namespace Blopnote
             }
         }
 
-        internal DirectoryInfo directoryInfo { get; set; }
+        public DirectoryInfo directoryInfo { get; set; }
 
-        internal string FileName => fileInfo.Name;
-        internal string FullFileName => fileInfo.FullName;
+        public string FileName => fileInfo.Name;
+        public string FullFileName => fileInfo.FullName;
 
-        internal DirectoryInfo[] NestedFolders => directoryInfo.GetDirectories();
+        public DirectoryInfo[] NestedFolders => directoryInfo.GetDirectories();
 
-        internal event EventHandler LyricsChanged;
+        public event EventHandler LyricsChanged;
         public string Lyrics
         {
             get => songInfoExists ? songInfo.Lyrics : null;
@@ -95,15 +95,15 @@ namespace Blopnote
                 LyricsChanged(this, null);
             }
         }
-        internal bool IsLyricsUsed => !string.IsNullOrEmpty(Lyrics);
+        public bool IsLyricsUsed => !string.IsNullOrEmpty(Lyrics);
 
-        internal FileState(ToolStripStatusLabel programStatus, TextField textField)
+        public FileState(ToolStripStatusLabel programStatus, TextField textField)
         {
             this.programStatus = programStatus;
             this.textField = textField;
         }
 
-        internal void DoesNotExist()
+        public void DoesNotExist()
         {
             songInfo = null;
             fileInfo = null;
@@ -111,24 +111,24 @@ namespace Blopnote
             textField.Disable();
         }
 
-        internal void NewFileInCurrentDir(FileInfo fileInfo, SongInfo songInfo)
+        public void NewFileInCurrentDir(FileInfo fileInfo, SongInfo songInfo)
         {
             this.fileInfo = new FileInfo(Path.Combine(directoryInfo.FullName, fileInfo.Name));
             this.songInfo = songInfo;
         }
 
-        internal void OpenFileWithDir(string fullFileName)
+        public void OpenFileWithDir(string fullFileName)
         {
             fileInfo = new FileInfo(fullFileName);
             directoryInfo = fileInfo.Directory;
         }
     }
 
-    internal class FileStateEventArgs : EventArgs
+    public class FileStateEventArgs : EventArgs
     {
-        internal readonly bool Opened;
+        public readonly bool Opened;
 
-        internal FileStateEventArgs(bool opened)
+        public FileStateEventArgs(bool opened)
         {
             Opened = opened;
         }

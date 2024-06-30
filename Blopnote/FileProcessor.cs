@@ -10,18 +10,18 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    internal class FileProcessor
+    public class FileProcessor
     {
         private readonly TextField textField;
         private readonly FileState fileState;
         private readonly LyricsBox lyricsBox;
         private readonly OpenFileDialog openFileDialog;
 
-        internal event EventHandler DirectoryChanged;
+        public event EventHandler DirectoryChanged;
 
-        internal int DirectoryLength => fileState.directoryInfo.FullName.Length;
+        public int DirectoryLength => fileState.directoryInfo.FullName.Length;
 
-        internal FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
+        public FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
         {
             this.textField = textField;
             this.fileState = fileState;
@@ -29,7 +29,7 @@ namespace Blopnote
             this.openFileDialog = openFileDialog;
         }
 
-        internal void SetInitialDirectory(string directoryName)
+        public void SetInitialDirectory(string directoryName)
         {
             fileState.directoryInfo = new DirectoryInfo(directoryName);
             openFileDialog.InitialDirectory = directoryName;
@@ -65,7 +65,7 @@ namespace Blopnote
             }
         }
 
-        internal void CreateNewTranslation(FileInfo fileInfo, SongInfo songInfo)
+        public void CreateNewTranslation(FileInfo fileInfo, SongInfo songInfo)
         {
             fileState.NewFileInCurrentDir(fileInfo, songInfo);
 
@@ -87,7 +87,7 @@ namespace Blopnote
 
         }
 
-        internal void Save()
+        public void Save()
         {
             File.WriteAllText(fileState.FullFileName, textField.Text, Encoding.UTF8);
         }
@@ -98,7 +98,7 @@ namespace Blopnote
             File.WriteAllText(fileState.FullFileName, serializedSongInfo);
         }
 
-        internal void OpenTranslation(string fileName)
+        public void OpenTranslation(string fileName)
         {
             fileState.OpenFileWithDir(fileName);
             fileState.songInfo = ParseSongInfo();
@@ -133,7 +133,7 @@ namespace Blopnote
         private string GenerateSongInfoPath(string fullFileName) =>
             fullFileName.Insert(fullFileName.LastIndexOf('\\'), "\\" + Names.SongInfoFolder).Replace(".txt", ".json");
 
-        internal void SongIsWritten_Handler(object sender, EventArgs e)
+        public void SongIsWritten_Handler(object sender, EventArgs e)
         {
             fileState.songInfo.Completed = true;
             TryRewriteSongInfo("Information about song completion wasn't written.");
@@ -149,7 +149,7 @@ namespace Blopnote
                             );
         }
 
-        internal void TryRewriteSongInfo(string errorMessage)
+        public void TryRewriteSongInfo(string errorMessage)
         {
             try
             {
