@@ -22,6 +22,7 @@ namespace Blopnote.MVP
         void Close();
         void EraseUntilDelimiter();
         bool TrySaveLineToClipboard();
+        void PrintEnterAtTheEnd();
 
         string TranslationText { get; set; }
         bool TranslationTextFieldEnabled { get; set; }

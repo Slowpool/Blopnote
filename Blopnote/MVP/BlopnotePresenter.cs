@@ -21,20 +21,6 @@ namespace Blopnote.MVP
             view.KeyPress += View_KeyPress;
         }
 
-        private void View_KeyPress(object sender, KeyPressEventArgs e)
-        {
-#warning I stayed here
-            timerAutoSave.Start();
-
-            if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
-            {
-                e.Handled = true;
-                TextBoxWithText.AppendText("\r\n");
-                TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
-                TryAutoCompleteText();
-            }
-        }
-
         private void View_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyData)
@@ -55,7 +41,23 @@ namespace Blopnote.MVP
 #warning should i copy text to model?
         }
 
+        private void View_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            model.StartSaveTimer();
 
+            if (model.IsLyricsShown && e.KeyChar == (int)Keys.Enter)
+            {
+                e.Handled = true;
+                view.PrintEnterAtTheEnd();
+                UploadViewTextToModel();
+                model.TryAutoCompleteText();
+            }
+        }
+
+        private void UploadViewTextToModel()
+        {
+            model.TranslationText = view.TranslationText;
+        }
 
         private void View_CreateNewTranslation(object sender, EventArgs e)
         {

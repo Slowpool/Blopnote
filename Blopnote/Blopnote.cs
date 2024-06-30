@@ -25,7 +25,6 @@ namespace Blopnote
 
         private Size WorkSpace => new Size(ClientSize.Width, ClientSize.Height - menuStrip1.Height - statusStrip1.Height);
 
-        private const int AUTOSAVE_FREQUENCY_IN_SECONDS = 5;
         private const string CONFIG_FOLDER_ATTRIBUTE = "folderWithTranslationsPath";
         private int PreviousSelectionStart { get; set; }
         public Blopnote()
@@ -316,9 +315,10 @@ namespace Blopnote
             return noSelectedText;
         }
 
-        private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
+        public void PrintEnterAtTheEnd()
         {
-            
+            TextBoxWithText.AppendText("\r\n");
+            TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
         }
 
         private void HighlightActualLine()

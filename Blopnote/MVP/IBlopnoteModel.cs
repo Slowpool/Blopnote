@@ -14,6 +14,8 @@ namespace Blopnote.MVP
         void OpenTranslation(string fullFileName);
         void CloseTranslation();
         void ChangeDirectory(DirectoryInfo newDirectory);
+        void StartSaveTimer();
+
         string FullFileName { get; }
         bool IsFolderAllowedToChange { get; }
 
