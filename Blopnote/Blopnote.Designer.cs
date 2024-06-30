@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.TextBoxWithText = new System.Windows.Forms.TextBox();
+            this.TextBoxWithText = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.createToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,16 +60,14 @@
             // 
             // TextBoxWithText
             // 
-            this.TextBoxWithText.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            this.TextBoxWithText.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.TextBoxWithText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.TextBoxWithText.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TextBoxWithText.Location = new System.Drawing.Point(0, 27);
             this.TextBoxWithText.MaxLength = 1500000;
-            this.TextBoxWithText.Multiline = true;
             this.TextBoxWithText.Name = "TextBoxWithText";
-            this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TextBoxWithText.Size = new System.Drawing.Size(530, 454);
             this.TextBoxWithText.TabIndex = 0;
+            this.TextBoxWithText.Text = "";
             this.TextBoxWithText.WordWrap = false;
             this.TextBoxWithText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBoxWithText_KeyDown);
             this.TextBoxWithText.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxWithText_KeyPress);
@@ -275,7 +273,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox TextBoxWithText;
+        private System.Windows.Forms.RichTextBox TextBoxWithText;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;

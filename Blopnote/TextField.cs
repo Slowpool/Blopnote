@@ -13,7 +13,7 @@ namespace Blopnote
     {
         internal event EventHandler SongIsWritten;
 
-        private readonly TextBox TextBoxWithText;
+        private readonly RichTextBox TextBoxWithText;
         internal string Text
         {
             get => TextBoxWithText.Text;
@@ -28,7 +28,7 @@ namespace Blopnote
 
         internal int LinesToComplete { get; set; }
 
-        internal TextField(TextBox TextBoxWithText)
+        internal TextField(RichTextBox TextBoxWithText)
         {
             this.TextBoxWithText = TextBoxWithText;
         }
