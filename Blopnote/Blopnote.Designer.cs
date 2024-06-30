@@ -60,16 +60,13 @@
             // 
             // TextBoxWithText
             // 
-            //this.TextBoxWithText.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
-            //this.TextBoxWithText.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.TextBoxWithText.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TextBoxWithText.Location = new System.Drawing.Point(0, 27);
             this.TextBoxWithText.MaxLength = 1500000;
-            this.TextBoxWithText.Multiline = true;
             this.TextBoxWithText.Name = "TextBoxWithText";
-            //this.TextBoxWithText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TextBoxWithText.Size = new System.Drawing.Size(530, 454);
             this.TextBoxWithText.TabIndex = 0;
+            this.TextBoxWithText.Text = "";
             this.TextBoxWithText.WordWrap = false;
             // 
             // menuStrip1
@@ -98,13 +95,13 @@
             // createToolStripMenuItem
             // 
             this.createToolStripMenuItem.Name = "createToolStripMenuItem";
-            this.createToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.createToolStripMenuItem.Text = "Create";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -112,7 +109,7 @@
             // 
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -214,7 +211,7 @@
             // PanelForLyricsBox
             // 
             this.PanelForLyricsBox.Controls.Add(this.VScrollBarForLyrics);
-            this.PanelForLyricsBox.Location = new System.Drawing.Point(536, 27);
+            this.PanelForLyricsBox.Location = new System.Drawing.Point(526, 22);
             this.PanelForLyricsBox.Name = "PanelForLyricsBox";
             this.PanelForLyricsBox.Size = new System.Drawing.Size(398, 454);
             this.PanelForLyricsBox.TabIndex = 4;
