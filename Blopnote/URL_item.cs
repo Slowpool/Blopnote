@@ -7,14 +7,14 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-    internal class Urlitem
+    public class Urlitem
     {
         private readonly Button CopyButton;
         private readonly RadioButton RadioButton;
         private readonly LinkLabel Label;
 
         private bool visible;
-        internal bool Visible
+        public bool Visible
         {
             get => visible;
             set
@@ -27,9 +27,9 @@ namespace Blopnote
             }
         }
 
-        internal string Url { get; set; }
+        public string Url { get; set; }
 
-        internal string Name
+        public string Name
         {
             get => Label.Text;
             set
@@ -38,7 +38,7 @@ namespace Blopnote
             }
         }
 
-        internal bool Checked
+        public bool Checked
         {
             get => RadioButton.Checked;
             set
@@ -47,19 +47,19 @@ namespace Blopnote
             }
         }
 
-        internal Urlitem(Button CopyButton, RadioButton RadioButton, LinkLabel Label)
+        public Urlitem(Button CopyButton, RadioButton RadioButton, LinkLabel Label)
         {
             this.CopyButton = CopyButton;
             this.RadioButton = RadioButton;
             this.Label = Label;
         }
 
-        internal bool HasButton(Button button)
+        public bool HasButton(Button button)
         {
             return CopyButton == button;
         }
 
-        internal bool HasLabel(LinkLabel linkLabel)
+        public bool HasLabel(LinkLabel linkLabel)
         {
             return Label == linkLabel;
         }

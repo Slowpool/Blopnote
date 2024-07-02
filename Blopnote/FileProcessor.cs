@@ -7,29 +7,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Blopnote
 {
-    internal class FileProcessor
+    public class FileProcessor
     {
         private readonly TextField textField;
         private readonly FileState fileState;
         private readonly LyricsBox lyricsBox;
         private readonly OpenFileDialog openFileDialog;
+        private readonly SaveFileDialog saveFileDialog;
+        private readonly FolderBrowserDialog folderBrowserDialog;
+        private XmlSerializer xmlSerializer { get; set; }
 
-        internal event EventHandler DirectoryChanged;
+        public event EventHandler DirectoryChanged;
 
-        internal int DirectoryLength => fileState.directoryInfo.FullName.Length;
-
-        internal FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
+        public FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
         {
             this.textField = textField;
             this.fileState = fileState;
             this.lyricsBox = lyricsBox;
             this.openFileDialog = openFileDialog;
+
+            folderBrowserDialog = new FolderBrowserDialog();
+            folderBrowserDialog.Description = "Choose the folder where translations will be stored. Programm will create the folder 'SongsInfo' within.";
+            saveFileDialog = new SaveFileDialog();
         }
 
-        internal void SetInitialDirectory(string directoryName)
+        public void SetInitialDirectory(string directoryName)
         {
             fileState.directoryInfo = new DirectoryInfo(directoryName);
             openFileDialog.InitialDirectory = directoryName;
@@ -65,7 +72,7 @@ namespace Blopnote
             }
         }
 
-        internal void CreateNewTranslation(FileInfo fileInfo, SongInfo songInfo)
+        public void CreateNewTranslation(FileInfo fileInfo, SongInfo songInfo)
         {
             fileState.NewFileInCurrentDir(fileInfo, songInfo);
 
@@ -80,14 +87,9 @@ namespace Blopnote
             {
                 TryRewriteSongInfo("File with song information wasn't created.");
             }
-            //else
-            //{
-            //    lyricsBox.EnsureCleared();
-            //}
-
         }
 
-        internal void Save()
+        public void Save()
         {
             File.WriteAllText(fileState.FullFileName, textField.Text, Encoding.UTF8);
         }
@@ -98,7 +100,7 @@ namespace Blopnote
             File.WriteAllText(fileState.FullFileName, serializedSongInfo);
         }
 
-        internal void OpenTranslation(string fileName)
+        public void OpenTranslation(string fileName)
         {
             fileState.OpenFileWithDir(fileName);
             fileState.songInfo = ParseSongInfo();
@@ -133,7 +135,7 @@ namespace Blopnote
         private string GenerateSongInfoPath(string fullFileName) =>
             fullFileName.Insert(fullFileName.LastIndexOf('\\'), "\\" + Names.SongInfoFolder).Replace(".txt", ".json");
 
-        internal void SongIsWritten_Handler(object sender, EventArgs e)
+        public void SongIsWritten_Handler(object sender, EventArgs e)
         {
             fileState.songInfo.Completed = true;
             TryRewriteSongInfo("Information about song completion wasn't written.");
@@ -149,7 +151,7 @@ namespace Blopnote
                             );
         }
 
-        internal void TryRewriteSongInfo(string errorMessage)
+        public void TryRewriteSongInfo(string errorMessage)
         {
             try
             {
@@ -163,6 +165,62 @@ namespace Blopnote
                             icon: MessageBoxIcon.Error
                             );
                 return;
+            }
+        }
+
+        public void ImportXmlHandler(object sender, EventArgs e)
+        {
+            if (!AskPath(PathTypesToAsk.Xml, out string path))
+            {
+                return;
+            }
+
+            if (xmlSerializer == null)
+            {
+                xmlSerializer = new XmlSerializer(typeof(SongInfoWithTranslation));
+            }
+            xmlSerializer.Serialize(new FileStream(path, FileMode.Create), new SongInfoWithTranslation(fileState.songInfo, textField.Text));
+
+        }
+
+
+        public bool AskPath(PathTypesToAsk type, out string path)
+        {
+            string description;
+            switch (type)
+            {
+                #region asking only directory name
+                case PathTypesToAsk.TranslationsDirectory:
+                    folderBrowserDialog.ShowDialog();
+                    path = folderBrowserDialog.SelectedPath;
+                    return true;
+                #endregion
+
+                #region asking the path with a file name
+                case PathTypesToAsk.Xml:
+                    saveFileDialog.FileName = fileState.FileNameWithoutExtension + ".xml";
+                    saveFileDialog.Filter = ".xml files(*.xml)|*.xml";
+                    break;
+                    
+                #endregion
+
+                default:
+                    throw new NotImplementedException();
+            }
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                path = saveFileDialog.FileName;
+                return true;
+            }
+            path = null;
+            return false;
+        }
+
+        internal void ChangeDirecrotyHandler(object sender, EventArgs e)
+        {
+            if (AskPath(PathTypesToAsk.TranslationsDirectory, out string folderPath))
+            {
+                SetInitialDirectory(folderPath);
             }
         }
     }

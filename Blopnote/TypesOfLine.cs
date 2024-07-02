@@ -1,6 +1,6 @@
 ﻿namespace Blopnote
 {
-    internal enum TypesOfLine
+    public enum TypesOfLine
     {
         Repeated,
         Keyword,

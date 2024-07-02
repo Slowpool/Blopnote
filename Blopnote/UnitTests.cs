@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Blopnote
 {
     [TestFixture]
-    internal class UnitTests
+    public class UnitTests
     {
         [Test]
         public void Test()

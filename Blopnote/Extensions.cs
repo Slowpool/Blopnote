@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Blopnote
 {
-    internal static class Extensions
+    public static class Extensions
     {
         public static void Reset(this Timer timer)
         {
@@ -16,7 +16,7 @@ namespace Blopnote
             timer.Start();
         }
 
-        internal static void NameToLower(this DirectoryInfo directory)
+        public static void NameToLower(this DirectoryInfo directory)
         {
             string nameInLowerCase = directory.Name.ToLower();
             directory.MoveTo(Path.Combine(directory.Parent.FullName, "temp"));

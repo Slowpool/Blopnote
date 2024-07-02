@@ -26,7 +26,7 @@ namespace Blopnote
 
         private const int AUTOSAVE_FREQUENCY_IN_SECONDS = 5;
         private const string CONFIG_FOLDER_ATTRIBUTE = "folderWithTranslationsPath";
-        private int PreviousSelectionStart { get; set; }
+        private int PreviousLineWithCarriage { get; set; }
         public Blopnote()
         {
             InitializeComponent();
@@ -39,6 +39,7 @@ namespace Blopnote
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
 
+            changeFolderToolStripMenuItem.Click += fileProcessor.ChangeDirecrotyHandler;
             tabTranslatesOnly1LineToolStripMenuItem.Click += lyricsBox.SwitchTabMode;
             createToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
             openToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
@@ -48,7 +49,7 @@ namespace Blopnote
             textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
-                createNewTranslationForm.UpdateMaxLength(fileProcessor.DirectoryLength);
+                createNewTranslationForm.UpdateMaxLength(fileState.DirectoryLength);
             };
 
             fileState.UrlChanged += (sender, e) =>
@@ -56,14 +57,15 @@ namespace Blopnote
                 followToolStripMenuItem.Enabled = fileState.IsUrlUsed;
             };
 
-            fileState.FileOpenedOrClosed += (sender, e) =>
+            fileState.FileOpenedOrClosed += (opened) =>
             {
                 textField.Clear();
 
-                closeToolStripMenuItem.Enabled = e.Opened;
-                changeFolderToolStripMenuItem.Enabled = !e.Opened;
-                changeUrlToolStripMenuItem.Enabled = e.Opened;
-                changeLyricsToolStripMenuItem.Enabled = e.Opened;
+                closeToolStripMenuItem.Enabled = opened;
+                changeFolderToolStripMenuItem.Enabled = !opened;
+                changeUrlToolStripMenuItem.Enabled = opened;
+                changeLyricsToolStripMenuItem.Enabled = opened;
+                uselessToolStripMenuItem.Enabled = opened;
             };
 
             fileState.LyricsChanged += (sender, e) =>
@@ -87,6 +89,8 @@ namespace Blopnote
                 }
             };
 
+            ImportXmlToolStripMenuItem.Click += fileProcessor.ImportXmlHandler;
+
             createNewTranslationForm = new CreateNewTranslationForm();
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
@@ -97,7 +101,7 @@ namespace Blopnote
         #region FormEvents
         private void Blopnote_Load(object sender, EventArgs e)
         {
-            fileState.DoesNotExist();
+            fileState.CloseFile();
             lyricsBox.Hide();
 
             sizeRegulator.RegulateTo(WorkSpace);
@@ -109,11 +113,10 @@ namespace Blopnote
             string directoryFullName = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
             if (string.IsNullOrEmpty(directoryFullName))
             {
-                folderBrowserDialog1.Description = "Choose the folder where translations will be stored. Program will create the folder 'songsInfo' inside.";
-                directoryFullName = AskUserForPath();
-                if (string.IsNullOrEmpty(directoryFullName))
+                if (!fileProcessor.AskPath(PathTypesToAsk.TranslationsDirectory, out directoryFullName))
                 {
                     this.Close();
+                    Application.Exit();
                 }
                 else
                 {
@@ -182,8 +185,6 @@ namespace Blopnote
             //}
 
             RegulateTextAndLyricsBoxes();
-
-            timerLineObserver.Start();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -210,27 +211,11 @@ namespace Blopnote
             config.Save();
         }
 
-        private string AskUserForPath()
-        {
-            folderBrowserDialog1.ShowDialog();
-            return folderBrowserDialog1.SelectedPath;
-        }
-
-        private void changeFolderPathToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string folderPath = AskUserForPath();
-            if (!string.IsNullOrEmpty(folderPath))
-            {
-                fileProcessor.SetInitialDirectory(folderPath);
-            }
-        }
-
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             StopTimerAndTrySaveFile(true);
-            fileState.DoesNotExist();
+            fileState.CloseFile();
             RegulateTextAndLyricsBoxes();
-            timerLineObserver.Stop();
         }
 
         private void ShowLyrics_Click(object sender, EventArgs e)
@@ -280,60 +265,41 @@ namespace Blopnote
 
         private void TextBoxWithText_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.KeyData)
+            if (e.KeyData == (Keys.Control | Keys.C) && TextBoxWithText.SelectedText.Length == 0)
             {
-                case Keys.Control | Keys.Back:
-                    e.SuppressKeyPress = true;
-                    if (TextBoxWithText.SelectionStart > 0)
-                    {
-                        SendKeys.Send("+{LEFT}{DEL}");
-                    }
-                    break;
-                case Keys.Control | Keys.C:
-                    if (TextBoxWithText.SelectedText.Length == 0)
-                    {
-                        e.SuppressKeyPress = true;
-                        textField.CopyCurrentLineToClipBoard();
-                    }
-                    break;
-                case Keys.Control | Keys.W:
-                    e.SuppressKeyPress = true;
-                    Application.Exit();
-                    break;
-                default:
-                    e.SuppressKeyPress = false;
-                    break;
+                e.SuppressKeyPress = true;
+                textField.CopyCurrentLineToClipBoard();
             }
-        }
 
-       // It's pointless to process ctrl+w in current version of app, but it's an another way to
-       // process the hotkey everywhere in application.
-       //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-       //{
-       //    if (keyData == (Keys.Control | Keys.W))
-       //    {
-       //        Application.Exit();
-       //        return true;
-       //    }
-       //    return base.ProcessCmdKey(ref msg, keyData);
-       //}
-
-        private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            timerAutoSave.Start();
-
-            if (ShowLyrics.Checked && (int)e.KeyChar == (int)Keys.Enter)
+            if (ShowLyrics.Checked && e.KeyCode == Keys.Enter)
             {
                 e.Handled = true;
-                TextBoxWithText.AppendText("\r\n");
+                TextBoxWithText.AppendText("\n");
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
                 TryAutoCompleteText();
             }
         }
 
+        // It's pointless to process ctrl+w in current version of app, but it's an another way to
+        // process the hotkey everywhere in application.
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.W))
+            {
+                Application.Exit();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            timerAutoSave.Start();
+        }
+
         private void HighlightActualLine()
         {
-            lyricsBox.HighlightAt(textField.LineIndexWithCarriage);
+            lyricsBox.HighlightAt(textField.LineWithCarriage);
         }
 
         private void TryAutoCompleteText()
@@ -353,20 +319,11 @@ namespace Blopnote
                         TextBoxWithText.AppendText(lyricsBox[lineIndex]);
                         break;
                 }
-                TextBoxWithText.AppendText("\r\n");
+                TextBoxWithText.AppendText("\n");
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
 
                 lineIndex++;
                 lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
-            }
-        }
-
-        private void timerLineObserver_Tick(object sender, EventArgs e)
-        {
-            if (PreviousSelectionStart != TextBoxWithText.SelectionStart)
-            {
-                PreviousSelectionStart = TextBoxWithText.SelectionStart;
-                HighlightActualLine();
             }
         }
 
@@ -407,6 +364,20 @@ namespace Blopnote
             var property = fileState.GetType().GetProperty(item);
             property.SetValue(fileState, newItem);
             fileProcessor.TryRewriteSongInfo($"{item} wasn't saved.");
+        }
+
+        private void TextBoxWithText_SelectionChanged(object sender, EventArgs e)
+        {
+            if (PreviousLineWithCarriage != textField.LineWithCarriage)
+            {
+                PreviousLineWithCarriage = textField.LineWithCarriage;
+                HighlightActualLine();
+            }
+        }
+
+        private void ImportDocToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

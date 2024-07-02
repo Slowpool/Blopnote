@@ -14,8 +14,8 @@ namespace Blopnote
     public partial class CreateNewTranslationForm : Form
     {
         private string SongName => TextBoxForAuthor.Text + " - " + TextBoxForSong.Text;
-        internal FileInfo fileInfo { get; set; }
-        internal SongInfo songInfo { get; set; }
+        public FileInfo fileInfo { get; set; }
+        public SongInfo songInfo { get; set; }
 
         private bool SongInserted => ValidateTextBox(TextBoxForAuthor) && ValidateTextBox(TextBoxForSong);
         private const string EMPTY_FIELDS_MESSAGE = "Author or song name isn't inserted";
@@ -47,7 +47,7 @@ namespace Blopnote
         private readonly string[,] ZERO_Urls = new string[,] { };
         private Urlitem SelectedUrlitem => Urlitems.Where(item => item.Checked)
                                                       .Single();
-        internal CreateNewTranslationForm()
+        public CreateNewTranslationForm()
         {
             InitializeComponent();
             Icon = Resources.icon;
@@ -62,7 +62,7 @@ namespace Blopnote
         }
 
         [STAThread]
-        internal DialogResult ShowForDataInput()
+        public DialogResult ShowForDataInput()
         {
             ClearAll();
             return ShowDialog();
@@ -171,7 +171,7 @@ namespace Blopnote
             Cursor.Current = Cursors.Default;
         }
 
-        internal async Task<string> GetLyrics(string GeniusSongUrl)
+        public async Task<string> GetLyrics(string GeniusSongUrl)
         {
             driver.Navigate().GoToUrl(GeniusSongUrl);
             await Task.Delay(1000);
@@ -209,7 +209,7 @@ namespace Blopnote
             Cursor.Current = Cursors.Default;
         }
 
-        internal void UpdateMaxLength(int length)
+        public void UpdateMaxLength(int length)
         {
             // length is
             // |_____________|

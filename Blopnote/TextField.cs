@@ -9,12 +9,12 @@ using System.Diagnostics;
 
 namespace Blopnote
 {
-    internal class TextField
+    public class TextField
     {
-        internal event EventHandler SongIsWritten;
+        public event EventHandler SongIsWritten;
 
         private readonly RichTextBox TextBoxWithText;
-        internal string Text
+        public string Text
         {
             get => TextBoxWithText.Text;
             set
@@ -23,46 +23,46 @@ namespace Blopnote
             }
         }
 
-        internal int LineIndexWithCarriage => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
-        internal int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
+        public int LineWithCarriage => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
+        public int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
-        internal int LinesToComplete { get; set; }
+        public int LinesToComplete { get; set; }
 
-        internal TextField(RichTextBox TextBoxWithText)
+        public TextField(RichTextBox TextBoxWithText)
         {
             this.TextBoxWithText = TextBoxWithText;
         }
 
-        internal void PlaceOnce(int topMargin)
+        public void PlaceOnce(int topMargin)
         {
             // Here -1 due to strange display of textbox borders even with using of property ClientSize
             TextBoxWithText.Location = new Point(-1, topMargin);
         }
 
-        internal void AdjustSizeTo(Size size)
+        public void AdjustSizeTo(Size size)
         {
             // Here +2 due to strange display of textbox borders even with the property ClientSize being used
             TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
         }
 
-        internal void Disable()
+        public void Disable()
         {
             TextBoxWithText.Enabled = false;
         }
 
-        internal void Enable()
+        public void Enable()
         {
             TextBoxWithText.Enabled = true;
         }
 
-        internal void Clear()
+        public void Clear()
         {
             TextBoxWithText.Clear();
         }
 
-        internal void CopyCurrentLineToClipBoard()
+        public void CopyCurrentLineToClipBoard()
         {
-            string line = TextBoxWithText.Lines[LineIndexWithCarriage];
+            string line = TextBoxWithText.Lines[LineWithCarriage];
             try
             {
                 Clipboard.SetText(line);
@@ -73,13 +73,13 @@ namespace Blopnote
             }
         }
 
-        internal void Focus()
+        public void Focus()
         {
             TextBoxWithText.Focus();
             TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
         }
 
-        internal void SongCompletionChecker(object sender, EventArgs e)
+        public void SongCompletionChecker(object sender, EventArgs e)
         {
             Debug.WriteLine("checking for completion...");
             if (TextBoxWithText.Lines.Length > LinesToComplete)
@@ -88,19 +88,19 @@ namespace Blopnote
             }
         }
 
-        internal void ObserveCompletion()
+        public void ObserveCompletion()
         {
             Debug.WriteLine("Observing: True");
             TextBoxWithText.TextChanged += SongCompletionChecker;
         }
 
-        internal void StopObserving()
+        public void StopObserving()
         {
             Debug.WriteLine("Observing: false");
             TextBoxWithText.TextChanged -= SongCompletionChecker;
         }
 
-        internal void TranslationByGoogleLoaded(object sender, EventArgs e)
+        public void TranslationByGoogleLoaded(object sender, EventArgs e)
         {
             TextBoxWithText.PreviewKeyDown += ((LyricsBox)sender).PreviewKeyDown;
         }
