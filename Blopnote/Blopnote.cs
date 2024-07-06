@@ -9,8 +9,6 @@ using System.Collections.Specialized;
 using System.IO;
 using Microsoft.VisualBasic;
 
-using static Blopnote.Browser;
-
 namespace Blopnote
 {
     public partial class Blopnote : Form
@@ -95,7 +93,6 @@ namespace Blopnote
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
-            Browser.Latch();
         }
 
         #region FormEvents
@@ -130,10 +127,9 @@ namespace Blopnote
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
-            if (Browser.IsOpened)
+            if (Browser.Created)
             {
-                driver.Close();
-                driver.Dispose();
+                Browser.Instance.Close();
             }
         }
 
@@ -334,7 +330,7 @@ namespace Blopnote
 
         private void followUrl_Click(object sender, EventArgs e)
         {
-            OpenUrl(fileState.Url);
+            Browser.Instance.OpenUrl(fileState.Url);
         }
 
         private void changeUrl_Click(object sender, EventArgs e)

@@ -8,10 +8,10 @@ namespace Blopnote
 {
     public class SongInfoWithTranslation
     {
-        public readonly string Lyrics;
-        public readonly string TranslationText;
-        public readonly bool Completed;
-        public readonly string Url;
+        public string Lyrics;
+        public string TranslationText;
+        public bool Completed;
+        public string Url;
 
         public SongInfoWithTranslation()
         { }

@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using Blopnote.Properties;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using static Blopnote.Browser;
 using System.IO;
 
 namespace Blopnote
@@ -46,7 +45,7 @@ namespace Blopnote
         private readonly Urlitem[] Urlitems;
         private readonly string[,] ZERO_Urls = new string[,] { };
         private Urlitem SelectedUrlitem => Urlitems.Where(item => item.Checked)
-                                                      .Single();
+                                                   .Single();
         public CreateNewTranslationForm()
         {
             InitializeComponent();
@@ -59,6 +58,18 @@ namespace Blopnote
                 new Urlitem(buttonCopy4, radioButtonUrl4, linkLabelUrl4),
                 new Urlitem(buttonCopy5, radioButtonUrl5, linkLabelUrl5),
             };
+
+            buttonLyricsRequest.Click += SetWaitingCursor;
+            buttonLyricsRequest.Click += buttonLyricsRequest_Click;
+            buttonLyricsRequest.Click += SetDefaultCursor;
+
+            buttonNextLyrics.Click += SetWaitingCursor;
+            buttonNextLyrics.Click += buttonNextLyrics_Click;
+            buttonNextLyrics.Click += SetDefaultCursor;
+
+            buttonRequestForUrl.Click += SetWaitingCursor;
+            buttonRequestForUrl.Click += buttonRequestForUrl_Click;
+            buttonRequestForUrl.Click += SetDefaultCursor;
         }
 
         [STAThread]
@@ -105,6 +116,16 @@ namespace Blopnote
             labelUrlRequest.Text = string.Empty;
         }
 
+        private void SetWaitingCursor(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+        }
+
+        private void SetDefaultCursor(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.Default;
+        }
+
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
         {
             TextBoxForLyrics.Enabled = checkBoxUseLyrics.Checked;
@@ -141,13 +162,20 @@ namespace Blopnote
             }
         }
 
-        private async void buttonLyricsRequest_Click(object sender, EventArgs e)
+        private void buttonLyricsRequest_Click(object sender, EventArgs e)
         {
-            Cursor.Current = Cursors.WaitCursor;
             LyricsId = 0;
-            if (SongInserted)
+            if (!SongInserted)
             {
-                lyricsReferences = await RequestForSimilarSongs(SongName);
+                ClearAllRelatedToLyrics();
+                UpdateLyricsSelector();
+                labelLyricsRequestResult.Text = EMPTY_FIELDS_MESSAGE;
+                return;
+            }
+
+            try
+            {
+                lyricsReferences = Browser.Instance.RequestForSimilarSongs(SongName);
                 if (lyricsReferences.Count == 0)
                 {
                     ClearAllRelatedToLyrics();
@@ -158,27 +186,15 @@ namespace Blopnote
                 {
                     labelLyricsRequestResult.Text = string.Format("{0} lyrics found", lyricsReferences.Count);
                     DownloadedLyrics.Clear();
-                    LyricsId = 0;
+                    //LyricsId = 0;
                     LoadLyricsToTextBox();
                 }
             }
-            else
+            catch (Exception exception)
             {
-                ClearAllRelatedToLyrics();
-                UpdateLyricsSelector();
-                labelLyricsRequestResult.Text = EMPTY_FIELDS_MESSAGE;
-            }
-            Cursor.Current = Cursors.Default;
-        }
 
-        public async Task<string> GetLyrics(string GeniusSongUrl)
-        {
-            driver.Navigate().GoToUrl(GeniusSongUrl);
-            await Task.Delay(1000);
-            IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
-            return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
-            //// latch
-            //return "haha";
+            }
+
         }
 
         private void buttonNextLyrics_Click(object sender, EventArgs e)
@@ -193,20 +209,18 @@ namespace Blopnote
             LoadLyricsToTextBox();
         }
 
-        private async void LoadLyricsToTextBox()
+        private void LoadLyricsToTextBox()
         {
-            Cursor.Current = Cursors.WaitCursor;
             try
             {
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
             }
             catch
             {
-                DownloadedLyrics.Add(await GetLyrics(lyricsReferences[LyricsId]));
+                DownloadedLyrics.Add(Browser.Instance.GetLyrics(lyricsReferences[LyricsId]));
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
             }
             UpdateLyricsSelector();
-            Cursor.Current = Cursors.Default;
         }
 
         public void UpdateMaxLength(int length)
@@ -282,12 +296,11 @@ namespace Blopnote
             Clipboard.SetText(Url);
         }
 
-        private void buttonRequestForUrlClick(object sender, EventArgs e)
+        private void buttonRequestForUrl_Click(object sender, EventArgs e)
         {
-            Cursor.Current = Cursors.WaitCursor;
             if (SongInserted)
             {
-                string[,] Urls = Browser.GetYoutubeUrls(SongName);
+                string[,] Urls = Browser.Instance.GetYoutubeUrls(SongName);
                 DisplayUrls(Urls);
                 labelUrlRequest.Text = Urls.GetLength(0) == 0
                                         ? NOT_FOUND_MESSAGE
@@ -298,7 +311,6 @@ namespace Blopnote
                 DisplayUrls(ZERO_Urls);
                 labelUrlRequest.Text = EMPTY_FIELDS_MESSAGE;
             }
-            Cursor.Current = Cursors.Default;
         }
 
         private void DisplayUrls(string[,] Urls)
@@ -321,8 +333,7 @@ namespace Blopnote
 
         private void linkLabelUrlLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string Url = GetUrl((LinkLabel)sender);
-            Browser.OpenUrl(Url);
+            Browser.Instance.OpenUrl(GetUrl((LinkLabel)sender));
         }
 
         private string GetUrl(LinkLabel linkLabel)

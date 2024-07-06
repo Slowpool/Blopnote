@@ -4,54 +4,52 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SeleniumKeys = OpenQA.Selenium.Keys;
 
 namespace Blopnote
 {
-    public static class Browser
+    public class Browser
     {
-        public static readonly ChromeDriver driver;
-        private static readonly WebDriverWait wait;
+        private static Browser instance;
+        public static bool Created => instance != null;
+        public static Browser Instance => Created ? instance : instance = new Browser();
 
-        public static bool IsOpened { get; set; } = false;
+        private ChromeDriver driver;
+        private readonly ChromeOptions options;
+        private readonly ChromeDriverService service;
+        private WebDriverWait wait;
 
-        /// <summary>
-        /// Use it for browser driver initialiation
-        /// </summary>
-        public static void Latch()
+        private Browser()
         {
-
-        }
-
-        static Browser()
-        {
-            IsOpened = true;
-            ChromeOptions options = new ChromeOptions();
+            options = new ChromeOptions();
             options.AddArgument("--headless"); // Hide the browser window
             options.AddArgument("--disable-extensions");
             options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.PageLoadStrategy = PageLoadStrategy.Eager;
 
-            ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+            service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
 
-            driver = new ChromeDriver(service, options);
+            StartNewDriver();
             driver.Manage().Window.Maximize();
-            //driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
-        public static async Task<List<string>> RequestForSimilarSongs(string songName)
+        public List<string> RequestForSimilarSongs(string songName)
         {
-            Cursor.Current = Cursors.WaitCursor;
-
-            driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
-            await Task.Delay(2000);
+            try
+            {
+                OpenLyricsSearchPage(songName);
+            }
+            catch
+            {
+                StartNewDriver();
+                OpenLyricsSearchPage(songName);
+            }
+            Task.Delay(2000);
 
             System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> cards;
             wait.IgnoreExceptionTypes();
@@ -60,14 +58,11 @@ namespace Blopnote
                 cards = wait.Until(webDriver =>
                 {
                     var result = webDriver.FindElements(By.ClassName("mini_card"));
-                    return result.Count >= 1
-                         ? result
-                         : null;
+                    return result.Count >= 1 ? result : null;
                 });
             }
             catch
             {
-                Cursor.Current = Cursors.Default;
                 return new List<string>();
             }
 
@@ -81,15 +76,23 @@ namespace Blopnote
                     references.Add(reference);
                 }
             }
-            Cursor.Current = Cursors.Default;
             return references;
-            // latch
-            return null;
         }
 
-        public static string[] GetTranslationByGoogle(string lyrics)
+        private void StartNewDriver()
         {
-            Cursor.Current = Cursors.WaitCursor;
+            driver?.Dispose();
+            driver = new ChromeDriver(service, options);
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        }
+
+        private void OpenLyricsSearchPage(string songName)
+        {
+            driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
+        }
+
+        public string[] GetTranslationByGoogle(string lyrics)
+        {
             driver.Navigate().GoToUrl("https://translate.google.com/?sl=ru&tl=en&text=" + lyrics.Replace("\r\n", "%0A"));
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
             try
@@ -113,16 +116,10 @@ namespace Blopnote
                 }
                 return latchArray;
             }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
         }
 
-        public static string[,] GetYoutubeUrls(string songName)
+        public string[,] GetYoutubeUrls(string songName)
         {
-            Cursor.Current = Cursors.WaitCursor;
-
             driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + songName);
             #region Delete
             //var search = wait.Until(webDriver => webDriver.FindElement(By.Id("search-input")));
@@ -144,11 +141,9 @@ namespace Blopnote
             {
                 result[i, 0] = videoTitle.GetAttribute("title");
                 result[i, 1] = videoTitle.GetAttribute("href");
-
                 i++;
             }
 
-            Cursor.Current = Cursors.Default;
             return result;
             #region latch
             //switch (new Random().Next(6))
@@ -171,7 +166,7 @@ namespace Blopnote
             #endregion
         }
 
-        public static void OpenUrl(string Url)
+        public void OpenUrl(string Url)
         {
             try
             {
@@ -183,7 +178,6 @@ namespace Blopnote
                 };
                 System.Diagnostics.Process.Start(info);
             }
-            //catch (InvalidOperationException e)
             catch (Exception e)
             {
                 MessageBox.Show(caption: "Url opening error",
@@ -191,6 +185,21 @@ namespace Blopnote
                                 buttons: MessageBoxButtons.OK,
                                 icon: MessageBoxIcon.Error);
             }
+        }
+
+        public void Close()
+        {
+            driver.Close();
+        }
+
+        public string GetLyrics(string GeniusSongUrl)
+        {
+            driver.Navigate().GoToUrl(GeniusSongUrl);
+            Task.Delay(1000);
+            IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
+            return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
+            //// latch
+            //return "haha";
         }
     }
 }

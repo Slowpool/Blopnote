@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
-using static Blopnote.Browser;
 using System.Diagnostics;
 
 namespace Blopnote
@@ -137,7 +136,7 @@ namespace Blopnote
 
             HighlightKeywords();
             ConfigureLabels();
-            TranslationByGoogle = Browser.GetTranslationByGoogle(FilteredLyrics);
+            TranslationByGoogle = Browser.Instance.GetTranslationByGoogle(FilteredLyrics);
             TranslationByGoogleLoaded(this, null);
             CalculateWidth();
             AdjustScrollBar();

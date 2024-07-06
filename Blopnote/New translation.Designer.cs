@@ -155,7 +155,6 @@ namespace Blopnote
             this.buttonLyricsRequest.Text = "Request for lyrics";
             this.toolTipLyricsRequest.SetToolTip(this.buttonLyricsRequest, "It yields no more than 5 lyrics.");
             this.buttonLyricsRequest.UseVisualStyleBackColor = true;
-            this.buttonLyricsRequest.Click += new System.EventHandler(this.buttonLyricsRequest_Click);
             // 
             // toolTipLyricsRequest
             // 
@@ -174,7 +173,6 @@ namespace Blopnote
             this.buttonNextLyrics.TabIndex = 7;
             this.buttonNextLyrics.Text = "Next";
             this.buttonNextLyrics.UseVisualStyleBackColor = true;
-            this.buttonNextLyrics.Click += new System.EventHandler(this.buttonNextLyrics_Click);
             // 
             // buttonPreviousLyrics
             // 
@@ -312,7 +310,6 @@ namespace Blopnote
             this.buttonRequestForUrl.TabIndex = 11;
             this.buttonRequestForUrl.Text = "Request for Url";
             this.buttonRequestForUrl.UseVisualStyleBackColor = true;
-            this.buttonRequestForUrl.Click += new System.EventHandler(this.buttonRequestForUrlClick);
             // 
             // checkBoxUseUrl
             // 

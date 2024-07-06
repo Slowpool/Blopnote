@@ -179,8 +179,10 @@ namespace Blopnote
             {
                 xmlSerializer = new XmlSerializer(typeof(SongInfoWithTranslation));
             }
-            xmlSerializer.Serialize(new FileStream(path, FileMode.Create), new SongInfoWithTranslation(fileState.songInfo, textField.Text));
-
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                xmlSerializer.Serialize(stream, new SongInfoWithTranslation(fileState.songInfo, textField.Text), null);
+            }
         }
 
 
