@@ -38,6 +38,14 @@ namespace Blopnote
             driver.Manage().Window.Maximize();
         }
 
+        public void CloseIfExists()
+        {
+            if (Created)
+            {
+                driver.Quit();
+            }
+        }
+
         public List<string> RequestForSimilarSongs(string songName)
         {
             try
@@ -97,13 +105,7 @@ namespace Blopnote
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
             try
             {
-                var soundButton =
-                    wait.Until(webDriver =>
-                    {
-                        return webDriver.FindElements(By.ClassName("aJIq1d"))
-                                        .Where(element => element.GetAttribute("data-language-code") == "en")
-                                        .Single();
-                    });
+                IWebElement soundButton = wait.Until(webDriver => webDriver.FindElements(By.XPath("//div[@class='aJIq1d' and @data-language-code='en']")).Single());
                 return soundButton.GetAttribute("data-text")
                                   .Split(new[] { "\r\n" }, StringSplitOptions.None);
             }
@@ -121,13 +123,6 @@ namespace Blopnote
         public string[,] GetYoutubeUrls(string songName)
         {
             driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + songName);
-            #region Delete
-            //var search = wait.Until(webDriver => webDriver.FindElement(By.Id("search-input")));
-            //await Task.Delay(5000);
-            //search.Click();
-            //search.SendKeys(songName);
-            //search.SendKeys(SeleniumKeys.Enter); 
-            #endregion
             var videoTitles = wait.Until(driver =>
             {
                 var videos = driver.FindElements(By.Id("video-title"));
@@ -166,7 +161,7 @@ namespace Blopnote
             #endregion
         }
 
-        public void OpenUrl(string Url)
+        public void OpenUrlForUser(string Url)
         {
             try
             {
@@ -187,16 +182,16 @@ namespace Blopnote
             }
         }
 
-        public void Close()
-        {
-            driver.Close();
-        }
+        //public void Close()
+        //{
+        //    driver.Close();
+        //}
 
         public string GetLyrics(string GeniusSongUrl)
         {
             driver.Navigate().GoToUrl(GeniusSongUrl);
             Task.Delay(1000);
-            IEnumerable<IWebElement> divs = driver.FindElements(By.XPath("(//div[contains(@data-lyrics-container,'true')])"));
+            IEnumerable<IWebElement> divs = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1"));
             return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
             //// latch
             //return "haha";

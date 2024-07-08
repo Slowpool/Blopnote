@@ -333,7 +333,7 @@ namespace Blopnote
 
         private void linkLabelUrlLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Browser.Instance.OpenUrl(GetUrl((LinkLabel)sender));
+            Browser.Instance.OpenUrlForUser(GetUrl((LinkLabel)sender));
         }
 
         private string GetUrl(LinkLabel linkLabel)

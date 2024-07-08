@@ -185,6 +185,7 @@
     <Compile Include="Browser.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileState.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="PathTypesToAsk.cs" />
     <Compile Include="New translation.cs">
       <SubType>Form</SubType>

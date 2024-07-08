@@ -127,10 +127,8 @@ namespace Blopnote
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
             closeToolStripMenuItem.PerformClick();
-            if (Browser.Created)
-            {
-                Browser.Instance.Close();
-            }
+            // I don't like it. Wanna better approach, e.g. ~Browser (destructor)
+            Browser.Instance.CloseIfExists();
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -330,7 +328,7 @@ namespace Blopnote
 
         private void followUrl_Click(object sender, EventArgs e)
         {
-            Browser.Instance.OpenUrl(fileState.Url);
+            Browser.Instance.OpenUrlForUser(fileState.Url);
         }
 
         private void changeUrl_Click(object sender, EventArgs e)
