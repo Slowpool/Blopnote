@@ -29,7 +29,6 @@ namespace Blopnote
         private readonly List<string> DownloadedLyrics = new List<string>();
 
         private int lyricsId;
-        private const string BROWSER_ERROR_CAPTION = "Browser error";
 
         private int LyricsId
         {
@@ -203,30 +202,9 @@ namespace Blopnote
             }
             catch (Exception exception)
             {
-                ShowMessage(exception);
+                MessageShower.Show(exception);
                 return;
             }
-        }
-
-        private void ShowMessage(Exception exception)
-        {
-            string text;
-            switch (exception.GetType().Name)
-            {
-                case "WebDriverTimeoutException":
-                    text = "Waiting time has expired\r\n" +
-                        "You can try reconnecting browser in the upper menu.";
-                    break;
-
-                case "FailedBrowserOpeningException":
-                default:
-                    text = exception.Message;
-                    break;
-            }
-            MessageBox.Show(caption: BROWSER_ERROR_CAPTION,
-                                text: text,
-                                buttons: MessageBoxButtons.OK,
-                                icon: MessageBoxIcon.Error);
         }
 
         private void buttonNextLyrics_Click(object sender, EventArgs e)
@@ -384,11 +362,6 @@ namespace Blopnote
             throw new ArgumentException("");
         }
 
-        private void reconnectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
         {
 #warning dry browser
@@ -398,7 +371,7 @@ namespace Blopnote
             }
             catch
             {
-                ShowMessage(new Exception("Failed to reconnect. Make sure you have an internet?"));
+                MessageShower.Show(new Exception("Failed to reconnect. Make sure you have an internet?"));
             }
         }
     }

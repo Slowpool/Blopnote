@@ -8,7 +8,6 @@ using System.Configuration;
 using System.Collections.Specialized;
 using System.IO;
 using Microsoft.VisualBasic;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Blopnote
 {
@@ -28,6 +27,8 @@ namespace Blopnote
         private int PreviousLineWithCarriage { get; set; }
         public Blopnote()
         {
+            Logger.Instance.Log(LogType.EventHandler,"Blopnote constructor invoked");
+
             InitializeComponent();
             this.Icon = Resources.icon;
             openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
@@ -94,19 +95,25 @@ namespace Blopnote
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote constructor finished");
         }
 
         #region FormEvents
         private void Blopnote_Load(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote load invoked");
             fileState.CloseFile();
             lyricsBox.Hide();
 
             sizeRegulator.RegulateTo(WorkSpace);
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote load finished");
         }
 
         private void Blopnote_Shown(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote shown invoked");
+
             Enabled = false;
             string directoryFullName = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
             if (string.IsNullOrEmpty(directoryFullName))
@@ -123,10 +130,14 @@ namespace Blopnote
             }
             fileProcessor.SetInitialDirectory(directoryFullName);
             Enabled = true;
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote shown finished");
         }
 
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote form closing invoked");
+
             closeToolStripMenuItem.PerformClick();
             // I don't like it. Wanna better approach, e.g. ~Browser (destructor)
             try
@@ -135,32 +146,46 @@ namespace Blopnote
             }
             catch
             { }
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote form closing finished");
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote size changed invoked");
             RegulateTextAndLyricsBoxes();
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote size changed finished");
         }
         #endregion
 
         private void RegulateTextAndLyricsBoxes()
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote regulate text and lyrics boxes invoked");
+
             sizeRegulator.RegulateTo(WorkSpace);
             lyricsBox.Left = TextBoxWithText.Right;
+
+            Logger.Instance.Log(LogType.Method, "Blopnote regulate text and lyrics boxes finished");
         }
 
         private void CreateToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote create file click invoked");
+
             if (createNewTranslationForm.ShowForDataInput() == DialogResult.OK)
             {
 #warning awful + dirty code
                 HandleInsertedData();
                 PrepareComponentsToDisplayTranslation();
             }
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote create file click finished");
         }
 
         private void HandleInsertedData()
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote handle inserted data invoked");
+
             try
             {
                 fileProcessor.CreateNewTranslation(createNewTranslationForm.fileInfo, createNewTranslationForm.songInfo);
@@ -170,10 +195,14 @@ namespace Blopnote
                 MessageBox.Show(caption: "File error",
                     text: "File wasn't created.\nCause: " + e.Message);
             }
+
+            Logger.Instance.Log(LogType.Method, "Blopnote handle inserted data finished");
         }
 
         private void PrepareComponentsToDisplayTranslation()
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote prepare components to display translation invoked");
+
             textField.Enable();
             
 // Q: maybe there's no need to use this?
@@ -185,10 +214,14 @@ namespace Blopnote
             //}
 
             RegulateTextAndLyricsBoxes();
+
+            Logger.Instance.Log(LogType.Method, "Blopnote prepare components to display translation finished");
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote open file invoked");
+
             DialogResult answer = openFileDialog1.ShowDialog();
 #warning maybe i should to handle an opened and empty file in different ways?
             if (answer == DialogResult.OK)
@@ -202,24 +235,36 @@ namespace Blopnote
 
                 textField.Focus();
             }
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote open file finished");
         }
 
         private void UpdateConfig(string key, string value)
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote config updating invoked");
+
             var config = ConfigurationManager.OpenExeConfiguration(Path.Combine(Environment.CurrentDirectory, "Blopnote.exe"));
             config.AppSettings.Settings[key].Value = value;
             config.Save();
+
+            Logger.Instance.Log(LogType.Method, "Blopnote config updating finished");
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote close file invoked");
+
             StopTimerAndTrySaveFile(true);
             fileState.CloseFile();
             RegulateTextAndLyricsBoxes();
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote close file finished");
         }
 
         private void ShowLyrics_Click(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote show lyrics clicked invoked");
+
             if (ShowLyrics.Checked)
             {
                 lyricsBox.Display();
@@ -229,25 +274,37 @@ namespace Blopnote
                 lyricsBox.Hide();
             }
             RegulateTextAndLyricsBoxes();
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote show lyrics clicked finished");
         }
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote show lyrics enabled changed invoked");
+
 #warning why is it here?
             if (!ShowLyrics.Enabled)
             {
                 ShowLyrics.Checked = false;
                 lyricsBox.NoLyrics();
             }
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote show lyrics enabled changed finished");
         }
 
         private void timerAutoSave_Tick(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote timer for auto save ticked invoked");
+
             StopTimerAndTrySaveFile(true);
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote timer for auto save ticked finished");
         }
 
         private void StopTimerAndTrySaveFile(bool mandatorySave)
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote stop timer and try save file invoked");
+
             timerAutoSave.Stop();
             try
             {
@@ -261,10 +318,14 @@ namespace Blopnote
                                     text: "Error text: " + exception.Message);
                 }
             }
+
+            Logger.Instance.Log(LogType.Method, "Blopnote stop timer and try save file finished");
         }
 
         private void TextBoxWithText_KeyDown(object sender, KeyEventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote TextBoxWithText_KeyDown invoked");
+
             if (e.KeyData == (Keys.Control | Keys.C) && TextBoxWithText.SelectedText.Length == 0)
             {
                 e.SuppressKeyPress = true;
@@ -278,32 +339,48 @@ namespace Blopnote
                 TextBoxWithText.SelectionStart = TextBoxWithText.Text.Length;
                 TryAutoCompleteText();
             }
+
+            Logger.Instance.Log(LogType.Method, "Blopnote TextBoxWithText_KeyDown finished");
         }
 
         // It's pointless to process ctrl+w in current version of app, but it's an another way to
         // process the hotkey everywhere in application.
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote ProcessCmdKey invoked");
+
             if (keyData == (Keys.Control | Keys.W))
             {
                 Application.Exit();
                 return true;
             }
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote ProcessCmdKey finished");
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void TextBoxWithText_KeyPress(object sender, KeyPressEventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote TextBoxWithText_KeyPress invoked");
+
             timerAutoSave.Start();
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote TextBoxWithText_KeyPress finished");
         }
 
         private void HighlightActualLine()
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote HighlightActualLine invoked");
+
             lyricsBox.HighlightAt(textField.LineWithCarriage);
+
+            Logger.Instance.Log(LogType.Method, "Blopnote HighlightActualLine finished");
         }
 
         private void TryAutoCompleteText()
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote TryAutoCompleteText invoked");
+
             int lineIndex = textField.realTextBoxLinesLength - 1;
             int lyricsBoxLineIndex;
             TypesOfLine lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
@@ -325,16 +402,26 @@ namespace Blopnote
                 lineIndex++;
                 lineType = lyricsBox.IsRepeatedLineOrKeyword(lineIndex);
             }
+
+            Logger.Instance.Log(LogType.Method, "Blopnote TryAutoCompleteText finished");
         }
 
         private void tabTranslatesOnly1LineToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote TryAutoCompleteText invoked");
+
             tabTranslatesOnly1LineToolStripMenuItem.Checked = !tabTranslatesOnly1LineToolStripMenuItem.Checked;
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote TryAutoCompleteText finished");
         }
 
         private void followUrl_Click(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote followUrl_Click invoked");
+
             Browser.OpenUrlForUser(fileState.Url);
+
+            Logger.Instance.Log(LogType.EventHandler, "Blopnote followUrl_Click invoked");
         }
 
         private void changeUrl_Click(object sender, EventArgs e)
@@ -349,10 +436,13 @@ namespace Blopnote
 
         private void InsertNew(string item)
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote insert new lyrics or url invoked");
+
             string newItem = Interaction.InputBox(Prompt: $"Insert {item}", Title: $"Changing {item}");
 
             if (string.IsNullOrEmpty(newItem))
             {
+                Logger.Instance.Log(LogType.Method, "Blopnote insert new lyrics or url finished");
                 return;
             }
 
@@ -364,15 +454,21 @@ namespace Blopnote
             var property = fileState.GetType().GetProperty(item);
             property.SetValue(fileState, newItem);
             fileProcessor.TryRewriteSongInfo($"{item} wasn't saved.");
+
+            Logger.Instance.Log(LogType.Method, "Blopnote insert new lyrics or url finished");
         }
 
         private void TextBoxWithText_SelectionChanged(object sender, EventArgs e)
         {
+            Logger.Instance.Log(LogType.Method, "Blopnote TextBoxWithText_SelectionChanged invoked");
+
             if (PreviousLineWithCarriage != textField.LineWithCarriage)
             {
                 PreviousLineWithCarriage = textField.LineWithCarriage;
                 HighlightActualLine();
             }
+
+            Logger.Instance.Log(LogType.Method, "Blopnote TextBoxWithText_SelectionChanged finished");
         }
 
         private void ImportDocToolStripMenuItem_Click(object sender, EventArgs e)
@@ -387,12 +483,9 @@ namespace Blopnote
             {
                 Browser.Instance.DoNothing();
             }
-            catch
+            catch (Exception exception)
             {
-                MessageBox.Show(caption: "Browser error",
-                                text: "Failed to reconnect. Make sure you have an internet?",
-                                buttons: MessageBoxButtons.OK,
-                                icon: MessageBoxIcon.Error);
+                MessageShower.Show(exception);
             }
         }
     }

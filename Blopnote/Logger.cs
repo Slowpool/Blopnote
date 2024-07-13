@@ -9,13 +9,35 @@ namespace Blopnote
 {
     public class Logger
     {
-        public static Logger Instance;
+        private static Logger instance;
+        public static Logger Instance => instance != null ? instance : instance = new Logger();
+
 
         private StreamWriter writer;
         private Logger()
         {
-#warning LOGGER
-            //writer = new StreamWriter();
+            string path = Path.Combine(Environment.CurrentDirectory, $"logs {Format(DateTime.UtcNow)}.txt");
+            writer = new StreamWriter(path);
+        }
+
+        ~Logger()
+        {
+            writer.Dispose();
+        }
+
+        private string Format(DateTime dateTime)
+        {
+            return dateTime.ToString("dd-MM-yyyy HH-mm-ss");
+        }
+
+        public void Log(string info)
+        {
+            writer.WriteLine($"{Format(DateTime.UtcNow)} {info}");
+        }
+
+        public void Log(LogType type, string info)
+        {
+            writer.WriteLine($"{Format(DateTime.UtcNow)} {type.NewToString()} {info}");
         }
     }
 }

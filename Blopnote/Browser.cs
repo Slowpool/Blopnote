@@ -81,8 +81,8 @@ namespace Blopnote
 
         private void StartNewDriver()
         {
-            //latch
-            throw new FailedBrowserOpeningException();
+            ////latch
+            //throw new FailedBrowserOpeningException();
 
             driver?.Dispose();
             try
