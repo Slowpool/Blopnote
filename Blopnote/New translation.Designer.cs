@@ -75,11 +75,14 @@ namespace Blopnote
             this.linkLabelUrl1 = new System.Windows.Forms.LinkLabel();
             this.radioButtonUrl2 = new System.Windows.Forms.RadioButton();
             this.radioButtonUrl1 = new System.Windows.Forms.RadioButton();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxSong.SuspendLayout();
             this.groupBoxLyrics.SuspendLayout();
             this.groupBoxLanguage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.groupBoxUrl.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextBoxForAuthor
@@ -123,7 +126,7 @@ namespace Blopnote
             // 
             this.buttonOK.AutoSize = true;
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(285, 665);
+            this.buttonOK.Location = new System.Drawing.Point(285, 682);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(180, 32);
             this.buttonOK.TabIndex = 8;
@@ -230,7 +233,7 @@ namespace Blopnote
             this.groupBoxSong.Controls.Add(this.TextBoxForAuthor);
             this.groupBoxSong.Controls.Add(this.TextBoxForSong);
             this.groupBoxSong.Controls.Add(this.label3);
-            this.groupBoxSong.Location = new System.Drawing.Point(12, 12);
+            this.groupBoxSong.Location = new System.Drawing.Point(12, 29);
             this.groupBoxSong.Name = "groupBoxSong";
             this.groupBoxSong.Size = new System.Drawing.Size(720, 102);
             this.groupBoxSong.TabIndex = 16;
@@ -247,7 +250,7 @@ namespace Blopnote
             this.groupBoxLyrics.Controls.Add(this.labelLyricsRequestResult);
             this.groupBoxLyrics.Controls.Add(this.buttonPreviousLyrics);
             this.groupBoxLyrics.Controls.Add(this.buttonNextLyrics);
-            this.groupBoxLyrics.Location = new System.Drawing.Point(12, 120);
+            this.groupBoxLyrics.Location = new System.Drawing.Point(12, 137);
             this.groupBoxLyrics.Name = "groupBoxLyrics";
             this.groupBoxLyrics.Size = new System.Drawing.Size(720, 260);
             this.groupBoxLyrics.TabIndex = 16;
@@ -346,7 +349,7 @@ namespace Blopnote
             this.groupBoxUrl.Controls.Add(this.radioButtonUrl1);
             this.groupBoxUrl.Controls.Add(this.checkBoxUseUrl);
             this.groupBoxUrl.Controls.Add(this.buttonRequestForUrl);
-            this.groupBoxUrl.Location = new System.Drawing.Point(12, 390);
+            this.groupBoxUrl.Location = new System.Drawing.Point(12, 407);
             this.groupBoxUrl.Name = "groupBoxUrl";
             this.groupBoxUrl.Size = new System.Drawing.Size(720, 270);
             this.groupBoxUrl.TabIndex = 18;
@@ -541,17 +544,36 @@ namespace Blopnote
             this.radioButtonUrl1.TabStop = true;
             this.radioButtonUrl1.UseVisualStyleBackColor = true;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.browserToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(744, 24);
+            this.menuStrip1.TabIndex = 19;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // browserToolStripMenuItem
+            // 
+            this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
+            this.browserToolStripMenuItem.Size = new System.Drawing.Size(122, 20);
+            this.browserToolStripMenuItem.Text = "Browser";
+            this.browserToolStripMenuItem.Click += new System.EventHandler(this.browserToolStripMenuItem_Click);
+            // 
             // CreateNewTranslationForm
             // 
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
-            this.ClientSize = new System.Drawing.Size(744, 709);
+            this.ClientSize = new System.Drawing.Size(744, 721);
             this.Controls.Add(this.groupBoxUrl);
             this.Controls.Add(this.groupBoxLanguage);
             this.Controls.Add(this.groupBoxLyrics);
             this.Controls.Add(this.groupBoxSong);
             this.Controls.Add(this.buttonOK);
+            this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "CreateNewTranslationForm";
@@ -566,6 +588,8 @@ namespace Blopnote
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.groupBoxUrl.ResumeLayout(false);
             this.groupBoxUrl.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -604,5 +628,7 @@ namespace Blopnote
         private Button buttonCopy4;
         private Button buttonCopy3;
         private Button buttonCopy2;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem browserToolStripMenuItem;
     }
 }

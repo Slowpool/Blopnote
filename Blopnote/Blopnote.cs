@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Collections.Specialized;
 using System.IO;
 using Microsoft.VisualBasic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Blopnote
 {
@@ -128,7 +129,12 @@ namespace Blopnote
         {
             closeToolStripMenuItem.PerformClick();
             // I don't like it. Wanna better approach, e.g. ~Browser (destructor)
-            Browser.Instance.CloseIfExists();
+            try
+            {
+                Browser.Instance.Dispose();
+            }
+            catch
+            { }
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -328,7 +334,7 @@ namespace Blopnote
 
         private void followUrl_Click(object sender, EventArgs e)
         {
-            Browser.Instance.OpenUrlForUser(fileState.Url);
+            Browser.OpenUrlForUser(fileState.Url);
         }
 
         private void changeUrl_Click(object sender, EventArgs e)
@@ -372,6 +378,22 @@ namespace Blopnote
         private void ImportDocToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void reconnectBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+#warning dry browser
+            try
+            {
+                Browser.Instance.DoNothing();
+            }
+            catch
+            {
+                MessageBox.Show(caption: "Browser error",
+                                text: "Failed to reconnect. Make sure you have an internet?",
+                                buttons: MessageBoxButtons.OK,
+                                icon: MessageBoxIcon.Error);
+            }
         }
     }
 }

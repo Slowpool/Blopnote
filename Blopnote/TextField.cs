@@ -100,7 +100,7 @@ namespace Blopnote
             TextBoxWithText.TextChanged -= SongCompletionChecker;
         }
 
-        public void TranslationByGoogleLoaded(object sender, EventArgs e)
+        public void TranslationByGoogleLoaded(object sender)
         {
             TextBoxWithText.PreviewKeyDown += ((LyricsBox)sender).PreviewKeyDown;
         }

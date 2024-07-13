@@ -57,6 +57,7 @@
             this.timerAutoSave = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
+            this.reconnectBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -154,7 +155,8 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeFolderToolStripMenuItem,
-            this.tabTranslatesOnly1LineToolStripMenuItem});
+            this.tabTranslatesOnly1LineToolStripMenuItem,
+            this.reconnectBrowserToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -289,6 +291,13 @@
             this.toolTipLyrics.ReshowDelay = 40;
             this.toolTipLyrics.UseFading = false;
             // 
+            // reconnectBrowserToolStripMenuItem
+            // 
+            this.reconnectBrowserToolStripMenuItem.Name = "reconnectBrowserToolStripMenuItem";
+            this.reconnectBrowserToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.reconnectBrowserToolStripMenuItem.Text = "Reconnect browser";
+            this.reconnectBrowserToolStripMenuItem.Click += new System.EventHandler(this.reconnectBrowserToolStripMenuItem_Click);
+            // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -346,6 +355,7 @@
         private System.Windows.Forms.ToolStripMenuItem ImportXlsxToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportXmlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportJsonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reconnectBrowserToolStripMenuItem;
     }
 }
 

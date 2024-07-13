@@ -4,7 +4,6 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace Blopnote
     public class Browser
     {
         private static Browser instance;
-        public static bool Created => instance != null;
+        private static bool Created => instance != null;
         public static Browser Instance => Created ? instance : instance = new Browser();
 
         private ChromeDriver driver;
@@ -38,7 +37,7 @@ namespace Blopnote
             driver.Manage().Window.Maximize();
         }
 
-        public void CloseIfExists()
+        public void Dispose()
         {
             if (Created)
             {
@@ -48,30 +47,23 @@ namespace Blopnote
 
         public List<string> RequestForSimilarSongs(string songName)
         {
-            try
-            {
-                OpenLyricsSearchPage(songName);
-            }
-            catch
-            {
-                StartNewDriver();
-                OpenLyricsSearchPage(songName);
-            }
-            Task.Delay(2000);
+            driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
+            Wait(2000);
 
             System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> cards;
-            wait.IgnoreExceptionTypes();
             try
             {
                 cards = wait.Until(webDriver =>
                 {
-                    var result = webDriver.FindElements(By.ClassName("mini_card"));
-                    return result.Count >= 1 ? result : null;
+                    return webDriver.FindElements(By.ClassName("mini_card"));
                 });
             }
-            catch
+#warning should I incapsulate this exception into another one more plain for outer interface?
+            catch (WebDriverTimeoutException)
             {
-                return new List<string>();
+                //#warning bad idea
+                //                return new List<string>();
+                throw;
             }
 
             List<string> references = new List<string>();
@@ -89,14 +81,19 @@ namespace Blopnote
 
         private void StartNewDriver()
         {
-            driver?.Dispose();
-            driver = new ChromeDriver(service, options);
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-        }
+            //latch
+            throw new FailedBrowserOpeningException();
 
-        private void OpenLyricsSearchPage(string songName)
-        {
-            driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
+            driver?.Dispose();
+            try
+            {
+                driver = new ChromeDriver(service, options);
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            }
+            catch
+            {
+                throw new FailedBrowserOpeningException();
+            }
         }
 
         public string[] GetTranslationByGoogle(string lyrics)
@@ -105,7 +102,7 @@ namespace Blopnote
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
             try
             {
-                IWebElement soundButton = wait.Until(webDriver => webDriver.FindElements(By.XPath("//div[@class='aJIq1d' and @data-language-code='en']")).Single());
+                IWebElement soundButton = wait.Until(webDriver => webDriver.FindElement(By.XPath("//div[@class='aJIq1d' and @data-language-code='en']")));
                 return soundButton.GetAttribute("data-text")
                                   .Split(new[] { "\r\n" }, StringSplitOptions.None);
             }
@@ -161,7 +158,7 @@ namespace Blopnote
             #endregion
         }
 
-        public void OpenUrlForUser(string Url)
+        public static void OpenUrlForUser(string Url)
         {
             try
             {
@@ -187,14 +184,38 @@ namespace Blopnote
         //    driver.Close();
         //}
 
-        public string GetLyrics(string GeniusSongUrl)
+        public string FindLyrics(string GeniusSongUrl)
         {
-            driver.Navigate().GoToUrl(GeniusSongUrl);
-            Task.Delay(1000);
-            IEnumerable<IWebElement> divs = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1"));
-            return divs.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
+            try
+            {
+                driver.Navigate().GoToUrl(GeniusSongUrl);
+                Wait(1000);
+                IEnumerable<IWebElement> divsWithLyrics = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1"));
+                return divsWithLyrics.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
+            }
+            catch
+            {
+#warning Ehhh
+                throw new Exception();
+            }
             //// latch
             //return "haha";
         }
+
+        private void Wait(int milliseconds)
+        {
+            System.Threading.Thread.Sleep(milliseconds);
+        }
+
+        internal void DoNothing()
+        {
+
+        }
+    }
+
+    public class FailedBrowserOpeningException : Exception
+    {
+        public FailedBrowserOpeningException() : base("Failed to open browser.") { }
+        public FailedBrowserOpeningException(string @string) : base(@string) { }
     }
 }

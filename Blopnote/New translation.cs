@@ -29,6 +29,8 @@ namespace Blopnote
         private readonly List<string> DownloadedLyrics = new List<string>();
 
         private int lyricsId;
+        private const string BROWSER_ERROR_CAPTION = "Browser error";
+
         private int LyricsId
         {
             get => lyricsId;
@@ -86,7 +88,6 @@ namespace Blopnote
             checkBoxUseLyrics.Checked = true;
 
             ClearAllRelatedToLyrics();
-            UpdateLyricsSelector();
 
             ClearAllRelatedToUrls();
 
@@ -108,6 +109,7 @@ namespace Blopnote
             lyricsReferences.Clear();
             TextBoxForLyrics.Clear();
             DownloadedLyrics.Clear();
+            UpdateLyricsSelector();
         }
 
         private void ClearAllRelatedToUrls()
@@ -132,7 +134,6 @@ namespace Blopnote
             buttonLyricsRequest.Enabled = checkBoxUseLyrics.Checked;
             labelLyricsRequestResult.Enabled = checkBoxUseLyrics.Checked;
             ClearAllRelatedToLyrics();
-            UpdateLyricsSelector();
         }
 
         private void checkBoxStoreUrlCheckedChanged(object sender, EventArgs e)
@@ -168,33 +169,64 @@ namespace Blopnote
             if (!SongInserted)
             {
                 ClearAllRelatedToLyrics();
-                UpdateLyricsSelector();
                 labelLyricsRequestResult.Text = EMPTY_FIELDS_MESSAGE;
                 return;
             }
 
-            try
+            TryActWithBrowserOtherwiseShowErrorMessage(delegate
             {
                 lyricsReferences = Browser.Instance.RequestForSimilarSongs(SongName);
-                if (lyricsReferences.Count == 0)
-                {
-                    ClearAllRelatedToLyrics();
-                    UpdateLyricsSelector();
-                    labelLyricsRequestResult.Text = NOT_FOUND_MESSAGE;
-                }
-                else
-                {
-                    labelLyricsRequestResult.Text = string.Format("{0} lyrics found", lyricsReferences.Count);
-                    DownloadedLyrics.Clear();
-                    //LyricsId = 0;
-                    LoadLyricsToTextBox();
-                }
+            });
+            
+
+            if (lyricsReferences.Count == 0)
+            {
+                ClearAllRelatedToLyrics();
+                labelLyricsRequestResult.Text = NOT_FOUND_MESSAGE;
+                return;
+            }
+
+            labelLyricsRequestResult.Text = string.Format($"{lyricsReferences.Count} lyrics found");
+            DownloadedLyrics.Clear();
+
+            TryActWithBrowserOtherwiseShowErrorMessage(delegate
+            {
+                LoadLyricsToTextBox();
+            });
+        }
+
+        private void TryActWithBrowserOtherwiseShowErrorMessage(Action action)
+        {
+            try
+            {
+                action.Invoke();
             }
             catch (Exception exception)
             {
-
+                ShowMessage(exception);
+                return;
             }
+        }
 
+        private void ShowMessage(Exception exception)
+        {
+            string text;
+            switch (exception.GetType().Name)
+            {
+                case "WebDriverTimeoutException":
+                    text = "Waiting time has expired\r\n" +
+                        "You can try reconnecting browser in the upper menu.";
+                    break;
+
+                case "FailedBrowserOpeningException":
+                default:
+                    text = exception.Message;
+                    break;
+            }
+            MessageBox.Show(caption: BROWSER_ERROR_CAPTION,
+                                text: text,
+                                buttons: MessageBoxButtons.OK,
+                                icon: MessageBoxIcon.Error);
         }
 
         private void buttonNextLyrics_Click(object sender, EventArgs e)
@@ -217,7 +249,7 @@ namespace Blopnote
             }
             catch
             {
-                DownloadedLyrics.Add(Browser.Instance.GetLyrics(lyricsReferences[LyricsId]));
+                DownloadedLyrics.Add(Browser.Instance.FindLyrics(lyricsReferences[LyricsId]));
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
             }
             UpdateLyricsSelector();
@@ -300,11 +332,15 @@ namespace Blopnote
         {
             if (SongInserted)
             {
-                string[,] Urls = Browser.Instance.GetYoutubeUrls(SongName);
-                DisplayUrls(Urls);
-                labelUrlRequest.Text = Urls.GetLength(0) == 0
+                TryActWithBrowserOtherwiseShowErrorMessage(delegate
+                {
+                    string[,] Urls = Browser.Instance.GetYoutubeUrls(SongName);
+                    DisplayUrls(Urls);
+
+                    labelUrlRequest.Text = Urls.GetLength(0) == 0
                                         ? NOT_FOUND_MESSAGE
-                                        : Urls.GetLength(0) + " Urls found";
+                                        : Urls.GetLength(0) + " Urls were found";
+                });
             }
             else
             {
@@ -333,7 +369,7 @@ namespace Blopnote
 
         private void linkLabelUrlLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Browser.Instance.OpenUrlForUser(GetUrl((LinkLabel)sender));
+            Browser.OpenUrlForUser(GetUrl((LinkLabel)sender));
         }
 
         private string GetUrl(LinkLabel linkLabel)
@@ -346,6 +382,24 @@ namespace Blopnote
                 }
             }
             throw new ArgumentException("");
+        }
+
+        private void reconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void browserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+#warning dry browser
+            try
+            {
+                Browser.Instance.DoNothing();
+            }
+            catch
+            {
+                ShowMessage(new Exception("Failed to reconnect. Make sure you have an internet?"));
+            }
         }
     }
 }

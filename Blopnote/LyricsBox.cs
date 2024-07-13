@@ -23,7 +23,7 @@ namespace Blopnote
         private Label HighlightedLabel { get; set; }
         private int IndexHighlightedLabel { get; set; }
 
-        public event EventHandler TranslationByGoogleLoaded;
+        public event Action<object> TranslationByGoogleLoaded;
         private string[] TranslationByGoogle { get; set; }
         private bool TranslateOnly1Line { get; set; }
 
@@ -136,9 +136,24 @@ namespace Blopnote
 
             HighlightKeywords();
             ConfigureLabels();
-            TranslationByGoogle = Browser.Instance.GetTranslationByGoogle(FilteredLyrics);
-            TranslationByGoogleLoaded(this, null);
-            CalculateWidth();
+
+            try
+            {
+                TranslationByGoogle = Browser.Instance.GetTranslationByGoogle(FilteredLyrics);
+                TranslationByGoogleLoaded(this);
+            }
+            catch
+            {
+                TranslationByGoogle = null;
+#warning acutally this is browser error
+                MessageBox.Show(caption: "Google translator error",
+                                text: "Failed to get translation of song by google.",
+                                buttons: MessageBoxButtons.OK,
+                                icon: MessageBoxIcon.Error);
+            }
+
+            CalculateMaxWidth();
+
             AdjustScrollBar();
 
             Display();
@@ -369,7 +384,7 @@ namespace Blopnote
             return Color.LightGray;
         }
 
-        private void CalculateWidth()
+        private void CalculateMaxWidth()
         {
             // attempt to calculate max width including width of labels with translation
             // but there's string[] TranslatedLyrics and it's impossible to calculate width of strings
@@ -379,23 +394,22 @@ namespace Blopnote
 
             string temp = LabelsWithLyrics[0].Text;
 
-            var fakeLabel = LabelsWithLyrics[0];
-            var TranslatedLinesWidth = TranslationByGoogle.Select(line =>
+            Label fakeLabel = LabelsWithLyrics[0];
+            var allWidths = LabelsWithLyrics.Select(label => label.Width);
+            if (TranslationByGoogle != null)
             {
-                fakeLabel.Text = line;
-                return fakeLabel.Width;
-            });
+                allWidths.Concat(TranslationByGoogle.Select(line =>
+                {
+                    fakeLabel.Text = line;
+                    return fakeLabel.Width;
+                }));
+            }
 
-            int maxWidthOfLines = LabelsWithLyrics.Select(label => label.Width)
-                                                  .Concat(TranslatedLinesWidth)
-                                                  .Max();
+            int maxWidth = allWidths.Max();
             fakeLabel.Text = temp;
 
-            LyricsBoxWidth = HORIZONTAL_PADDING + maxWidthOfLines + HORIZONTAL_PADDING + scrollBar.Width;
-            if (LyricsBoxWidth > MAX_WIDTH)
-            {
-                LyricsBoxWidth = MAX_WIDTH;
-            }
+            int widthToFitAllLabel = HORIZONTAL_PADDING + maxWidth + HORIZONTAL_PADDING + scrollBar.Width;
+            LyricsBoxWidth = widthToFitAllLabel > MAX_WIDTH ? MAX_WIDTH : widthToFitAllLabel;
         }
 
         public void NoLyrics()
