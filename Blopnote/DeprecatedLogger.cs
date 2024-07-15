@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace Blopnote
 {
-    public class Logger
+    public class DeprecatedLogger
     {
-        private static Logger instance;
-        public static Logger Instance => instance != null ? instance : instance = new Logger();
+        private static DeprecatedLogger instance;
+        public static DeprecatedLogger Instance => instance != null ? instance : instance = new DeprecatedLogger();
 
 
         private StreamWriter writer;
-        private Logger()
+        private DeprecatedLogger()
         {
             string path = Path.Combine(Environment.CurrentDirectory, $"logs {Format(DateTime.UtcNow)}.txt");
             writer = new StreamWriter(path);
         }
 
-        ~Logger()
+        ~DeprecatedLogger()
         {
             writer.Dispose();
         }

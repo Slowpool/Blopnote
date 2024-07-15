@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.Extensions.Logging;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -11,8 +12,10 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
+#warning there's complete mess with reinstancing and restart and more one thousand of synonimous methods
     public class Browser
     {
+        private readonly ILogger<Browser> Logger = BlopnoteLogger.CreateLogger<Browser>();
         private static Browser instance;
         private static bool Created => instance != null;
         public static Browser Instance => Created ? instance : instance = new Browser();
@@ -24,29 +27,37 @@ namespace Blopnote
 
         private Browser()
         {
+            Logger.LogInformation("Constructing browser");
+
             options = new ChromeOptions();
             options.AddArgument("--headless"); // Hide the browser window
             options.AddArgument("--disable-extensions");
             options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.PageLoadStrategy = PageLoadStrategy.Eager;
-
+            
             service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
+            RestartWebDriver();
 
-            StartNewDriver();
             driver.Manage().Window.Maximize();
         }
 
-        public void Dispose()
+        public void Close()
         {
-            if (Created)
+            if (driver != null)
             {
                 driver.Quit();
+                Logger.LogInformation("WebDriver was closed");
+            }
+            else
+            {
+                Logger.LogWarning("Browser got called Dispose() method, but WebDriver was null");
             }
         }
 
         public List<string> RequestForSimilarSongs(string songName)
         {
+            Logger.LogInformation("Looking for songs with name {name}", songName);
             driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
             Wait(2000);
 
@@ -59,8 +70,9 @@ namespace Blopnote
                 });
             }
 #warning should I incapsulate this exception into another one more plain for outer interface?
-            catch (WebDriverTimeoutException)
+            catch (WebDriverTimeoutException exception)
             {
+                Logger.LogError(exception, "Songs weren't find");
                 //#warning bad idea
                 //                return new List<string>();
                 throw;
@@ -76,22 +88,30 @@ namespace Blopnote
                     references.Add(reference);
                 }
             }
+            Logger.LogInformation("Refernces of found songs: {references}", references);
             return references;
         }
 
-        private void StartNewDriver()
+        private void RestartWebDriver()
         {
             ////latch
             //throw new FailedBrowserOpeningException();
 
-            driver?.Dispose();
+            Close();
+            TryCreateDriver();
+        }
+
+        private void TryCreateDriver()
+        {
             try
             {
                 driver = new ChromeDriver(service, options);
                 wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                Logger.LogError("WebDriver successfully created");
             }
-            catch
+            catch (Exception exception)
             {
+                Logger.LogError(exception, "Failed to create new WebDriver");
                 throw new FailedBrowserOpeningException();
             }
         }
@@ -106,27 +126,49 @@ namespace Blopnote
                 return soundButton.GetAttribute("data-text")
                                   .Split(new[] { "\r\n" }, StringSplitOptions.None);
             }
-            catch
+            catch (Exception exception)
             {
-                string[] latchArray = new string[lyrics.Length];
-                for(int i = 0; i < latchArray.Length; i++)
-                {
-                    latchArray[i] = "Error. Translation wasn't loaded";
-                }
-                return latchArray;
+                Logger.LogError(exception, "Failed to find translation by google");
+                throw;
             }
         }
 
         public string[,] GetYoutubeUrls(string songName)
         {
-            driver.Navigate().GoToUrl("https://www.youtube.com/results?search_query=" + songName);
-            var videoTitles = wait.Until(driver =>
+            string url = "https://www.youtube.com/results?search_query=" + songName;
+            try
             {
-                var videos = driver.FindElements(By.Id("video-title"));
-                return videos.Count() >= 5
-                     ? videos.Take(5)
-                     : null;
-            });
+                driver.Navigate().GoToUrl(url);
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "Failed to follow the link: {link}", url);
+                throw;
+            }
+
+            IEnumerable<IWebElement> videoTitles;
+            try
+            {
+                videoTitles = wait.Until(driver =>
+                {
+                    var videos = driver.FindElements(By.Id("video-title"));
+                    return videos.Count() >= 5
+                         ? videos.Take(5)
+                         : null;
+                });
+            }
+            // Does it look redundant, doesn't it?
+            catch (WebDriverTimeoutException exception)
+            {
+                Logger.LogError(exception, "Failed to find videos");
+                throw;
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "Failed to find videos");
+                throw;
+            }
+            
             string[,] result = new string[videoTitles.Count(), 2];
             int i = 0;
             foreach (var videoTitle in videoTitles)
@@ -179,11 +221,6 @@ namespace Blopnote
             }
         }
 
-        //public void Close()
-        //{
-        //    driver.Close();
-        //}
-
         public string FindLyrics(string GeniusSongUrl)
         {
             try
@@ -210,6 +247,18 @@ namespace Blopnote
         internal void DoNothing()
         {
 
+        }
+
+        internal static void TryReconstruct()
+        {
+            try
+            {
+                Instance.DoNothing();
+            }
+            catch (Exception exception)
+            {
+                MessageShower.Show(exception);
+            }
         }
     }
 

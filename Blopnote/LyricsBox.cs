@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace Blopnote
 {
     public class LyricsBox
     {
+        private readonly ILogger<Blopnote> Logger = BlopnoteLogger.CreateLogger<Blopnote>();
+
         public readonly Panel panel;
         private readonly Font font;
         private readonly VScrollBar scrollBar;

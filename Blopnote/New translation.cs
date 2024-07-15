@@ -364,15 +364,7 @@ namespace Blopnote
 
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-#warning dry browser
-            try
-            {
-                Browser.Instance.DoNothing();
-            }
-            catch
-            {
-                MessageShower.Show(new Exception("Failed to reconnect. Make sure you have an internet?"));
-            }
+            Browser.TryReconstruct();
         }
     }
 }

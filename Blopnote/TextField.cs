@@ -23,7 +23,7 @@ namespace Blopnote
             }
         }
 
-        public int LineWithCarriage => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
+        public int CarriageLine => TextBoxWithText.GetLineFromCharIndex(TextBoxWithText.SelectionStart);
         public int realTextBoxLinesLength => TextBoxWithText.Lines.Length == 0 ? 1 : TextBoxWithText.Lines.Length;
 
         public int LinesToComplete { get; set; }
@@ -62,7 +62,7 @@ namespace Blopnote
 
         public void CopyCurrentLineToClipBoard()
         {
-            string line = TextBoxWithText.Lines[LineWithCarriage];
+            string line = TextBoxWithText.Lines[CarriageLine];
             try
             {
                 Clipboard.SetText(line);

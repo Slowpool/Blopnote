@@ -22,22 +22,5 @@ namespace Blopnote
             directory.MoveTo(Path.Combine(directory.Parent.FullName, "temp"));
             directory.MoveTo(Path.Combine(directory.Parent.FullName, nameInLowerCase));
         }
-
-        public static string NewToString(this LogType logType)
-        {
-            switch (logType)
-            {
-                case LogType.EventHandler:
-                    return "Event handler";
-                case LogType.Method:
-                case LogType.Constructor:
-                case LogType.Destructor:
-                    return logType.ToString();
-
-#warning why does the compiler require it?
-                default:
-                    return "unnamed log";
-            }
-        }
     }
 }
