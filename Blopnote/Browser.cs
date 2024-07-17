@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -12,17 +13,20 @@ using System.Windows.Forms;
 
 namespace Blopnote
 {
-#warning there's complete mess with reinstancing and restart and more one thousand of synonimous methods
-    public class Browser
+    public class Browser : ISongInfoSupplier
     {
         private readonly ILogger<Browser> Logger = BlopnoteLogger.CreateLogger<Browser>();
+
         private static Browser instance;
         private static bool Created => instance != null;
         public static Browser Instance => Created ? instance : instance = new Browser();
 
-        private ChromeDriver driver;
+#error I thought about several webdrivers, but after all decided it's a bad idea.
         private readonly ChromeOptions options;
+        //private readonly FirefoxOptions options;
         private readonly ChromeDriverService service;
+        //private readonly FirefoxDriverService service;
+        private IWebDriver driver;
         private WebDriverWait wait;
 
         private Browser()
@@ -30,32 +34,26 @@ namespace Blopnote
             Logger.LogInformation("Constructing browser");
 
             options = new ChromeOptions();
+            //options = new FirefoxOptions();
             options.AddArgument("--headless"); // Hide the browser window
+            options.AddArgument("--start-maximize");
             options.AddArgument("--disable-extensions");
             options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.PageLoadStrategy = PageLoadStrategy.Eager;
-            
+
             service = ChromeDriverService.CreateDefaultService();
+            //service = FirefoxDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
-            RestartWebDriver();
 
-            driver.Manage().Window.Maximize();
+            TryCreateDriver();
         }
 
-        public void Close()
+        ~Browser()
         {
-            if (driver != null)
-            {
-                driver.Quit();
-                Logger.LogInformation("WebDriver was closed");
-            }
-            else
-            {
-                Logger.LogWarning("Browser got called Dispose() method, but WebDriver was null");
-            }
+            Close();
         }
 
-        public List<string> RequestForSimilarSongs(string songName)
+        public List<string> FindSimilarSongs(string songName)
         {
             Logger.LogInformation("Looking for songs with name {name}", songName);
             driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
@@ -69,12 +67,9 @@ namespace Blopnote
                     return webDriver.FindElements(By.ClassName("mini_card"));
                 });
             }
-#warning should I incapsulate this exception into another one more plain for outer interface?
             catch (WebDriverTimeoutException exception)
             {
-                Logger.LogError(exception, "Songs weren't find");
-                //#warning bad idea
-                //                return new List<string>();
+                Logger.LogError(exception, "Songs weren't found");
                 throw;
             }
 
@@ -88,32 +83,8 @@ namespace Blopnote
                     references.Add(reference);
                 }
             }
-            Logger.LogInformation("Refernces of found songs: {references}", references);
+            Logger.LogInformation("References of found songs: {refs}", references);
             return references;
-        }
-
-        private void RestartWebDriver()
-        {
-            ////latch
-            //throw new FailedBrowserOpeningException();
-
-            Close();
-            TryCreateDriver();
-        }
-
-        private void TryCreateDriver()
-        {
-            try
-            {
-                driver = new ChromeDriver(service, options);
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                Logger.LogError("WebDriver successfully created");
-            }
-            catch (Exception exception)
-            {
-                Logger.LogError(exception, "Failed to create new WebDriver");
-                throw new FailedBrowserOpeningException();
-            }
         }
 
         public string[] GetTranslationByGoogle(string lyrics)
@@ -133,7 +104,7 @@ namespace Blopnote
             }
         }
 
-        public string[,] GetYoutubeUrls(string songName)
+        public string[,] GetYoutubeReferences(string songName)
         {
             string url = "https://www.youtube.com/results?search_query=" + songName;
             try
@@ -200,6 +171,25 @@ namespace Blopnote
             #endregion
         }
 
+        public string GetLyrics(string SongUrlOnGenius)
+        {
+            try
+            {
+                driver.Navigate().GoToUrl(SongUrlOnGenius);
+                Wait(1000);
+                IEnumerable<IWebElement> divsWithLyrics = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1"));
+                return divsWithLyrics.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
+            }
+            catch
+            {
+                throw new Exception();
+            }
+        }
+
+        /// <summary>
+        /// Strictrly speaking, it doesn't matter where this method is. Just here it's the most suitable from point of view of logic belonging (opens new window in browser, in spite of doing that independently of this browser.)
+        /// </summary>
+        /// <param name="Url"></param>
         public static void OpenUrlForUser(string Url)
         {
             try
@@ -214,29 +204,8 @@ namespace Blopnote
             }
             catch (Exception e)
             {
-                MessageBox.Show(caption: "Url opening error",
-                                text: "Url wasn't opened correctly. Cause: " + e.Message,
-                                buttons: MessageBoxButtons.OK,
-                                icon: MessageBoxIcon.Error);
+                MessageShower.Show(BlopnoteMessageTypes.UrlOpeningError, e);
             }
-        }
-
-        public string FindLyrics(string GeniusSongUrl)
-        {
-            try
-            {
-                driver.Navigate().GoToUrl(GeniusSongUrl);
-                Wait(1000);
-                IEnumerable<IWebElement> divsWithLyrics = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1"));
-                return divsWithLyrics.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
-            }
-            catch
-            {
-#warning Ehhh
-                throw new Exception();
-            }
-            //// latch
-            //return "haha";
         }
 
         private void Wait(int milliseconds)
@@ -244,27 +213,47 @@ namespace Blopnote
             System.Threading.Thread.Sleep(milliseconds);
         }
 
-        internal void DoNothing()
+        public void Reconnect()
         {
-
+            Close();
+            TryCreateDriver();
         }
 
-        internal static void TryReconstruct()
+        private void Close()
+        {
+            if (driver != null)
+            {
+                driver.Quit();
+                driver.Dispose();
+                Logger.LogInformation("WebDriver was closed");
+            }
+            else
+            {
+                Logger.LogWarning("Browser got called Close() method, but WebDriver was null");
+            }
+        }
+
+        private void TryCreateDriver()
         {
             try
             {
-                Instance.DoNothing();
+                driver = new ChromeDriver(service, options);
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                Logger.LogInformation("WebDriver successfully created");
             }
             catch (Exception exception)
             {
-                MessageShower.Show(exception);
+                Logger.LogError(exception, "Failed to create new WebDriver");
+                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception);
+                //throw new BrowserCreatingException(exception.Message);
             }
         }
     }
 
-    public class FailedBrowserOpeningException : Exception
+    // expand it with more exceptions
+    public class BrowserCreatingException : Exception
     {
-        public FailedBrowserOpeningException() : base("Failed to open browser.") { }
-        public FailedBrowserOpeningException(string @string) : base(@string) { }
+        public BrowserCreatingException() : base("Failed to open browser.") { }
+        public BrowserCreatingException(string @string) : base(@string) { }
     }
 }

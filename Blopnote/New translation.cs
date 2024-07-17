@@ -7,11 +7,14 @@ using Blopnote.Properties;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace Blopnote
 {
-    public partial class CreateNewTranslationForm : Form
+    public partial class CreateNewTranslationForm : Form, IInteractorWithBrowser
     {
+        private readonly ILogger<CreateNewTranslationForm> Logger = BlopnoteLogger.CreateLogger<CreateNewTranslationForm>();
+
         private string SongName => TextBoxForAuthor.Text + " - " + TextBoxForSong.Text;
         public FileInfo fileInfo { get; set; }
         public SongInfo songInfo { get; set; }
@@ -172,9 +175,9 @@ namespace Blopnote
                 return;
             }
 
-            TryActWithBrowserOtherwiseShowErrorMessage(delegate
+            TryInteractWithBrowserOtherwiseShowError(delegate
             {
-                lyricsReferences = Browser.Instance.RequestForSimilarSongs(SongName);
+                lyricsReferences = Browser.Instance.FindSimilarSongs(SongName);
             });
             
 
@@ -188,13 +191,13 @@ namespace Blopnote
             labelLyricsRequestResult.Text = string.Format($"{lyricsReferences.Count} lyrics found");
             DownloadedLyrics.Clear();
 
-            TryActWithBrowserOtherwiseShowErrorMessage(delegate
+            TryInteractWithBrowserOtherwiseShowError(delegate
             {
                 LoadLyricsToTextBox();
             });
         }
 
-        private void TryActWithBrowserOtherwiseShowErrorMessage(Action action)
+        public void TryInteractWithBrowserOtherwiseShowError(Action action)
         {
             try
             {
@@ -202,7 +205,8 @@ namespace Blopnote
             }
             catch (Exception exception)
             {
-                MessageShower.Show(exception);
+                Logger.LogError(exception, "Browser error");
+                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception);
                 return;
             }
         }
@@ -227,7 +231,7 @@ namespace Blopnote
             }
             catch
             {
-                DownloadedLyrics.Add(Browser.Instance.FindLyrics(lyricsReferences[LyricsId]));
+                DownloadedLyrics.Add(Browser.Instance.GetLyrics(lyricsReferences[LyricsId]));
                 TextBoxForLyrics.Text = DownloadedLyrics[LyricsId];
             }
             UpdateLyricsSelector();
@@ -310,9 +314,9 @@ namespace Blopnote
         {
             if (SongInserted)
             {
-                TryActWithBrowserOtherwiseShowErrorMessage(delegate
+                TryInteractWithBrowserOtherwiseShowError(delegate
                 {
-                    string[,] Urls = Browser.Instance.GetYoutubeUrls(SongName);
+                    string[,] Urls = Browser.Instance.GetYoutubeReferences(SongName);
                     DisplayUrls(Urls);
 
                     labelUrlRequest.Text = Urls.GetLength(0) == 0
@@ -364,7 +368,7 @@ namespace Blopnote
 
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Browser.TryReconstruct();
+            Browser.Instance.Reconnect();
         }
     }
 }

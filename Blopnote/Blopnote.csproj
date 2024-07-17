@@ -9,7 +9,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{88CB2485-705B-474A-9146-ED9CF02F1BF8}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>Blopnote</RootNamespace>
     <AssemblyName>Blopnote</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -73,6 +73,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.Api.Gax, Version=4.8.0.0, Culture=neutral, PublicKeyToken=3ec5ea7f18953e47, processorArchitecture=MSIL">
@@ -229,13 +235,14 @@
     <Compile Include="Blopnote.Designer.cs">
       <DependentUpon>Blopnote.cs</DependentUpon>
     </Compile>
+    <Compile Include="BlopnoteMessageTypes.cs" />
     <Compile Include="BlopnoteLogger.cs" />
     <Compile Include="Browser.cs" />
     <Compile Include="CauseOfErrorToShow.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileState.cs" />
-    <Compile Include="DeprecatedLogger.cs" />
-    <Compile Include="LogType.cs" />
+    <Compile Include="ISongInfoSupplier.cs" />
+    <Compile Include="IInteractorWithBrowser.cs" />
     <Compile Include="MessageShower.cs" />
     <Compile Include="PathTypesToAsk.cs" />
     <Compile Include="New translation.cs">

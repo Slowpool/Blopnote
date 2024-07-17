@@ -40,8 +40,6 @@ namespace Blopnote
                 }
                 else
                 {
-                    // latch
-                    //MessageBox.Show("There was no song info");
                     songInfo = new SongInfo(null, value);
                 }
                 UrlChanged(this, null);
@@ -91,8 +89,6 @@ namespace Blopnote
                 }
                 else
                 {
-                    // latch
-                    //MessageBox.Show("There was no song info");
                     songInfo = new SongInfo(value, null);
                 }
                 LyricsChanged(this, null);

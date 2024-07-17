@@ -24,12 +24,14 @@ namespace Blopnote
 
         public event EventHandler DirectoryChanged;
 
-        public FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox, OpenFileDialog openFileDialog)
+        public FileProcessor(TextField textField, FileState fileState, LyricsBox lyricsBox)
         {
             this.textField = textField;
             this.fileState = fileState;
             this.lyricsBox = lyricsBox;
-            this.openFileDialog = openFileDialog;
+
+            openFileDialog = new OpenFileDialog();
+
 
             folderBrowserDialog = new FolderBrowserDialog();
             folderBrowserDialog.Description = "Choose the folder where translations will be stored. Programm will create the folder 'SongsInfo' within.";
@@ -144,11 +146,7 @@ namespace Blopnote
             //fileState.songInfo = null; 
             #endregion
             textField.StopObserving();
-            MessageBox.Show(caption: "Completed",
-                            text: "Congratulations! Song was successfully written!",
-                            buttons: MessageBoxButtons.OK,
-                            icon: MessageBoxIcon.Information
-                            );
+            MessageShower.Show(BlopnoteMessageTypes.TranslationCompleted, null);
         }
 
         public void TryRewriteSongInfo(string errorMessage)
@@ -159,11 +157,7 @@ namespace Blopnote
             }
             catch (Exception exception)
             {
-                MessageBox.Show(caption: "Error",
-                            text: errorMessage + " Cause of error: " + exception.Message,
-                            buttons: MessageBoxButtons.OK,
-                            icon: MessageBoxIcon.Error
-                            );
+                MessageShower.Show(BlopnoteMessageTypes.FileSavingError, exception, errorMessage);
                 return;
             }
         }
@@ -188,34 +182,47 @@ namespace Blopnote
 
         public bool AskPath(PathTypesToAsk type, out string path)
         {
-            string description;
+            DialogResult userAnswer;
             switch (type)
             {
                 #region asking only directory name
                 case PathTypesToAsk.TranslationsDirectory:
-                    folderBrowserDialog.ShowDialog();
+                    userAnswer = folderBrowserDialog.ShowDialog();
                     path = folderBrowserDialog.SelectedPath;
-                    return true;
+                    break;
                 #endregion
 
                 #region asking the path with a file name
                 case PathTypesToAsk.Xml:
                     saveFileDialog.FileName = fileState.FileNameWithoutExtension + ".xml";
                     saveFileDialog.Filter = ".xml files(*.xml)|*.xml";
+
+                    userAnswer = saveFileDialog.ShowDialog();
+                    path = saveFileDialog.FileName;
                     break;
-                    
+                case PathTypesToAsk.Song:
+                    openFileDialog.InitialDirectory = fileState.directoryInfo.FullName;
+                    openFileDialog.Filter = ".txt files(*.txt)|*.txt";
+
+                    userAnswer = openFileDialog.ShowDialog();
+                    path = openFileDialog.FileName;
+
+                    break;
                 #endregion
 
                 default:
-                    throw new NotImplementedException();
+                    throw new Exception("Unknown type of path");
             }
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+
+            if (userAnswer == DialogResult.OK)
             {
-                path = saveFileDialog.FileName;
                 return true;
             }
-            path = null;
-            return false;
+            else
+            {
+                path = null;
+                return false;
+            }
         }
 
         internal void ChangeDirecrotyHandler(object sender, EventArgs e)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blopnote
 {
+    // semiAdapter pattern
     public class SongInfoWithTranslation
     {
         public string Lyrics;

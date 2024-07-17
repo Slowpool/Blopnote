@@ -12,7 +12,7 @@ namespace Blopnote
 {
     public class LyricsBox
     {
-        private readonly ILogger<Blopnote> Logger = BlopnoteLogger.CreateLogger<Blopnote>();
+        private readonly ILogger<LyricsBox> Logger = BlopnoteLogger.CreateLogger<LyricsBox>();
 
         public readonly Panel panel;
         private readonly Font font;
@@ -144,15 +144,13 @@ namespace Blopnote
             {
                 TranslationByGoogle = Browser.Instance.GetTranslationByGoogle(FilteredLyrics);
                 TranslationByGoogleLoaded(this);
+                Logger.LogInformation("Google translation was successfully found");
             }
-            catch
+            catch (Exception exception)
             {
+                Logger.LogError(exception, "Google translation wasn't found");
                 TranslationByGoogle = null;
-#warning acutally this is browser error
-                MessageBox.Show(caption: "Google translator error",
-                                text: "Failed to get translation of song by google.",
-                                buttons: MessageBoxButtons.OK,
-                                icon: MessageBoxIcon.Error);
+                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception, "Google translation wasn't found");
             }
 
             CalculateMaxWidth();
@@ -560,7 +558,7 @@ namespace Blopnote
 
         public void PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (e.KeyData == System.Windows.Forms.Keys.Tab)
+            if (e.KeyData == Keys.Tab)
             {
                 ((RichTextBox)sender).KeyUp += KeyUp;
                 if (TranslateOnly1Line)

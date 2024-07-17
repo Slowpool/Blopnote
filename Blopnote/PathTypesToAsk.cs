@@ -9,6 +9,7 @@ namespace Blopnote
     public enum PathTypesToAsk
     {
         TranslationsDirectory,
+        Song,
         Xml,
         Doc,
         Json,

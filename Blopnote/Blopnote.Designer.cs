@@ -55,7 +55,6 @@
             this.PanelForLyricsBox = new System.Windows.Forms.Panel();
             this.VScrollBarForLyrics = new System.Windows.Forms.VScrollBar();
             this.timerAutoSave = new System.Windows.Forms.Timer(this.components);
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
             this.reconnectBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
@@ -342,7 +341,6 @@
         private System.Windows.Forms.Panel PanelForLyricsBox;
         private System.Windows.Forms.VScrollBar VScrollBarForLyrics;
         private System.Windows.Forms.Timer timerAutoSave;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolTip toolTipLyrics;
         private System.Windows.Forms.ToolStripMenuItem tabTranslatesOnly1LineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem UrlToolStripMenuItem;

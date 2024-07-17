@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Blopnote
 {
-    public partial class Blopnote : Form
+    public partial class Blopnote : Form, IInteractorWithBrowser
     {
         private readonly ILogger<Blopnote> Logger = BlopnoteLogger.CreateLogger<Blopnote>();
 
@@ -33,13 +33,12 @@ namespace Blopnote
 
             InitializeComponent();
             this.Icon = Resources.icon;
-            openFileDialog1.Filter = ".txt files(*.txt)|*.txt";
             timerAutoSave.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
 
             textField = new TextField(TextBoxWithText);
             fileState = new FileState(status, textField);
             lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
-            fileProcessor = new FileProcessor(textField, fileState, lyricsBox, openFileDialog1);
+            fileProcessor = new FileProcessor(textField, fileState, lyricsBox);
 
             changeFolderToolStripMenuItem.Click += fileProcessor.ChangeDirecrotyHandler;
             tabTranslatesOnly1LineToolStripMenuItem.Click += lyricsBox.SwitchTabMode;
@@ -68,6 +67,8 @@ namespace Blopnote
                 changeUrlToolStripMenuItem.Enabled = opened;
                 changeLyricsToolStripMenuItem.Enabled = opened;
                 uselessToolStripMenuItem.Enabled = opened;
+
+                // remove event of tab 
             };
 
             fileState.LyricsChanged += (sender, e) =>
@@ -111,7 +112,7 @@ namespace Blopnote
 
         private void Blopnote_Shown(object sender, EventArgs e)
         {
-            Logger.LogInformation("Shown invoked");
+            Logger.LogInformation("Form shown");
 
             Enabled = false;
             string directoryFullName = ConfigurationManager.AppSettings.Get(CONFIG_FOLDER_ATTRIBUTE);
@@ -123,6 +124,7 @@ namespace Blopnote
                     Logger.LogInformation("User picked cancel, so app is closing");
                     this.Close();
                     Application.Exit();
+                    return;
                 }
                 else
                 {
@@ -136,18 +138,19 @@ namespace Blopnote
 
         private void Blopnote_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Logger.LogInformation("Attempt to close form");
+            Logger.LogInformation("Form closing");
 
             closeToolStripMenuItem.PerformClick();
+
             // I don't like it. Wanna better approach, e.g. ~Browser (destructor)
-            try
-            {
-                Browser.Instance.Close();
-            }
-            catch (NullReferenceException exception)
-            {
-                Logger.LogInformation(exception, "Browser wasn't created, so it wasn't disposed");
-            }
+            //try
+            //{
+            //    Browser.Instance.Close();
+            //}
+            //catch (NullReferenceException exception)
+            //{
+            //    Logger.LogInformation(exception, "Browser wasn't created, so it wasn't disposed");
+            //}
         }
 
         private void Blopnote_SizeChanged(object sender, EventArgs e)
@@ -191,8 +194,7 @@ namespace Blopnote
             catch (Exception e)
             {
                 Logger.LogError(e, "File creating error");
-                MessageBox.Show(caption: "File creating error",
-                    text: "Failed to create file.\nCause: " + e.Message);
+                MessageShower.Show(BlopnoteMessageTypes.FileCreatingError, e);
             }
         }
 
@@ -217,22 +219,21 @@ namespace Blopnote
         {
             Logger.LogInformation("File opening");
 
-            DialogResult answer = openFileDialog1.ShowDialog();
-            if (answer == DialogResult.OK)
+            if (fileProcessor.AskPath(PathTypesToAsk.Song, out string fullFileName))
             {
-                Logger.LogInformation("User opened file: {fileName}", openFileDialog1.FileName);
+                Logger.LogInformation("User opened file: {fileName}", fullFileName);
 
                 textField.StopObserving();
                 StopTimerAndTrySaveFile(mandatorySave: false);
 
-                fileProcessor.OpenTranslation(openFileDialog1.FileName);
+                fileProcessor.OpenTranslation(fullFileName);
                 PrepareComponentsToDisplayTranslation();
 
                 textField.Focus();
             }
             else
             {
-                Logger.LogInformation("User closed \"file opening\" dialog");
+                Logger.LogInformation("User closed \"File opening\" dialog");
             }
         }
 
@@ -271,7 +272,7 @@ namespace Blopnote
 
         private void ShowLyrics_EnabledChanged(object sender, EventArgs e)
         {
-            Logger.LogInformation("show lyrics enabled changed invoked");
+            Logger.LogInformation("Show lyrics changed: {value}", ShowLyrics.Enabled);
 
             if (!ShowLyrics.Enabled)
             {
@@ -299,8 +300,7 @@ namespace Blopnote
                 if (mandatorySave)
                 {
                     Logger.LogError(exception, "File wasn't saved");
-                    MessageBox.Show(caption: "File saving error",
-                                    text: "Error text: " + exception.Message);
+                    MessageShower.Show(BlopnoteMessageTypes.FileSavingError, exception);
                 }
             }
         }
@@ -432,9 +432,23 @@ namespace Blopnote
 
         }
 
+        public void TryInteractWithBrowserOtherwiseShowError(Action action)
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "Browser error");
+                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception);
+                return;
+            }
+        }
+
         private void reconnectBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Browser.TryReconstruct();
+            Browser.Instance.Reconnect();
         }
     }
 }
