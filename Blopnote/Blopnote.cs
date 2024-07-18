@@ -27,6 +27,7 @@ namespace Blopnote
         private const int AUTOSAVE_FREQUENCY_IN_SECONDS = 5;
         private const string CONFIG_FOLDER_ATTRIBUTE = "folderWithTranslationsPath";
         private int PreviousCarriageLine { get; set; }
+        public static Font font = new Font("Consolas", 14.25F, FontStyle.Regular);
         public Blopnote()
         {
             Logger.LogInformation("Class constructing");
@@ -35,9 +36,9 @@ namespace Blopnote
             this.Icon = Resources.icon;
             timerAutoSave.Interval = AUTOSAVE_FREQUENCY_IN_SECONDS * 1000;
 
-            textField = new TextField(TextBoxWithText);
+            lyricsBox = new LyricsBox(PanelForLyricsBox, font, VScrollBarForLyrics);
+            textField = new TextField(TextBoxWithText, lyricsBox.PreviewKeyDown, lyricsBox.KeyUp);
             fileState = new FileState(status, textField);
-            lyricsBox = new LyricsBox(PanelForLyricsBox, TextBoxWithText.Font, VScrollBarForLyrics);
             fileProcessor = new FileProcessor(textField, fileState, lyricsBox);
 
             changeFolderToolStripMenuItem.Click += fileProcessor.ChangeDirecrotyHandler;
@@ -45,9 +46,11 @@ namespace Blopnote
             createToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
             openToolStripMenuItem.Click += lyricsBox.ResetScrollBar;
 
-            lyricsBox.TranslationByGoogleLoaded += textField.TranslationByGoogleLoaded;
+            lyricsBox.RawOnlineTranslationWasLoaded += textField.ObserveTabHolding;
+            useOnlineTranslationToolStripMenuItem.Click += lyricsBox.OnlineTranslation_Changed;
 
             textField.SongIsWritten += fileProcessor.SongIsWritten_Handler;
+            
             fileProcessor.DirectoryChanged += (sender, e) =>
             {
                 createNewTranslationForm.UpdateMaxLength(fileState.DirectoryLength);
@@ -61,14 +64,16 @@ namespace Blopnote
             fileState.FileOpenedOrClosed += (opened) =>
             {
                 textField.Clear();
+                if (!opened)
+                {
+                    textField.StopObserveTabHolding();
+                }
 
                 closeToolStripMenuItem.Enabled = opened;
                 changeFolderToolStripMenuItem.Enabled = !opened;
                 changeUrlToolStripMenuItem.Enabled = opened;
                 changeLyricsToolStripMenuItem.Enabled = opened;
                 uselessToolStripMenuItem.Enabled = opened;
-
-                // remove event of tab 
             };
 
             fileState.LyricsChanged += (sender, e) =>
@@ -94,7 +99,7 @@ namespace Blopnote
 
             ImportXmlToolStripMenuItem.Click += fileProcessor.ImportXmlHandler;
 
-            createNewTranslationForm = new CreateNewTranslationForm();
+            createNewTranslationForm = new CreateNewTranslationForm(reconnectBrowserToolStripMenuItem_Click);
             sizeRegulator = new SizeRegulator(lyricsBox, textField);
 
             textField.PlaceOnce(topMargin: menuStrip1.Height);
@@ -122,7 +127,6 @@ namespace Blopnote
                 if (!fileProcessor.AskPath(PathTypesToAsk.TranslationsDirectory, out directoryFullName))
                 {
                     Logger.LogInformation("User picked cancel, so app is closing");
-                    this.Close();
                     Application.Exit();
                     return;
                 }
@@ -174,8 +178,11 @@ namespace Blopnote
             if (createNewTranslationForm.ShowForDataInput() == DialogResult.OK)
             {
                 Logger.LogInformation("User created new translation");
-                HandleInsertedData();
-                PrepareComponentsToDisplayTranslation();
+                using (new WaitingCursor())
+                {
+                    HandleInsertedData();
+                    PrepareComponentsToDisplayTranslation();
+                }
             }
             else
             {
@@ -204,14 +211,6 @@ namespace Blopnote
 
             textField.Enable();
             
-// Q: maybe there's no need to use this?
-// A: there is.
-// Q: maybe it's still worth it to remove it and leave just textField.Clear()
-            //if (clearText)
-            //{
-            //    textField.Clear();
-            //}
-
             RegulateTextAndLyricsBoxes();
         }
 
@@ -223,13 +222,16 @@ namespace Blopnote
             {
                 Logger.LogInformation("User opened file: {fileName}", fullFileName);
 
-                textField.StopObserving();
-                StopTimerAndTrySaveFile(mandatorySave: false);
+                using (new WaitingCursor())
+                {
+                    textField.StopObserving();
+                    StopTimerAndTrySaveFile(mandatorySave: false);
 
-                fileProcessor.OpenTranslation(fullFileName);
-                PrepareComponentsToDisplayTranslation();
+                    fileProcessor.OpenTranslation(fullFileName);
+                    PrepareComponentsToDisplayTranslation();
 
-                textField.Focus();
+                    textField.Focus();
+                }
             }
             else
             {
@@ -449,6 +451,11 @@ namespace Blopnote
         private void reconnectBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Browser.Instance.Reconnect();
+        }
+
+        private void useOnlineTranslationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            useOnlineTranslationToolStripMenuItem.Checked = !useOnlineTranslationToolStripMenuItem.Checked;
         }
     }
 }

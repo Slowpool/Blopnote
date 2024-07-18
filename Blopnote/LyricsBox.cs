@@ -26,9 +26,10 @@ namespace Blopnote
         private Label HighlightedLabel { get; set; }
         private int IndexHighlightedLabel { get; set; }
 
-        public event Action<object> TranslationByGoogleLoaded;
-        private string[] TranslationByGoogle { get; set; }
-        private bool TranslateOnly1Line { get; set; }
+        private bool RequestOnlineTranslation { get; set; } = true;
+        public event Action RawOnlineTranslationWasLoaded;
+        private string[] RawOnlineTranslation { get; set; }
+        private bool DisplayOnly1TranslatedLine { get; set; }
 
         public bool Enabled => panel.Visible;
 
@@ -72,6 +73,7 @@ namespace Blopnote
                 }
             }
         }
+
 
         private readonly Color HIGHLIGHTED_LABEL = Color.LightSteelBlue;
         private const int HORIZONTAL_PADDING = 10;
@@ -137,28 +139,55 @@ namespace Blopnote
             TrimLines();
             LabelsWithLyrics = new Label[Lines.Count];
 
-            HighlightKeywords();
+            SeparateKeywords();
             ConfigureLabels();
 
+            if (RequestOnlineTranslation)
+            {
+                TryRequestOnlineTranslation();
+            }
+            else
+            {
+                RawOnlineTranslation = null;
+            }
+            
+            CalculateMaxWidth();
+            AdjustScrollBar();
+            Display();
+            return FilteredLyrics;
+        }
+
+        private void TryRequestOnlineTranslation()
+        {
             try
             {
-                TranslationByGoogle = Browser.Instance.GetTranslationByGoogle(FilteredLyrics);
-                TranslationByGoogleLoaded(this);
+                RawOnlineTranslation = Browser.Instance.GetRawOnlineTranslation(FilteredLyrics);
+                RawOnlineTranslationWasLoaded();
                 Logger.LogInformation("Google translation was successfully found");
             }
             catch (Exception exception)
             {
                 Logger.LogError(exception, "Google translation wasn't found");
-                TranslationByGoogle = null;
-                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception, "Google translation wasn't found");
+                RawOnlineTranslation = null;
+                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception, "Online translation wasn't found");
             }
+        }
 
-            CalculateMaxWidth();
-
-            AdjustScrollBar();
-
-            Display();
-            return FilteredLyrics;
+        /// <summary>
+        /// If lyrics contains accidentaly cut phrase "You might also like..." then this method return the lyrics without that phrase.
+        /// </summary>
+        /// <param name="lyrics"></param>
+        /// <returns></returns>
+        private void CutExcessPhrase()
+        {
+            if (Lines.Contains(EXCESS_PHRASE))
+            {
+                int ExcessPhraseIndex = Lines.IndexOf(EXCESS_PHRASE);
+                for (int i = 0; i < LINES_AFTER_EXCESS_PHRASE; i++)
+                {
+                    Lines.RemoveAt(ExcessPhraseIndex);
+                }
+            }
         }
 
         private void TrimLines()
@@ -176,7 +205,7 @@ namespace Blopnote
             }
         }
 
-        private void HighlightKeywords()
+        private void SeparateKeywords()
         {
             SelectKeywordsAsIndividualLines(0);
             int realIndex;
@@ -186,7 +215,7 @@ namespace Blopnote
             // so they don't need to be checked
             // and even if last line is keyword it's ok
             // but if the last line looks like [chorus]lyrics lyrics[chorus][bridge]
-            // then it's kind of strage and i'll ignore that
+            // then it's kind of strage and app will ignore that
 
             for (int i = 1; i < numberOfLines; i++)
             {
@@ -275,23 +304,6 @@ namespace Blopnote
                 added++;
             }
             return added;
-        }
-
-        /// <summary>
-        /// If lyrics contains accidentaly cut phrase "You might also like..." then this method return the lyrics without that phrase.
-        /// </summary>
-        /// <param name="lyrics"></param>
-        /// <returns></returns>
-        private void CutExcessPhrase()
-        {
-            if (Lines.Contains(EXCESS_PHRASE))
-            {
-                int ExcessPhraseIndex = Lines.IndexOf(EXCESS_PHRASE);
-                for (int i = 0; i < LINES_AFTER_EXCESS_PHRASE; i++)
-                {
-                    Lines.RemoveAt(ExcessPhraseIndex);
-                }
-            }
         }
 
         private void ConfigureLabels()
@@ -397,9 +409,9 @@ namespace Blopnote
 
             Label fakeLabel = LabelsWithLyrics[0];
             var allWidths = LabelsWithLyrics.Select(label => label.Width);
-            if (TranslationByGoogle != null)
+            if (RawOnlineTranslation != null)
             {
-                allWidths.Concat(TranslationByGoogle.Select(line =>
+                allWidths.Concat(RawOnlineTranslation.Select(line =>
                 {
                     fakeLabel.Text = line;
                     return fakeLabel.Width;
@@ -561,14 +573,9 @@ namespace Blopnote
             if (e.KeyData == Keys.Tab)
             {
                 ((RichTextBox)sender).KeyUp += KeyUp;
-                if (TranslateOnly1Line)
+                if (DisplayOnly1TranslatedLine)
                 {
-                    try
-                    {
-                        HighlightedLabel.Text = TranslationByGoogle[IndexHighlightedLabel];
-                    }
-                    catch
-                    { }
+                    HighlightedLabel.Text = RawOnlineTranslation[IndexHighlightedLabel];
                 }
                 else
                 {
@@ -576,23 +583,18 @@ namespace Blopnote
                     {
                         if (!IsKeyword(LabelsWithLyrics[i].Text))
                         {
-                            LabelsWithLyrics[i].Text = TranslationByGoogle[i];
+                            LabelsWithLyrics[i].Text = RawOnlineTranslation[i];
                         }
                     }
                 }
             }
         }
 
-        private void KeyUp(object sender, KeyEventArgs e)
+        public void KeyUp(object sender, KeyEventArgs e)
         {
-            if (TranslateOnly1Line)
+            if (DisplayOnly1TranslatedLine)
             {
-                try
-                {
-                    HighlightedLabel.Text = Lines[IndexHighlightedLabel];
-                }
-                catch
-                { }
+                HighlightedLabel.Text = Lines[IndexHighlightedLabel];
             }
             else
             {
@@ -606,7 +608,12 @@ namespace Blopnote
 
         public void SwitchTabMode(object sender, EventArgs e)
         {
-            TranslateOnly1Line = !TranslateOnly1Line;
+            DisplayOnly1TranslatedLine = !DisplayOnly1TranslatedLine;
+        }
+
+        public void OnlineTranslation_Changed(object sender, EventArgs e)
+        {
+            RequestOnlineTranslation = ((ToolStripMenuItem)sender).Checked;
         }
     }
 }

@@ -76,7 +76,8 @@ namespace Blopnote
             this.radioButtonUrl2 = new System.Windows.Forms.RadioButton();
             this.radioButtonUrl1 = new System.Windows.Forms.RadioButton();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.browserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reconnectToBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxSong.SuspendLayout();
             this.groupBoxLyrics.SuspendLayout();
             this.groupBoxLanguage.SuspendLayout();
@@ -547,19 +548,26 @@ namespace Blopnote
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.browserToolStripMenuItem});
+            this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(744, 24);
             this.menuStrip1.TabIndex = 19;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // browserToolStripMenuItem
+            // settingsToolStripMenuItem
             // 
-            this.browserToolStripMenuItem.Name = "browserToolStripMenuItem";
-            this.browserToolStripMenuItem.Size = new System.Drawing.Size(122, 20);
-            this.browserToolStripMenuItem.Text = "Browser";
-            this.browserToolStripMenuItem.Click += new System.EventHandler(this.browserToolStripMenuItem_Click);
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reconnectToBrowserToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // reconnectToBrowserToolStripMenuItem
+            // 
+            this.reconnectToBrowserToolStripMenuItem.Name = "reconnectToBrowserToolStripMenuItem";
+            this.reconnectToBrowserToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.reconnectToBrowserToolStripMenuItem.Text = "Reconnect to browser";
             // 
             // CreateNewTranslationForm
             // 
@@ -629,6 +637,7 @@ namespace Blopnote
         private Button buttonCopy3;
         private Button buttonCopy2;
         private MenuStrip menuStrip1;
-        private ToolStripMenuItem browserToolStripMenuItem;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private ToolStripMenuItem reconnectToBrowserToolStripMenuItem;
     }
 }

@@ -9,8 +9,6 @@ namespace Blopnote
 {
     public class Program
     {
-        private readonly ILogger<Program> Logger = BlopnoteLogger.CreateLogger<Program>();
-
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>

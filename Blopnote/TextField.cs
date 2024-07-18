@@ -28,20 +28,25 @@ namespace Blopnote
 
         public int LinesToComplete { get; set; }
 
-        public TextField(RichTextBox TextBoxWithText)
+#warning i don't like it but i don't know other ways. This part really bad.
+        private readonly PreviewKeyDownEventHandler TabHoldingHandler;
+        private readonly KeyEventHandler KeyUpHandler;
+        public TextField(RichTextBox textBoxWithText, PreviewKeyDownEventHandler tabHoldingHandler, KeyEventHandler keyUpHandler)
         {
-            this.TextBoxWithText = TextBoxWithText;
+            this.TextBoxWithText = textBoxWithText;
+            this.TabHoldingHandler = tabHoldingHandler;
+            this.KeyUpHandler = keyUpHandler;
         }
 
         public void PlaceOnce(int topMargin)
         {
-            // Here -1 due to strange display of textbox borders even with using of property ClientSize
+            // Here -1 due to strange displaying of textbox borders even when ClientSize property is used
             TextBoxWithText.Location = new Point(-1, topMargin);
         }
 
         public void AdjustSizeTo(Size size)
         {
-            // Here +2 due to strange display of textbox borders even with the property ClientSize being used
+            // Here +2 due to strange displaying of textbox borders even when ClientSize property is used
             TextBoxWithText.Size = new Size(size.Width + 2, size.Height);
         }
 
@@ -100,9 +105,15 @@ namespace Blopnote
             TextBoxWithText.TextChanged -= SongCompletionChecker;
         }
 
-        public void TranslationByGoogleLoaded(object sender)
+        public void ObserveTabHolding()
         {
-            TextBoxWithText.PreviewKeyDown += ((LyricsBox)sender).PreviewKeyDown;
+            TextBoxWithText.PreviewKeyDown += TabHoldingHandler;
+        }
+
+        public void StopObserveTabHolding()
+        {
+            TextBoxWithText.PreviewKeyDown -= TabHoldingHandler;
+            TextBoxWithText.KeyUp -= KeyUpHandler;
         }
     }
 }

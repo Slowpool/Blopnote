@@ -1,15 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Blopnote
 {
@@ -21,11 +18,8 @@ namespace Blopnote
         private static bool Created => instance != null;
         public static Browser Instance => Created ? instance : instance = new Browser();
 
-#error I thought about several webdrivers, but after all decided it's a bad idea.
         private readonly ChromeOptions options;
-        //private readonly FirefoxOptions options;
         private readonly ChromeDriverService service;
-        //private readonly FirefoxDriverService service;
         private IWebDriver driver;
         private WebDriverWait wait;
 
@@ -34,7 +28,6 @@ namespace Blopnote
             Logger.LogInformation("Constructing browser");
 
             options = new ChromeOptions();
-            //options = new FirefoxOptions();
             options.AddArgument("--headless"); // Hide the browser window
             options.AddArgument("--start-maximize");
             options.AddArgument("--disable-extensions");
@@ -42,7 +35,6 @@ namespace Blopnote
             options.PageLoadStrategy = PageLoadStrategy.Eager;
 
             service = ChromeDriverService.CreateDefaultService();
-            //service = FirefoxDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
 
             TryCreateDriver();
@@ -51,6 +43,21 @@ namespace Blopnote
         ~Browser()
         {
             Close();
+        }
+
+        private void TryCreateDriver()
+        {
+            try
+            {
+                driver = new ChromeDriver(service, options);
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+                Logger.LogInformation("WebDriver successfully created");
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "Failed to create new WebDriver");
+                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception);
+            }
         }
 
         public List<string> FindSimilarSongs(string songName)
@@ -87,7 +94,7 @@ namespace Blopnote
             return references;
         }
 
-        public string[] GetTranslationByGoogle(string lyrics)
+        public string[] GetRawOnlineTranslation(string lyrics)
         {
             driver.Navigate().GoToUrl("https://translate.google.com/?sl=ru&tl=en&text=" + lyrics.Replace("\r\n", "%0A"));
             wait.IgnoreExceptionTypes(typeof(InvalidOperationException));
@@ -127,12 +134,6 @@ namespace Blopnote
                          ? videos.Take(5)
                          : null;
                 });
-            }
-            // Does it look redundant, doesn't it?
-            catch (WebDriverTimeoutException exception)
-            {
-                Logger.LogError(exception, "Failed to find videos");
-                throw;
             }
             catch (Exception exception)
             {
@@ -180,8 +181,9 @@ namespace Blopnote
                 IEnumerable<IWebElement> divsWithLyrics = driver.FindElements(By.ClassName("Lyrics__Container-sc-1ynbvzw-1"));
                 return divsWithLyrics.Aggregate(string.Empty, (lyrics, div) => lyrics + div.Text);
             }
-            catch
+            catch (Exception exception)
             {
+                Logger.LogError(exception, "Failed to find lyrics");
                 throw new Exception();
             }
         }
@@ -215,6 +217,7 @@ namespace Blopnote
 
         public void Reconnect()
         {
+            Logger.LogInformation("Reconnecting to browser");
             Close();
             TryCreateDriver();
         }
@@ -230,22 +233,6 @@ namespace Blopnote
             else
             {
                 Logger.LogWarning("Browser got called Close() method, but WebDriver was null");
-            }
-        }
-
-        private void TryCreateDriver()
-        {
-            try
-            {
-                driver = new ChromeDriver(service, options);
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-                Logger.LogInformation("WebDriver successfully created");
-            }
-            catch (Exception exception)
-            {
-                Logger.LogError(exception, "Failed to create new WebDriver");
-                MessageShower.Show(BlopnoteMessageTypes.BrowserError, exception);
-                //throw new BrowserCreatingException(exception.Message);
             }
         }
     }

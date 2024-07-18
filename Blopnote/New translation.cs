@@ -50,9 +50,12 @@ namespace Blopnote
         private readonly string[,] ZERO_Urls = new string[,] { };
         private Urlitem SelectedUrlitem => Urlitems.Where(item => item.Checked)
                                                    .Single();
-        public CreateNewTranslationForm()
+        public CreateNewTranslationForm(EventHandler reconnectBrowser_Click)
         {
             InitializeComponent();
+
+            reconnectToBrowserToolStripMenuItem.Click += reconnectBrowser_Click;
+
             Icon = Resources.icon;
             Urlitems = new Urlitem[]
             {
@@ -63,17 +66,18 @@ namespace Blopnote
                 new Urlitem(buttonCopy5, radioButtonUrl5, linkLabelUrl5),
             };
 
-            buttonLyricsRequest.Click += SetWaitingCursor;
+#warning decorator???. I think it could be implemented another, more nifty way.
+            buttonLyricsRequest.Click += delegate { CursorChanger.SetWaiting(); };
             buttonLyricsRequest.Click += buttonLyricsRequest_Click;
-            buttonLyricsRequest.Click += SetDefaultCursor;
+            buttonLyricsRequest.Click += delegate { CursorChanger.SetDefault(); };
 
-            buttonNextLyrics.Click += SetWaitingCursor;
+            buttonNextLyrics.Click += delegate { CursorChanger.SetWaiting(); };
             buttonNextLyrics.Click += buttonNextLyrics_Click;
-            buttonNextLyrics.Click += SetDefaultCursor;
+            buttonNextLyrics.Click += delegate { CursorChanger.SetDefault(); };
 
-            buttonRequestForUrl.Click += SetWaitingCursor;
+            buttonRequestForUrl.Click += delegate { CursorChanger.SetWaiting(); };
             buttonRequestForUrl.Click += buttonRequestForUrl_Click;
-            buttonRequestForUrl.Click += SetDefaultCursor;
+            buttonRequestForUrl.Click += delegate { CursorChanger.SetDefault(); };
         }
 
         [STAThread]
@@ -87,14 +91,16 @@ namespace Blopnote
         {
             TextBoxForAuthor.Clear();
             TextBoxForSong.Clear();
-            checkBoxUseLyrics.Checked = true;
 
+            checkBoxUseLyrics.Checked = true;
             ClearAllRelatedToLyrics();
 
+            checkBoxUseUrl.Checked = true;
             ClearAllRelatedToUrls();
 
             fileInfo = null;
             songInfo = null;
+            Logger.LogInformation("Form was cleared");
         }
 
         private void UpdateLyricsSelector()
@@ -120,18 +126,9 @@ namespace Blopnote
             labelUrlRequest.Text = string.Empty;
         }
 
-        private void SetWaitingCursor(object sender, EventArgs e)
-        {
-            Cursor.Current = Cursors.WaitCursor;
-        }
-
-        private void SetDefaultCursor(object sender, EventArgs e)
-        {
-            Cursor.Current = Cursors.Default;
-        }
-
         private void CheckBoxUseLyrics_CheckedChanged(object sender, EventArgs e)
         {
+            Logger.LogInformation("Use lyrics changed: {value}", checkBoxUseLyrics.Checked);
             TextBoxForLyrics.Enabled = checkBoxUseLyrics.Checked;
             buttonLyricsRequest.Enabled = checkBoxUseLyrics.Checked;
             labelLyricsRequestResult.Enabled = checkBoxUseLyrics.Checked;
@@ -140,6 +137,7 @@ namespace Blopnote
 
         private void checkBoxStoreUrlCheckedChanged(object sender, EventArgs e)
         {
+            Logger.LogInformation("Use Url changed: {value}", checkBoxUseUrl.Checked);
             buttonRequestForUrl.Enabled = checkBoxUseUrl.Checked;
             ClearAllRelatedToUrls();
         }
@@ -153,12 +151,14 @@ namespace Blopnote
             }
             else
             {
+                Logger.LogWarning("Validation failed");
                 this.DialogResult = DialogResult.None;
             }
         }
 
         private void TextBoxForAuthor_KeyPress(object sender, KeyPressEventArgs e)
         {
+#warning plain checking. at least there's workaround with ctrl+v
             if (e.KeyChar == '-')
             {
                 e.Handled = true;
@@ -179,9 +179,9 @@ namespace Blopnote
             {
                 lyricsReferences = Browser.Instance.FindSimilarSongs(SongName);
             });
-            
 
-            if (lyricsReferences.Count == 0)
+
+            if (lyricsReferences == null || lyricsReferences.Count == 0)
             {
                 ClearAllRelatedToLyrics();
                 labelLyricsRequestResult.Text = NOT_FOUND_MESSAGE;
@@ -334,7 +334,7 @@ namespace Blopnote
         private void DisplayUrls(string[,] Urls)
         {
             Urlitems[0].Checked = true;
-            for(int i = 0; i < Urls.GetLength(0); i++)
+            for (int i = 0; i < Urls.GetLength(0); i++)
             {
                 Urlitems[i].Name = Urls[i, 0];
                 Urlitems[i].Url = Urls[i, 1];
@@ -356,7 +356,7 @@ namespace Blopnote
 
         private string GetUrl(LinkLabel linkLabel)
         {
-            foreach(Urlitem item in Urlitems)
+            foreach (Urlitem item in Urlitems)
             {
                 if (item.HasLabel(linkLabel))
                 {

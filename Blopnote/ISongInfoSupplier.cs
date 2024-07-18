@@ -8,7 +8,7 @@ namespace Blopnote
 {
     public interface ISongInfoSupplier
     {
-        string[] GetTranslationByGoogle(string sourceLyrics);
+        string[] GetRawOnlineTranslation(string sourceLyrics);
         List<string> FindSimilarSongs(string songName);
         string[,] GetYoutubeReferences(string songName);
         string GetLyrics(string LyricsOfSongUrl);

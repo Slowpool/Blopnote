@@ -41,6 +41,8 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabTranslatesOnly1LineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reconnectBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.useOnlineTranslationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.UrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeUrlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,8 +57,6 @@
             this.PanelForLyricsBox = new System.Windows.Forms.Panel();
             this.VScrollBarForLyrics = new System.Windows.Forms.VScrollBar();
             this.timerAutoSave = new System.Windows.Forms.Timer(this.components);
-            this.toolTipLyrics = new System.Windows.Forms.ToolTip(this.components);
-            this.reconnectBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.PanelForLyricsBox.SuspendLayout();
@@ -154,6 +154,7 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.changeFolderToolStripMenuItem,
+            this.useOnlineTranslationToolStripMenuItem,
             this.tabTranslatesOnly1LineToolStripMenuItem,
             this.reconnectBrowserToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
@@ -163,17 +164,34 @@
             // changeFolderToolStripMenuItem
             // 
             this.changeFolderToolStripMenuItem.Name = "changeFolderToolStripMenuItem";
-            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.changeFolderToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
             this.changeFolderToolStripMenuItem.Text = "Change folder";
             this.changeFolderToolStripMenuItem.ToolTipText = "Close file to unlock";
             // 
             // tabTranslatesOnly1LineToolStripMenuItem
             // 
             this.tabTranslatesOnly1LineToolStripMenuItem.Name = "tabTranslatesOnly1LineToolStripMenuItem";
-            this.tabTranslatesOnly1LineToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Tab translates only 1 line";
-            this.tabTranslatesOnly1LineToolStripMenuItem.ToolTipText = "Works only with shown lyrics";
+            this.tabTranslatesOnly1LineToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.tabTranslatesOnly1LineToolStripMenuItem.Text = "Show only 1 translated line";
+            this.tabTranslatesOnly1LineToolStripMenuItem.ToolTipText = "Hold \'tab\' to display translation of current line. Works only with shown lyrics";
             this.tabTranslatesOnly1LineToolStripMenuItem.Click += new System.EventHandler(this.tabTranslatesOnly1LineToolStripMenuItem_Click);
+            // 
+            // reconnectBrowserToolStripMenuItem
+            // 
+            this.reconnectBrowserToolStripMenuItem.Name = "reconnectBrowserToolStripMenuItem";
+            this.reconnectBrowserToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.reconnectBrowserToolStripMenuItem.Text = "Reconnect to browser";
+            this.reconnectBrowserToolStripMenuItem.Click += new System.EventHandler(this.reconnectBrowserToolStripMenuItem_Click);
+            // 
+            // useOnlineTranslationToolStripMenuItem
+            // 
+            this.useOnlineTranslationToolStripMenuItem.Checked = true;
+            this.useOnlineTranslationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useOnlineTranslationToolStripMenuItem.Name = "useOnlineTranslationToolStripMenuItem";
+            this.useOnlineTranslationToolStripMenuItem.Size = new System.Drawing.Size(249, 22);
+            this.useOnlineTranslationToolStripMenuItem.Text = "Translation from online translator";
+            this.useOnlineTranslationToolStripMenuItem.ToolTipText = "App requests raw translation of lyrics from online translator\r\n";
+            this.useOnlineTranslationToolStripMenuItem.Click += new System.EventHandler(this.useOnlineTranslationToolStripMenuItem_Click);
             // 
             // UrlToolStripMenuItem
             // 
@@ -282,21 +300,6 @@
             // 
             this.timerAutoSave.Tick += new System.EventHandler(this.timerAutoSave_Tick);
             // 
-            // toolTipLyrics
-            // 
-            this.toolTipLyrics.AutomaticDelay = 200;
-            this.toolTipLyrics.AutoPopDelay = 32000;
-            this.toolTipLyrics.InitialDelay = 200;
-            this.toolTipLyrics.ReshowDelay = 40;
-            this.toolTipLyrics.UseFading = false;
-            // 
-            // reconnectBrowserToolStripMenuItem
-            // 
-            this.reconnectBrowserToolStripMenuItem.Name = "reconnectBrowserToolStripMenuItem";
-            this.reconnectBrowserToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.reconnectBrowserToolStripMenuItem.Text = "Reconnect browser";
-            this.reconnectBrowserToolStripMenuItem.Click += new System.EventHandler(this.reconnectBrowserToolStripMenuItem_Click);
-            // 
             // Blopnote
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -341,7 +344,6 @@
         private System.Windows.Forms.Panel PanelForLyricsBox;
         private System.Windows.Forms.VScrollBar VScrollBarForLyrics;
         private System.Windows.Forms.Timer timerAutoSave;
-        private System.Windows.Forms.ToolTip toolTipLyrics;
         private System.Windows.Forms.ToolStripMenuItem tabTranslatesOnly1LineToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem UrlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem followToolStripMenuItem;
@@ -354,6 +356,7 @@
         private System.Windows.Forms.ToolStripMenuItem ImportXmlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportJsonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reconnectBrowserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem useOnlineTranslationToolStripMenuItem;
     }
 }
 
