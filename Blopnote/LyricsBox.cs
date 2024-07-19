@@ -17,6 +17,7 @@ namespace Blopnote
         public readonly Panel panel;
         private readonly Font font;
         private readonly VScrollBar scrollBar;
+        private const int SCROLL_BAR_LENGTH = 9;
         private List<string> Lines { get; set; }
         public int LinesQuantity => Lines.Count;
         private string FilteredLyrics => Lines.Aggregate(string.Empty, (total, line) => total + line + "\r\n");
@@ -74,14 +75,13 @@ namespace Blopnote
             }
         }
 
-
         private readonly Color HIGHLIGHTED_LABEL = Color.LightSteelBlue;
         private const int HORIZONTAL_PADDING = 10;
         private const int VERTICAL_PADDING = 10;
         private const int MAX_WIDTH = 800;
         // manually copied lyrics from genius could contain such redundant infromation
         private const string EXCESS_PHRASE = "You might also like";
-        private const int LINES_AFTER_EXCESS_PHRASE = 7;
+        private const int REDUNDANT_LINES_AFTER_EXCESS_PHRASE = 7;
 
         private readonly int lineHeight;
 
@@ -95,7 +95,7 @@ namespace Blopnote
 
             panel.MouseWheel += PanelForLyricsBox_MouseWheel;
             scrollBar.ValueChanged += ScrollBar_ValueChanged;
-            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE FOR CORRECT DISPLAYING OF ROWS?
+            // Q WHY DO I HAVE TO SUBTRACT 1 FROM FONT HEIGHT HERE IN ORDER TO HAVE CORRECT ROWS DISPLAYING?
             lineHeight = font.Height - 1;
         }
 
@@ -183,7 +183,7 @@ namespace Blopnote
             if (Lines.Contains(EXCESS_PHRASE))
             {
                 int ExcessPhraseIndex = Lines.IndexOf(EXCESS_PHRASE);
-                for (int i = 0; i < LINES_AFTER_EXCESS_PHRASE; i++)
+                for (int i = 0; i < REDUNDANT_LINES_AFTER_EXCESS_PHRASE; i++)
                 {
                     Lines.RemoveAt(ExcessPhraseIndex);
                 }
@@ -242,7 +242,7 @@ namespace Blopnote
 #warning still bad code even after remaking
             #region interesting note
             // it looks like issue from leetcode like:
-            // given a string of words, spaces and other characters and substrings
+            // given a string which contains words, spaces and other characters and substrings
             // that contain some phrases in brackets. example:
             //
             //   haha[nice] that was a [mistake][to trust the bread] after all he did for you
@@ -400,7 +400,7 @@ namespace Blopnote
         private void CalculateMaxWidth()
         {
             // attempt to calculate max width including width of labels with translation
-            // but there's string[] TranslatedLyrics and it's impossible to calculate width of strings
+            // but there's string[] TranslatedLyrics and it's hard to calculate width of strings
             // because characters have different width so it'll spaghetti-code
             // UPD: got it. i don't need in several labels, I need in only one (I decided to take first one
             // because it's already configurated in appropriate way.
@@ -450,7 +450,7 @@ namespace Blopnote
 
         public void EnsureCleared()
         {
-            if (panel.Controls.Count != 1) // 1 is scrollbar
+            if (panel.Controls.Count != 1) // 1 is scrollbar which is always in panel.controls
             {
                 foreach (var label in LabelsWithLyrics)
                 {
@@ -461,10 +461,7 @@ namespace Blopnote
 
         public void AdjustScrollBar()
         {
-            // Q: emmm what is 9 here?
-            // A: length of scrollBar
-            // Conclusion: use const value
-            scrollBar.Maximum = InvisibleLabelsQuantity + 9;
+            scrollBar.Maximum = InvisibleLabelsQuantity + SCROLL_BAR_LENGTH;
         }
 
         public bool ContainsKeyword(string line)
@@ -525,13 +522,15 @@ namespace Blopnote
         {
             if (Lines == null)
             {
-#warning is it possible?
+#warning is it possible? 
+                Logger.LogWarning("Attempt to highlight line when there's no lyrics");
                 return;
             }
 
             if (lineIndex >= Lines.Count)
             {
                 ReleaseHighlightedLabel();
+                Logger.LogWarning("Attempt to highlight line out of lyrics (It must be allowed once)");
                 return;
             }
 
@@ -539,6 +538,7 @@ namespace Blopnote
 
             if (currentLabel == HighlightedLabel)
             {
+                Logger.LogWarning("Attempt to highlight label, which is already highlighted");
                 return;
             }
 
@@ -573,6 +573,8 @@ namespace Blopnote
             if (e.KeyData == Keys.Tab)
             {
                 ((RichTextBox)sender).KeyUp += KeyUp;
+                Logger.LogInformation("Showing of raw translation of " + (DisplayOnly1TranslatedLine ? "one line" : "the whole lyrics"));
+
                 if (DisplayOnly1TranslatedLine)
                 {
                     HighlightedLabel.Text = RawOnlineTranslation[IndexHighlightedLabel];
@@ -592,6 +594,7 @@ namespace Blopnote
 
         public void KeyUp(object sender, KeyEventArgs e)
         {
+            Logger.LogInformation("Recovery of source lyrics");
             if (DisplayOnly1TranslatedLine)
             {
                 HighlightedLabel.Text = Lines[IndexHighlightedLabel];
@@ -614,6 +617,7 @@ namespace Blopnote
         public void OnlineTranslation_Changed(object sender, EventArgs e)
         {
             RequestOnlineTranslation = ((ToolStripMenuItem)sender).Checked;
+            Logger.LogInformation("Request online translation changed: {value}", RequestOnlineTranslation);
         }
     }
 }

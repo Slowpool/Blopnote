@@ -197,6 +197,8 @@ namespace Blopnote
             try
             {
                 fileProcessor.CreateNewTranslation(createNewTranslationForm.fileInfo, createNewTranslationForm.songInfo);
+                Logger.LogInformation("User created translation.\r\nSong info: {@SongInfo}\r\nFile info: {@FileInfo}", fileState.songInfo, fileState.fileInfo);
+                Logger.LogInformation("User created translation: {@SongInfo}", fileState.songInfo);
             }
             catch (Exception e)
             {
@@ -379,7 +381,7 @@ namespace Blopnote
         {
             tabTranslatesOnly1LineToolStripMenuItem.Checked = !tabTranslatesOnly1LineToolStripMenuItem.Checked;
 
-            Logger.LogInformation("Tab setting changed to {newValue}", tabTranslatesOnly1LineToolStripMenuItem.Checked);
+            Logger.LogInformation("Tab setting changed: {value}", tabTranslatesOnly1LineToolStripMenuItem.Checked);
         }
 
         private void followUrl_Click(object sender, EventArgs e)
