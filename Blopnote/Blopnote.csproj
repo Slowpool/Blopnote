@@ -250,7 +250,6 @@
     <Compile Include="SongInfoWithTranslation.cs" />
     <Compile Include="TextField.cs" />
     <Compile Include="TypesOfLine.cs" />
-    <Compile Include="UnitTests.cs" />
     <Compile Include="URL_item.cs" />
     <Compile Include="WaitingCursor.cs" />
     <EmbeddedResource Include="Blopnote.resx">

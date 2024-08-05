@@ -29,20 +29,28 @@ namespace Blopnote
 
             options = new ChromeOptions();
             options.AddArgument("--headless"); // Hide the browser window
+            options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.AddArgument("--start-maximize");
             options.AddArgument("--disable-extensions");
-            options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.PageLoadStrategy = PageLoadStrategy.Eager;
 
             service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
 
             TryCreateDriver();
+
+#warning handle incorrect song name like 11:11
         }
 
         ~Browser()
         {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
             Close();
+            GC.SuppressFinalize(this);
         }
 
         private void TryCreateDriver()
@@ -64,7 +72,7 @@ namespace Blopnote
         {
             Logger.LogInformation("Looking for songs with name {name}", songName);
             driver.Navigate().GoToUrl("https://genius.com/search?q=" + songName);
-            Wait(2000);
+            Wait(4000);
 
             System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> cards;
             try

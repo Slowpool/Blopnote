@@ -198,7 +198,6 @@ namespace Blopnote
             {
                 fileProcessor.CreateNewTranslation(createNewTranslationForm.fileInfo, createNewTranslationForm.songInfo);
                 Logger.LogInformation("User created translation.\r\nSong info: {@SongInfo}\r\nFile info: {@FileInfo}", fileState.songInfo, fileState.fileInfo);
-                Logger.LogInformation("User created translation: {@SongInfo}", fileState.songInfo);
             }
             catch (Exception e)
             {

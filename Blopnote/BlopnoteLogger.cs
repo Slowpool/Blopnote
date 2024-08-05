@@ -20,8 +20,6 @@ namespace Blopnote
         private static ILoggerFactory Factory;
         static BlopnoteLogger()
         {
-            //new Serilog.Sinks.File.FileSink(Path.Combine(Environment.CurrentDirectory, $"logs/{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.txt"), );
-
             string logPath = $"logs/{DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")}.txt";
             var fileLogger = new LoggerConfiguration()
                 .WriteTo.File(logPath, outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u4}] {Message:lj}{NewLine}{Exception}")

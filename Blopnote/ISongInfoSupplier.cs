@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blopnote
 {
-    public interface ISongInfoSupplier
+    public interface ISongInfoSupplier : IDisposable
     {
         string[] GetRawOnlineTranslation(string sourceLyrics);
         List<string> FindSimilarSongs(string songName);
