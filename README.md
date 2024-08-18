@@ -1,4 +1,5 @@
-[Abandoned] This app allows to write down the song translation MANUALLY from one language to another.
+[Abandoned] json-instead-of-txt last modified branch
+This app allows to write down the song translation MANUALLY from one language to another.
 User can use lyrics (preferable from https://Genius.com), which can also be found by built-in HTTP-request.
 In other words, this is a notepad-like app but with auto-save (each 5 seconds) and with lyrics in right part of screen.
 If anyone doesn't know, song translation is fun and it's not discussed.
