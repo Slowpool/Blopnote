@@ -4,6 +4,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace Blopnote
             Logger.LogInformation("Constructing browser");
 
             options = new ChromeOptions();
-            options.AddArgument("--headless"); // Hide the browser window
+            //options.AddArgument("--headless"); // Hide the browser window
             options.AddArgument("--disable-gpu"); // Disable hardware acceleration.
             options.AddArgument("--start-maximize");
             options.AddArgument("--disable-extensions");
@@ -234,14 +235,29 @@ namespace Blopnote
         {
             if (driver != null)
             {
-                driver.Quit();
-                driver.Dispose();
+                //driver.Quit();
+                //driver.Dispose();
+                KillDriverProcesses();
                 Logger.LogInformation("WebDriver was closed");
             }
             else
             {
                 Logger.LogWarning("Browser got called Close() method, but WebDriver was null");
             }
+        }
+
+        private void KillDriverProcesses()
+        {
+            var processes = Process.GetProcesses();
+            var chromeProcesses = processes.Where(process => process.ProcessName == "chromedriver" || process.ProcessName == "chrome").ToList();
+
+            int count = 0;
+            foreach (var process in chromeProcesses)
+            {
+                process.Kill();
+                count++;
+            }
+            Logger.LogInformation("{numberOfProcesses} were killed", count);
         }
     }
 

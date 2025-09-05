@@ -206,6 +206,10 @@ namespace Blopnote
             }
         }
 
+        //[LoggerMessage(0, LogLevel.Information, "User created translation.\r\nSong info: {@SongInfo}\r\nFile info: {@FileInfo}")]
+        //public static partial void LogTranslation(this ILogger logger, SongInfo songInfo, FileInfo fileInfo);
+        // UPD: oops, doesn't work in c# 7.3
+
         private void PrepareComponentsToDisplayTranslation()
         {
             Logger.LogInformation("Preparing components for translation displaying");

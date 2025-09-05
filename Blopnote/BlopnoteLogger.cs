@@ -26,6 +26,8 @@ namespace Blopnote
                 .CreateLogger();
             Factory = LoggerFactory.Create(builder => builder
                 .AddConsole()
+#warning logs disabled
+                .SetMinimumLevel(LogLevel.None)
                 .AddSerilog(fileLogger, dispose: true)
             );
         }
