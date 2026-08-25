@@ -14,40 +14,33 @@ How to use:
 <img width="943" height="538" alt="image" src="https://github.com/user-attachments/assets/ded52912-9109-433f-9f1a-a16268989833" />
 
 Incredible features & why to use `Blopnote` instead of standard Notepad:
-- Autopulling of the lyrics from `Genius.com` in one click:
+- Auto-pulling of the lyrics from `Genius.com` in one click:
 // TODO gif/picture
 Selenium does all the work under the hood.
 
-- Autofilling of song's structure lines bracketed by `[]`:
+- Your translation and lyrics are in one convenient window (you can hide lyrics)
+
+- Auto-filling of song's structure lines: empty lines, lines which are bracketed by `[]` (`genius.com`-oriented feature):
 // TODO gif
 
+- Auto-completion of already translated lines. You don't need to copy these lines manually.
+// TODO gif
 
+- You'll never loose the focus because the current line is highlighted with blue color
 
-User can use lyrics (preferable from https://Genius.com), which can also be found by built-in HTTP-request.
-In other words, this is a notepad-like app but with auto-save (each 5 seconds) and with lyrics in right part of screen.
-If anyone doesn't know, song translation is fun and it's not discussed.
+- Have forgotten some word's translation and web translate is far from you? Just press `TAB` to skim the translation of current line pulled from google translate:
+// TODO gif
+Selenium pasts the lyrics of song to google translate on song creating and parses translation, so it's displayed instantly.
 
-It's more convenient to use this program to translate some songs instead of default notepad because:
-1. This app contains your text and lyrics in one convenient window. (You could hide lyrics)
-2. Autosave. You needn't to click Ctrl + S each word as if in notepad.
-  2.1 Autosave when closing.
-4. App highlights the current line of lyrics that you enter right now.
-5. Auto-completion of already entered lines. You needn't copy lines manually.
-  4.1. Following to the song structure like:
+- Autosave. No need in annoying `Ctrl + S` pressing after each word like in default Notepad.
+- 
 
-   [Chorus]
-   
-   lalala nice day
-   it's pretty nice day
-
-
-   [Verse]
-
-   I fond of today
-   Very-very keen on today
-7. // in process..
+More details:
+User can past own lyrics (preferable ones are from https://genius.com), or app may parse lyrics automatically by built-in selenium parser.
+In other words, this is a notepad-like app but with auto-save (each 5 seconds under the hood) and with lyrics in right part of screen. 
+If somebody doesn't know, song translation is fun and it's not discussed.
 
 Hotkeys:
-Ctrl + C to copy current line
-Ctrl + W to close
-// in process..
+`Ctrl + C` to copy current line
+`Ctrl + W` to close app (like in standard windows' notepad)
+
