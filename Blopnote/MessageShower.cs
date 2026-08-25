@@ -63,7 +63,10 @@ namespace Blopnote
             {
                 text += extraInfo + Environment.NewLine;
             }
-            text += "Cause: " + exception.Message;
+            if (exception != null)
+            {
+                text += "Cause: " + exception.Message;
+            }
 
             MessageBox.Show(caption: caption,
                             text: text,
