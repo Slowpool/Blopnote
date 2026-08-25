@@ -8,12 +8,13 @@ How to use:
 <img width="237" height="130" alt="image" src="https://github.com/user-attachments/assets/1d675133-b8ae-419b-9e76-b16767dfa2c0" />
 
 3. Fill song info
-<img width="737" height="748" alt="image" src="https://github.com/user-attachments/assets/6fa52a22-c48a-4782-88cb-99f755e94c7c" />
+<img width="742" height="748" alt="image" src="https://github.com/user-attachments/assets/b2323aff-14ff-45e0-88c3-5c503c63e4a7" />
 
 4. Translate!
 <img width="943" height="538" alt="image" src="https://github.com/user-attachments/assets/ded52912-9109-433f-9f1a-a16268989833" />
 
 Incredible features & why to use `Blopnote` instead of standard Notepad:
+
 - Auto-pulling of the lyrics from `Genius.com` in one click:
 // TODO gif/picture
 Selenium does all the work under the hood.
@@ -21,10 +22,12 @@ Selenium does all the work under the hood.
 - Your translation and lyrics are in one convenient window (you can hide lyrics)
 
 - Auto-filling of song's structure lines: empty lines, lines which are bracketed by `[]` (`genius.com`-oriented feature):
-// TODO gif
+<img width="1280" height="720" alt="2026-08-25-15-22-34-_online-video-cutter com_" src="https://github.com/user-attachments/assets/cf55fadc-ae32-4860-98e9-a77fcd027110" />
 
-- Auto-completion of already translated lines. You don't need to copy these lines manually.
-// TODO gif
+
+- Auto-completion of already translated lines. You don't need to copy them manually.
+<img width="1280" height="720" alt="auto_completion_feature" src="https://github.com/user-attachments/assets/c862001d-e477-4d38-9d41-248a99823af2" />
+
 
 - You'll never loose the focus because the current line is highlighted with blue color
 
