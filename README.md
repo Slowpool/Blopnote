@@ -63,6 +63,12 @@ So it's shown instantly. Be sceptical about this machine translation.
 - `Ctrl + C` to copy current line
 - `Ctrl + W` to close app (like in standard windows' notepad)
 
+# Technology stack
+- C#
+- Windows.Forms
+- MySQL
+- Selenium
+
 # More details:
 User can past own lyrics (preferable ones are from https://genius.com), or app may parse lyrics automatically by built-in selenium parser.
 In other words, this is a notepad-like app but with auto-save (each 5 seconds under the hood) and with lyrics in right part of screen. 
